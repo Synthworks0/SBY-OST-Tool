@@ -16,15 +16,19 @@ SBY OST Tool is a powerful tool designed to extract and rename soundtracks from 
 
 1. Go to the [Releases](https://github.com/Synthworks0/SBY-OST-Tool/releases) page.
 2. Download the latest version for your operating system:
-   - Windows: `placeholder`
-   - Portable: `placeholder` *Startup time may be slower for this version!
+   - Windows: No CLI Support
+   - Portable: CLI Support, Startup time may be slower for this version!
 
 * Mac OS and Linux support will be added soon!
 
 ### Installation Steps
 
+Windows:
 1. Extract the downloaded archive to your preferred location.
 2. Run the `SBY_OST_Tool.exe` file.
+
+Portable:
+1. Run application in your preferred location.
 
 ## Usage
 
@@ -41,7 +45,7 @@ SBY OST Tool is a powerful tool designed to extract and rename soundtracks from 
 
 To use the CLI mode, open a terminal or command prompt and navigate to the application's directory. Then run:
 
-`SBY_OST_Tool.exe --cli`
+`SBY_OST_Tool_Portable.exe --cli`
 
 Follow the on-screen prompts to select actions, albums, and languages.
 
@@ -52,3 +56,5 @@ If you encounter any issues or have questions, please [open an issue](https://gi
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/Synthworks0/SBY-OST-Tool/blob/main/LICENSE) file for details.
+
+The soundtracks are not distributed in the github repo for copyright reasons.
