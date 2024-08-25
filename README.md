@@ -51,4 +51,4 @@ If you encounter any issues or have questions, please [open an issue](https://gi
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/Synthworks0/SBY-OST-Tool/blob/main/LICENSE) file for details.
