@@ -2,6 +2,8 @@
 
 SBY OST Tool is a powerful tool designed to extract and rename soundtracks from the "Seishun Buta Yarou" (Rascal Does Not Dream) series. This application provides both a graphical user interface (GUI) and a command-line interface (CLI) for ease of use.
 
+* If there is translation issues please feel free to let me know!
+
 ## Features
 
 - Extract soundtracks from the SBY series
