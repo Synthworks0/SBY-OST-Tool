@@ -12,6 +12,10 @@ SBY OST Tool is a powerful tool designed to extract and rename soundtracks from 
 - User-friendly GUI with album selection and language options
 - CLI support 
 
+![Example 1](https://github.com/Synthworks0/SBY-OST-Tool/blob/dev/example1.png)
+
+![Example 2](https://github.com/Synthworks0/SBY-OST-Tool/blob/dev/example2.png)
+
 ## Installation
 
 ### Download
