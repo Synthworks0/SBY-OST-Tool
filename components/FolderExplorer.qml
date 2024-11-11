@@ -8,6 +8,10 @@ Item {
     property bool isOpen: false
     property var _renamer: null
     property string currentPath: ""
+    property color backgroundColor
+    property color textColor
+    property color accentColor
+    property bool isExtras: false
 
     signal folderSelected(string folder)
 
@@ -15,19 +19,59 @@ Item {
         _renamer = renamer
     }
 
+    signal opened()
+    signal closed()
+
     function open() {
         isOpen = true
         currentPath = ""
         _renamer.set_current_path("")
+        opened()
     }
 
     function close() {
-        isOpen = false
+        if (isOpen) {
+            isOpen = false
+            if (scrollView.contentHeight > scrollView.height && scrollView.contentItem.contentY > 0) {
+                Qt.callLater(scrollTimer.start)
+            }
+            closed()
+        }
+    }
+
+    function getContrastColor(color) {
+        var r = color.r * 255;
+        var g = color.g * 255;
+        var b = color.b * 255;
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        return (yiq >= 128) ? "black" : "white";
+    }
+
+    function adjustBrightness(color, amount) {
+        var r = color.r * 255;
+        var g = color.g * 255;
+        var b = color.b * 255;
+
+        r = Math.max(0, Math.min(255, r + amount));
+        g = Math.max(0, Math.min(255, g + amount));
+        b = Math.max(0, Math.min(255, b + amount));
+
+        return Qt.rgba(r / 255, g / 255, b / 255, color.a);
+    }
+
+    function adjustColorForContrast(color) {
+        if (!isExtras) return color;
+        var r = color.r * 255;
+        var g = color.g * 255;
+        var b = color.b * 255;
+        var luminance = (0.299 * r + 0.587 * g + 0.114 * b);
+        var adjustment = luminance > 186 ? -50 : 50;
+        return adjustBrightness(color, adjustment);
     }
 
     Rectangle {
         anchors.fill: parent
-        color: Material.background
+        color: adjustColorForContrast(root.backgroundColor)
         opacity: 0.9
         visible: root.isOpen
 
@@ -41,7 +85,7 @@ Item {
 
                 Label {
                     text: currentPath || "Select Folder"
-                    color: Material.foreground
+                    color: isExtras ? getContrastColor(root.backgroundColor) : root.textColor
                     font.pixelSize: 14
                     Layout.fillWidth: true
                     elide: Text.ElideMiddle
@@ -65,19 +109,19 @@ Item {
                         Rectangle {
                             width: 24
                             height: 24
-                            color: Material.accent
+                            color: adjustColorForContrast(root.accentColor)
                             radius: 4
 
                             Text {
                                 anchors.centerIn: parent
                                 text: "F"
-                                color: Material.foreground
+                                color: getContrastColor(parent.color)
                             }
                         }
 
                         Label {
                             text: modelData.name
-                            color: Material.foreground
+                            color: isExtras ? getContrastColor(root.backgroundColor) : root.textColor
                             Layout.fillWidth: true
                             elide: Text.ElideRight
                         }
@@ -93,7 +137,7 @@ Item {
                     }
                 }
             }
-            
+
             RowLayout {
                 Layout.fillWidth: true
                 Layout.margins: 10
@@ -101,11 +145,21 @@ Item {
                 TextField {
                     id: newFolderName
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 40
                     placeholderText: "New folder name"
+                    placeholderTextColor: getContrastColor(root.backgroundColor)
+                    color: root.textColor
+                    background: Rectangle {
+                        color: adjustColorForContrast(root.backgroundColor)
+                        border.color: root.accentColor
+                        border.width: 1
+                        radius: 4
+                    }
                 }
 
                 Button {
                     text: "New Folder"
+                    Layout.preferredHeight: 50
                     enabled: currentPath !== "" && newFolderName.text.trim() !== ""
                     onClicked: {
                         if (_renamer.create_new_folder(currentPath, newFolderName.text.trim())) {
@@ -115,7 +169,16 @@ Item {
                             newFolderName.text = ""
                         }
                     }
-                    Material.background: Material.accent
+                    background: Rectangle {
+                        color: parent.enabled ? adjustColorForContrast(root.accentColor) : Qt.darker(adjustColorForContrast(root.accentColor), 1.5)
+                        radius: 4
+                    }
+                    contentItem: Text {
+                        text: parent.text
+                        color: isExtras ? "black" : getContrastColor(parent.background.color)
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
 
@@ -125,31 +188,61 @@ Item {
 
                 Button {
                     text: "Back"
+                    Layout.preferredHeight: 44
                     enabled: currentPath !== ""
                     onClicked: {
                         var parentDir = _renamer.get_parent_directory(currentPath)
                         currentPath = parentDir
                         _renamer.set_current_path(parentDir)
                     }
-                    Material.background: Material.accent
+                    background: Rectangle {
+                        color: parent.enabled ? adjustColorForContrast(root.accentColor) : Qt.darker(adjustColorForContrast(root.accentColor), 1.5)
+                        radius: 4
+                    }
+                    contentItem: Text {
+                        text: parent.text
+                        color: isExtras ? "black" : getContrastColor(parent.background.color)
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
 
                 Item { Layout.fillWidth: true }
 
                 Button {
                     text: "Select"
+                    Layout.preferredHeight: 44
                     enabled: currentPath !== ""
                     onClicked: {
                         folderSelected(currentPath)
                         root.close()
                     }
-                    Material.background: Material.accent
+                    background: Rectangle {
+                        color: parent.enabled ? adjustColorForContrast(root.accentColor) : Qt.darker(adjustColorForContrast(root.accentColor), 1.5)
+                        radius: 4
+                    }
+                    contentItem: Text {
+                        text: parent.text
+                        color: isExtras ? "black" : getContrastColor(parent.background.color)
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
 
                 Button {
                     text: "Cancel"
+                    Layout.preferredHeight: 44
                     onClicked: root.close()
-                    Material.background: Material.accent
+                    background: Rectangle {
+                        color: adjustColorForContrast(root.accentColor)
+                        radius: 4
+                    }
+                    contentItem: Text {
+                        text: parent.text
+                        color: isExtras ? "black" : getContrastColor(parent.background.color)
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
         }

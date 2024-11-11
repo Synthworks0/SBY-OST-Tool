@@ -3,18 +3,23 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import Qt5Compat.GraphicalEffects
+import QtQuick.Window 2.15
+import QtMultimedia
 
 ApplicationWindow {
     id: window
     visible: true
-    width: 600
-    height: 1200
-    minimumWidth: 600
-    maximumWidth: 600
-    minimumHeight: 1200
-    maximumHeight: 1200
     title: "SBY OST Tool"
-    
+
+    property real designWidth: 600
+    property real designHeight: 1200
+    property real scaleFactor: Math.min(Screen.width / (designWidth + 220), Screen.height / (designHeight + 200), 1)
+
+    width: designWidth * scaleFactor
+    height: designHeight * scaleFactor
+    minimumWidth: designWidth * 0.6
+    minimumHeight: designHeight * 0.5
+
     Material.theme: Material.Dark
     Material.accent: coverColorAnalyzer.dominantColor
     Material.background: coverColorAnalyzer.backgroundColor
@@ -26,6 +31,7 @@ ApplicationWindow {
         property color backgroundColor: "#182f74"
         property color accentColor: "#063c94"
         property color textColor: "#ffffff"
+        property var extraColors: ["#e5eef3", "#f8f4c4", "#ecd4e2", "#d5ebdc", "#fbd3c9", "#fcfcf4"]
 
         function setColors(album) {
             switch (album) {
@@ -53,13 +59,19 @@ ApplicationWindow {
                     accentColor = "#f2a99a"
                     textColor = "#ffffff"
                     break
+                case "Extras":
+                    dominantColor = extraColors[0]
+                    backgroundColor = extraColors[1]
+                    accentColor = extraColors[2]
+                    textColor = "#000000"
+                    break
             }
         }
     }
 
     Loader {
         id: mainLoader
-        anchors.fill: parent
         source: "MainContent.qml"
+        anchors.fill: parent
     }
 }
