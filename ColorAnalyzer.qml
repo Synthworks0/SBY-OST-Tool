@@ -7,6 +7,7 @@ Item {
     property color backgroundColor: "#182f74"
     property color accentColor: "#063c94"
     property color textColor: "#ffffff"
+    property var extraColors: ["#e5eef3", "#f8f4c4", "#ecd4e2", "#d5ebdc", "#fbd3c9", "#fcfcf4"]
 
     function setColors(album) {
         switch (album) {
@@ -33,6 +34,12 @@ Item {
                 backgroundColor = "#c68384"
                 accentColor = "#f2a99a"
                 textColor = "#ffffff"
+                break
+            case "Extras":
+                dominantColor = extraColors[0]
+                backgroundColor = extraColors[1]
+                accentColor = extraColors[2]
+                textColor = "#000000"
                 break
         }
     }
