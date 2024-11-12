@@ -38,6 +38,18 @@ The SBY OST Tool is a powerful tool designed to extract and rename soundtracks f
 5. Click "Extract Soundtrack" to extract the files and set the desired langauge.
 6. If needed, click "Rename Files" to rename the soundtrack files after extracting.
 
+## Developer Notes
+
+I've loved this series for a long time and as a audiophile I bought the blurays and extracted the soundtracks in flac lossless from them. When I was going to add them to my media server (I use Jellyfin) 
+and I wanted to batch rename all of the soundtrack albums with some better metadata and thought, "Why don't I just make a program to do this instead of a terminal program just for me?"
+
+Fast forward 6 months and now we're here in November of 2024. 
+
+I spent a lot of time on this as I've never used PySide6 and had to learn the hard way that everything I wanted to do just wasn't possible :)
+
+I'm aware that less than 10 people will probably ever use this and that does make me disappointed. But while making it I felt happy to contribute and make something for a series that has changed my life.
+So if you are reading this, thank you. You can find me at `synthworks` on Discord and Reddit. 
+
 ## Support
 
 If you encounter any issues or have questions, please [open an issue](https://github.com/Synthworks0/SBY-OST-Tool/issues) on the GitHub repository.
