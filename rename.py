@@ -14,8 +14,30 @@ from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtWidgets import QApplication, QFileSystemModel
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import QResource
+from debug_logger import DebugLogger
+
+# Enable or disable debug logging
+DEBUG_MODE = True
+debug_logger = DebugLogger(DEBUG_MODE)
 
 os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "1"
+os.environ["QT_DEBUG_PLUGINS"] = "1"
+os.environ["QT_MEDIA_BACKEND"] = "ffmpeg"
+os.environ["QT_MULTIMEDIA_PREFERRED_PLUGINS"] = "ffmpeg"
+
+ffmpeg_paths = [
+    '/usr/local/opt/ffmpeg/lib',
+    '/opt/homebrew/opt/ffmpeg/lib',
+    '/usr/local/lib',
+    '/opt/homebrew/lib'
+]
+
+for path in ffmpeg_paths:
+    if os.path.exists(path):
+        if 'DYLD_LIBRARY_PATH' in os.environ:
+            os.environ['DYLD_LIBRARY_PATH'] = f"{path}:{os.environ['DYLD_LIBRARY_PATH']}"
+        else:
+            os.environ['DYLD_LIBRARY_PATH'] = path
 
 albums = {
     "Bunny Girl Senpai": {
@@ -780,7 +802,7 @@ class RenamerBackend(QObject, Renamer):
             with open('config.json', 'w') as f:
                 json.dump(config, f)
         except Exception as e:
-            print(f"Error saving config: {str(e)}")
+            debug_logger.error(f"Error saving config: {str(e)}")
 
     def load_last_output_folder(self):
         try:
@@ -791,7 +813,7 @@ class RenamerBackend(QObject, Renamer):
         except FileNotFoundError:
             pass
         except Exception as e:
-            print(f"Error loading config: {str(e)}")
+            debug_logger.error(f"Error loading config: {str(e)}")
 
     @Slot(str)
     def set_output_folder(self, folder):
@@ -939,7 +961,7 @@ class RenamerBackend(QObject, Renamer):
                     dest_subfolder = os.path.join(destination_dir, *dest_subfolder_name.split('/'))
             
             if not source_subfolder or not os.path.exists(source_subfolder):
-                print(f"Source subfolder not found: {source_subfolder}")
+                debug_logger.error(f"Source subfolder not found: {source_subfolder}")
                 continue
                 
             if not dest_subfolder:
@@ -1072,7 +1094,7 @@ class RenamerBackend(QObject, Renamer):
             else:
                 self.update_extras_song_list(album_dir)
         else:
-            print(f"Album path does not exist: {album_dir}")
+            debug_logger.error(f"Album path does not exist: {album_dir}")
         self.songListChanged.emit()
 
     def update_extras_song_list(self, album_dir):
@@ -1316,36 +1338,56 @@ def main():
     if app is None:
         app = QApplication(sys.argv)
 
-    print("Starting GUI...")
+    debug_logger.info("Starting GUI application...")
 
     if getattr(sys, 'frozen', False):
         # Running as compiled exe
         base_path = sys._MEIPASS
+        debug_logger.info(f"Running as frozen application from: {base_path}")
     else:
         # Running as script
         base_path = os.path.dirname(os.path.abspath(__file__))
+        debug_logger.info(f"Running as script from: {base_path}")
+
+    # Log Qt library paths
+    debug_logger.info(f"Qt library paths: {app.libraryPaths()}")
+    
+    # Force Qt to look for plugins in the bundle
+    if getattr(sys, 'frozen', False):
+        plugin_path = os.path.join(base_path, 'Qt', 'plugins')
+        app.addLibraryPath(plugin_path)
+        debug_logger.info(f"Added plugin path: {plugin_path}")
 
     icon_path = os.path.join(base_path, "icon.ico")
     app_icon = QIcon(icon_path)
     app.setWindowIcon(app_icon)
 
+    # Enable QML debugging
+    if DEBUG_MODE:
+        os.environ['QML_DEBUG_MESSAGES'] = '1'
+        debug_logger.info("QML debugging enabled")
+
     engine = QQmlApplicationEngine()
+    debug_logger.info("QML Engine created")
     
     renamer = RenamerBackend()
     engine.rootContext().setContextProperty("renamer", renamer)
+    debug_logger.info("RenamerBackend initialized and set as context property")
     
     qml_file = os.path.join(base_path, "main.qml")
+    debug_logger.info(f"Loading QML file: {qml_file}")
     
     engine.load(QUrl.fromLocalFile(qml_file))
     
     if not engine.rootObjects():
-        print(f"Failed to load QML file: {qml_file}")
+        debug_logger.error(f"Failed to load QML file: {qml_file}")
         return -1
     
     window = engine.rootObjects()[0]
     window.setProperty("iconPath", QUrl.fromLocalFile(icon_path))
+    debug_logger.info("Application window created and configured")
     
-    sys.exit(app.exec())
+    return app.exec()
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
