@@ -2,10 +2,16 @@ name: Build Executables
 
 on:
   push:
-    branches: [ main ]
+    branches: [ build ]
   pull_request:
-    branches: [ main ]
+    branches: [ build ]
   workflow_dispatch:
+
+# Add these permission settings
+permissions:
+  contents: write
+  packages: read
+  actions: write
 
 jobs:
   build-windows:
@@ -41,18 +47,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pyinstaller
-      - name: Build macOS app
-        run: pyinstaller SBY_OST_Tool_Mac.spec --noconfirm
-      - name: Upload macOS build
-        uses: actions/upload-artifact@v4
-        with:
-          name: SBY_OST_Tool-macOS
-          path: dist/SBY_OST_Tool.app
+          pip install pyinstaller pillow
       - name: Convert icon for macOS
-        if: runner.os == 'macOS'
         run: |
-          pip install pillow
           python -c "
           from PIL import Image
           import os
@@ -68,6 +65,13 @@ jobs:
                   resized.save(f'icon.iconset/icon_{size}x{size}@2x.png')
           "
           iconutil -c icns icon.iconset
+      - name: Build macOS app
+        run: pyinstaller SBY_OST_Tool_Mac.spec --noconfirm
+      - name: Upload macOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: SBY_OST_Tool-macOS
+          path: dist/SBY_OST_Tool.app
 
   build-linux:
     runs-on: ubuntu-latest
