@@ -6,7 +6,7 @@ a = Analysis(
     ['rename.py'],
     pathex=[],
     binaries=[],
-    datas=[('main.qml', '.'), ('MainContent.qml', '.'), ('Components', 'Components'), ('resources', 'resources'), ('icon.ico', '.')],
+    datas=[('main.qml', '.'), ('MainContent.qml', '.'), ('Components', 'components'), ('resources', 'resources'), ('icon.ico', '.')],
     hiddenimports=['PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtCore', 'PySide6.QtGui', 'PySide6.QtMultimedia'],
     hookspath=[],
     hooksconfig={},
