@@ -1,0 +1,104 @@
+name: Build Executables
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12.3
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.3'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      - name: Build Windows executable
+        run: pyinstaller SBY_OST_Tool.spec --noconfirm
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: SBY_OST_Tool-Windows
+          path: dist/SBY_OST_Tool
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12.3
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.3'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      - name: Build macOS app
+        run: pyinstaller SBY_OST_Tool_Mac.spec --noconfirm
+      - name: Upload macOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: SBY_OST_Tool-macOS
+          path: dist/SBY_OST_Tool.app
+      - name: Convert icon for macOS
+        if: runner.os == 'macOS'
+        run: |
+          pip install pillow
+          python -c "
+          from PIL import Image
+          import os
+          ICON_SIZES = [16, 32, 64, 128, 256, 512, 1024]
+          img = Image.open('icon.ico')
+          if not os.path.exists('icon.iconset'):
+              os.makedirs('icon.iconset')
+          for size in ICON_SIZES:
+              resized = img.resize((size, size))
+              resized.save(f'icon.iconset/icon_{size}x{size}.png')
+              if size < 512:
+                  resized = img.resize((size*2, size*2))
+                  resized.save(f'icon.iconset/icon_{size}x{size}@2x.png')
+          "
+          iconutil -c icns icon.iconset
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12.3
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.3'
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-dev libgl1-mesa-dev libxkbcommon-x11-0 libpulse-dev libasound2-dev
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      - name: Build Linux executable
+        run: pyinstaller SBY_OST_Tool_Linux.spec --noconfirm
+      - name: Upload Linux build
+        uses: actions/upload-artifact@v4
+        with:
+          name: SBY_OST_Tool-Linux
+          path: dist/SBY_OST_Tool
+      - name: Create PNG icon for Linux
+        if: runner.os == 'Linux'
+        run: |
+          pip install pillow
+          python -c "
+          from PIL import Image
+          img = Image.open('icon.ico')
+          img.save('icon.png')
+          "
