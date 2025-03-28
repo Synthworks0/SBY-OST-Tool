@@ -6,7 +6,7 @@ a = Analysis(
     ['rename.py'],
     pathex=[],
     binaries=[],
-    datas=[('main.qml', '.'), ('MainContent.qml', '.'), ('Components', 'components'), ('resources', 'resources'), ('icon.ico', '.')],
+    datas=[('main.qml', '.'), ('MainContent.qml', '.'), ('Components', 'Components'), ('resources', 'resources'), ('icon.ico', '.')],
     hiddenimports=['PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtCore', 'PySide6.QtGui', 'PySide6.QtMultimedia'],
     hookspath=[],
     hooksconfig={},
@@ -16,6 +16,7 @@ a = Analysis(
     win_private_assemblies=False,
     cipher=block_cipher,
     noarchive=False,
+    optimize=0,
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
@@ -39,7 +40,7 @@ exe = EXE(
 
 # Use icon.icns if available, otherwise use icon.ico
 import os
-icon_file = 'icon.icns' if os.path.exists('icon.icns') else 'icon.ico'
+icon_file = 'icon.icns' if os.path.exists('icon.icns') else None
 
 app = BUNDLE(
     exe,

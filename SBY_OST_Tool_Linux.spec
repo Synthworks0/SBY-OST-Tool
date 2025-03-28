@@ -1,12 +1,38 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import os
+import sys
+
 block_cipher = None
+
+# Verify if directories exist and adjust case if needed
+components_dir = 'Components'
+if not os.path.exists(components_dir) and os.path.exists('components'):
+    components_dir = 'components'
+
+resources_dir = 'resources'
+if not os.path.exists(resources_dir) and os.path.exists('Resources'):
+    resources_dir = 'Resources'
+
+# Build the datas list with only existing files
+datas = []
+for file_or_dir, dest in [
+    ('main.qml', '.'), 
+    ('MainContent.qml', '.'), 
+    (components_dir, components_dir), 
+    (resources_dir, resources_dir), 
+    ('icon.ico', '.')
+]:
+    if os.path.exists(file_or_dir):
+        datas.append((file_or_dir, dest))
+    else:
+        print(f"Warning: {file_or_dir} not found, skipping in build")
 
 a = Analysis(
     ['rename.py'],
     pathex=[],
     binaries=[],
-    datas=[('main.qml', '.'), ('MainContent.qml', '.'), ('Components', 'components'), ('resources', 'resources'), ('icon.ico', '.'), ('icon.png', '.')],
+    datas=datas,
     hiddenimports=['PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtCore', 'PySide6.QtGui', 'PySide6.QtMultimedia'],
     hookspath=[],
     hooksconfig={},
@@ -16,6 +42,7 @@ a = Analysis(
     win_private_assemblies=False,
     cipher=block_cipher,
     noarchive=False,
+    optimize=0,
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
@@ -38,5 +65,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='icon.ico',  # Still used even in Linux
+    icon='icon.ico' if os.path.exists('icon.ico') else None,
 )
