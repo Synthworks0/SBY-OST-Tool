@@ -2,10 +2,16 @@ name: Build Executables
 
 on:
   push:
-    branches: [ main ]
+    branches: [ build ]
   pull_request:
-    branches: [ main ]
+    branches: [ build ]
   workflow_dispatch:
+
+# Add these permission settings
+permissions:
+  contents: write
+  packages: read
+  actions: write
 
 jobs:
   build-windows:
