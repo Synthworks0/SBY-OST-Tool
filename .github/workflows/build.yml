@@ -34,8 +34,8 @@ jobs:
           name: SBY_OST_Tool-Windows-x64
           path: dist/SBY_OST_Tool
 
-  # build-windows-arm64: # Commented out - Requires Larger Runners - Will return to this later
-  #   runs-on: windows-latest-arm64
+  # build-windows-arm64: # Commented out - Requires Larger Runners
+  #   runs-on: windows-latest-arm64 # Needs GitHub Larger Runner access
   #   steps:
   #     - uses: actions/checkout@v4
   #     - name: Set up Python 3.12.3 (ARM64)
@@ -56,7 +56,7 @@ jobs:
   #         name: SBY_OST_Tool-Windows-arm64
   #         path: dist/SBY_OST_Tool
 
-  build-macos-universal:
+  build-macos-arm64:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -100,13 +100,64 @@ jobs:
           else
             echo "Skipping iconutil as icon.iconset was not created."
           fi
-      - name: Build macOS Universal app
-        # Removed --target-arch flag, it's now in the spec file
-        run: pyinstaller SBY_OST_Tool_Mac.spec --noconfirm
-      - name: Upload macOS build (Universal)
+      - name: Build macOS app (ARM64)
+        run: pyinstaller SBY_OST_Tool_Mac.spec --target-arch=arm64 --noconfirm
+      - name: Upload macOS build (ARM64)
         uses: actions/upload-artifact@v4
         with:
-          name: SBY_OST_Tool-macOS-Universal
+          name: SBY_OST_Tool-macOS-arm64
+          path: dist/SBY_OST_Tool.app
+
+  build-macos-x86_64:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12.3 (Universal)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.3'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller pillow
+      - name: Convert icon for macOS
+        run: |
+          python -c "
+          from PIL import Image
+          import os
+          ICON_SIZES = [16, 32, 64, 128, 256, 512, 1024]
+          try:
+              img = Image.open('icon.ico')
+              if not os.path.exists('icon.iconset'):
+                  os.makedirs('icon.iconset')
+              for size in ICON_SIZES:
+                  try:
+                      resized = img.resize((size, size))
+                      resized.save(f'icon.iconset/icon_{size}x{size}.png')
+                      if size < 512:
+                          resized2x = img.resize((size*2, size*2))
+                          resized2x.save(f'icon.iconset/icon_{size}x{size}@2x.png')
+                  except Exception as e:
+                      print(f'Warning: Failed processing size {size}: {e}')
+              print('Generated PNGs for iconset.')
+          except FileNotFoundError:
+              print('Warning: icon.ico not found, skipping icon conversion.')
+          except Exception as e:
+              print(f'Warning: Icon conversion failed: {e}')
+          "
+          if [ -d "icon.iconset" ]; then
+            iconutil -c icns icon.iconset
+            echo "Generated icon.icns"
+          else
+            echo "Skipping iconutil as icon.iconset was not created."
+          fi
+      - name: Build macOS app (x86_64)
+        run: pyinstaller SBY_OST_Tool_Mac.spec --target-arch=x86_64 --noconfirm
+      - name: Upload macOS build (x86_64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: SBY_OST_Tool-macOS-x86_64
           path: dist/SBY_OST_Tool.app
 
   build-linux-x86_64:
@@ -153,8 +204,8 @@ jobs:
           name: SBY_OST_Tool-Linux-x86_64
           path: dist/SBY_OST_Tool
 
-  # build-linux-arm64: # Commented out - Requires Larger Runners - Same as windows arm
-  #   runs-on: ubuntu-latest-arm64
+  # build-linux-arm64: # Commented out - Requires Larger Runners
+  #   runs-on: ubuntu-latest-arm64 # Needs GitHub Larger Runner access
   #   steps:
   #     - uses: actions/checkout@v4
   #     - name: Set up Python 3.12.3 (ARM64)
