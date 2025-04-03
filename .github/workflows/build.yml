@@ -103,11 +103,18 @@ jobs:
           fi
       - name: Build macOS app (ARM64)
         run: pyinstaller SBY_OST_Tool_Mac.spec --noconfirm
+      - name: Package .app into .zip
+        run: |
+          cd dist
+          # Create a file that indicates this is the ARM64 version
+          touch SBY_OST_Tool.app/Contents/MacOS/APPLE_SILICON
+          # Create zip archive with the .app bundle
+          zip -r SBY_OST_Tool-arm64.zip SBY_OST_Tool.app
       - name: Upload macOS build (ARM64)
         uses: actions/upload-artifact@v4
         with:
           name: SBY_OST_Tool-macOS-arm64
-          path: dist/SBY_OST_Tool.app
+          path: dist/SBY_OST_Tool-arm64.zip
 
   build-macos-x86_64:
     runs-on: macos-latest
@@ -156,11 +163,18 @@ jobs:
           fi
       - name: Build macOS app (x86_64)
         run: pyinstaller SBY_OST_Tool_Mac.spec --noconfirm
+      - name: Package .app into .zip
+        run: |
+          cd dist
+          # Create a file that indicates this is the Intel version
+          touch SBY_OST_Tool.app/Contents/MacOS/INTEL_X64
+          # Create zip archive with the .app bundle
+          zip -r SBY_OST_Tool-x86_64.zip SBY_OST_Tool.app
       - name: Upload macOS build (x86_64)
         uses: actions/upload-artifact@v4
         with:
           name: SBY_OST_Tool-macOS-x86_64
-          path: dist/SBY_OST_Tool.app
+          path: dist/SBY_OST_Tool-x86_64.zip
 
   build-linux-x86_64:
     runs-on: ubuntu-latest
