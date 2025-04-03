@@ -110,7 +110,11 @@ app = BUNDLE(
         'NSHighResolutionCapable': 'True',
         'NSRequiresAquaSystemAppearance': 'False',
         'LSApplicationCategoryType': 'public.app-category.utilities',
-        'LSMinimumSystemVersion': '10.15'
+        'LSMinimumSystemVersion': '10.15',
+        # Add CPU architecture compatibility flags
+        'LSArchitecturePriority': ['x86_64', 'arm64'] if exe.target_arch is None else [exe.target_arch],
+        # This is added to ensure app runs natively on the target architecture
+        'LSRequiresNativeExecution': True
     },
     append_pkg=False
 )
