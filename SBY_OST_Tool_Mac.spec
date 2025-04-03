@@ -83,7 +83,6 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=True,
-    target_arch='universal2',  # Target universal binary
     codesign_identity=None,
     entitlements_file=None,
 )
