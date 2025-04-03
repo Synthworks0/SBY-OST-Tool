@@ -1,102 +1,81 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-import os
-
-# Function to check for datas existence and handle case sensitivity
-def get_datas():
-    datas_list = []
-    # Check Components/components
-    components_dir = 'Components'
-    if not os.path.exists(components_dir) and os.path.exists('components'):
-        components_dir = 'components'
-    if os.path.exists(components_dir):
-        datas_list.append((components_dir, components_dir)) # Keep relative path in bundle
-    else:
-         print(f"Warning: '{components_dir}' or 'components' directory not found.")
-
-    # Check resources/Resources
-    resources_dir = 'resources'
-    if not os.path.exists(resources_dir) and os.path.exists('Resources'):
-        resources_dir = 'Resources'
-    if os.path.exists(resources_dir):
-        datas_list.append((resources_dir, resources_dir)) # Keep relative path in bundle
-    else:
-         print(f"Warning: '{resources_dir}' or 'Resources' directory not found.")
-
-    # Add QML files if they exist
-    if os.path.exists('main.qml'):
-        datas_list.append(('main.qml', '.'))
-    else:
-        print("Warning: 'main.qml' not found.")
-    if os.path.exists('MainContent.qml'):
-        datas_list.append(('MainContent.qml', '.'))
-    else:
-        print("Warning: 'MainContent.qml' not found.")
-
-    # We only need icon.ico temporarily for conversion, not in the final datas
-    # if os.path.exists('icon.ico'):
-    #     datas_list.append(('icon.ico', '.')) # Removed - icon handled separately
-
-    return datas_list
-
-app_datas = get_datas()
+block_cipher = None
 
 a = Analysis(
     ['rename.py'],
-    pathex=[],
-    binaries=[], # Keep binaries empty unless you have specific non-python libs to force include
-    datas=app_datas, # Use the dynamically generated list
+    pathex=['.'],
+    binaries=[],
+    datas=[('main.qml', '.'), ('MainContent.qml', '.'), ('Components', 'Components'), ('resources', 'resources'), ('icon.ico', '.')],
     hiddenimports=['PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtCore', 'PySide6.QtGui', 'PySide6.QtMultimedia'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
     noarchive=False,
     optimize=0,
 )
-pyz = PYZ(a.pure)
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
     pyz,
     a.scripts,
-    # Binaries and datas are handled by the BUNDLE on macOS
-    [], # Keep binaries list empty here
-    exclude_binaries=True, # Exclude binaries automatically found by Analysis from EXE
-    name='SBY_OST_Tool', # Base executable name
+    [],
+    exclude_binaries=True,
+    name='SBY_OST_Tool',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=False, # Setting UPX to False - often problematic with macOS signing/universal
+    upx=True,
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=True,
-    target_arch='universal2', # Target universal binary
+    target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
 )
 
-# Use icon.icns if available (created by the workflow)
+# Use icon.icns if available, otherwise use icon.ico
+import os
+from PyInstaller.utils.hooks import Tree
+
 icon_file = 'icon.icns' if os.path.exists('icon.icns') else None
-if not icon_file:
-    print("Warning: icon.icns not found. App will not have a custom icon.")
 
 app = BUNDLE(
     exe,
-    # a.binaries, # Let PyInstaller handle system/Qt binaries unless needed
-    # a.datas,    # Use the result from Analysis datas=app_datas
-    name='SBY_OST_Tool.app', # The final .app name
+    [],
+    name='SBY_OST_Tool.app',
     icon=icon_file,
     bundle_identifier='com.synthworks.sbyosttool',
     info_plist={
-        'CFBundleShortVersionString': '1.0.0', # Consider updating this version automatically
-        'CFBundleVersion': '1', # Build number
+        'CFBundleShortVersionString': '1.0.0',
+        'CFBundleVersion': '1',
         'CFBundleGetInfoString': 'SBY OST Tool',
         'NSHighResolutionCapable': 'True',
-        'NSRequiresAquaSystemAppearance': 'False', # Allows dark/light mode switching
+        'NSRequiresAquaSystemAppearance': 'False',
         'LSApplicationCategoryType': 'public.app-category.utilities',
-        'LSMinimumSystemVersion': '10.15', # Set minimum required macOS
+        'LSMinimumSystemVersion': '10.15'
     },
-    #  Explicitly include collected binaries & datas in BUNDLE
-    # This ensures frameworks and data files are placed correctly within the .app structure
-    bundle_files = a.binaries + a.datas,
+    bundle_files=a.binaries + a.datas,
 )
+
+# In the get_datas function, replace the components directory block with:
+components_dir = 'Components'
+if not os.path.isdir(components_dir) and os.path.isdir('components'):
+    components_dir = 'components'
+if os.path.isdir(components_dir):
+    datas_list += Tree(components_dir, prefix=components_dir).toc
+else:
+    print(f"Warning: '{components_dir}' or 'components' directory not found.")
+
+# Similarly, replace the resources directory block with:
+resources_dir = 'resources'
+if not os.path.isdir(resources_dir) and os.path.isdir('Resources'):
+    resources_dir = 'Resources'
+if os.path.isdir(resources_dir):
+    datas_list += Tree(resources_dir, prefix=resources_dir).toc
+else:
+    print(f"Warning: '{resources_dir}' or 'Resources' directory not found.")
