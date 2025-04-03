@@ -2,9 +2,9 @@ name: Build Executables
 
 on:
   push:
-    branches: [ build ] # Target the build branch
+    branches: [ build ]
   pull_request:
-    branches: [ build ] # Target the build branch
+    branches: [ build ]
   workflow_dispatch:
 
 permissions:
@@ -13,8 +13,8 @@ permissions:
   actions: write
 
 jobs:
-  build-windows-x64: # Renamed for clarity
-    runs-on: windows-latest # Builds for x64 by default
+  build-windows-x64:
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.12.3 (x64)
@@ -34,38 +34,36 @@ jobs:
           name: SBY_OST_Tool-Windows-x64
           path: dist/SBY_OST_Tool
 
-  build-windows-arm64: # New job for Windows ARM64
-    runs-on: windows-latest-arm64 # Use ARM64 runner
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python 3.12.3 (ARM64)
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12.3'
-          architecture: arm64 # Explicitly request ARM64 Python
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pyinstaller pillow
-      - name: Build Windows executable (ARM64)
-        # Explicitly target arm64
-        run: pyinstaller SBY_OST_Tool.spec --noconfirm --target-arch arm64
-      - name: Upload Windows build (ARM64)
-        uses: actions/upload-artifact@v4
-        with:
-          name: SBY_OST_Tool-Windows-arm64
-          path: dist/SBY_OST_Tool
+  # build-windows-arm64: # Commented out - Requires Larger Runners - Will return to this later
+  #   runs-on: windows-latest-arm64
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up Python 3.12.3 (ARM64)
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.12.3'
+  #         architecture: arm64
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install -r requirements.txt
+  #         pip install pyinstaller pillow
+  #     - name: Build Windows executable (ARM64)
+  #       run: pyinstaller SBY_OST_Tool.spec --noconfirm --target-arch arm64 # Target arch set in spec for consistency if uncommented
+  #     - name: Upload Windows build (ARM64)
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: SBY_OST_Tool-Windows-arm64
+  #         path: dist/SBY_OST_Tool
 
-  build-macos-universal: # Renamed for clarity
-    runs-on: macos-latest # Use latest runner for universal2 build
+  build-macos-universal:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.12.3 (Universal)
         uses: actions/setup-python@v5
         with:
           python-version: '3.12.3'
-          # architecture: 'x64' # May be needed for some universal builds
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -103,15 +101,16 @@ jobs:
             echo "Skipping iconutil as icon.iconset was not created."
           fi
       - name: Build macOS Universal app
-        run: pyinstaller SBY_OST_Tool_Mac.spec --noconfirm --target-arch universal2
+        # Removed --target-arch flag, it's now in the spec file
+        run: pyinstaller SBY_OST_Tool_Mac.spec --noconfirm
       - name: Upload macOS build (Universal)
         uses: actions/upload-artifact@v4
         with:
           name: SBY_OST_Tool-macOS-Universal
           path: dist/SBY_OST_Tool.app
 
-  build-linux-x86_64: # Renamed for clarity
-    runs-on: ubuntu-latest # Builds for x86_64 by default
+  build-linux-x86_64:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.12.3 (x86_64)
@@ -154,49 +153,47 @@ jobs:
           name: SBY_OST_Tool-Linux-x86_64
           path: dist/SBY_OST_Tool
 
-  build-linux-arm64: # New job for Linux ARM64
-    runs-on: ubuntu-latest-arm64 # Use ARM64 runner
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python 3.12.3 (ARM64)
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12.3'
-          architecture: arm64 # Explicitly request ARM64 Python
-      - name: Install system dependencies (ARM64)
-        run: |
-          sudo apt-get update
-          # Ensure ARM64 versions of libraries are installed
-          sudo apt-get install -y python3-dev libgl1-mesa-dev libxkbcommon-x11-0 libpulse-dev libasound2-dev
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pyinstaller pillow
-      - name: Create PNG icon for Linux
-        run: |
-          python -c "
-          from PIL import Image
-          try:
-              img = Image.open('icon.ico')
-              img.save('icon.png')
-              print('Generated icon.png')
-          except FileNotFoundError:
-              print('Warning: icon.ico not found, skipping PNG icon creation.')
-          except Exception as e:
-              print(f'Warning: PNG icon creation failed: {e}')
-          "
-      - name: Check directory structure and fix case (if needed)
-        run: |
-          echo "Current directory structure:"
-          ls -la
-          if [ ! -d "Components" ] && [ -d "components" ]; then echo "Fixing Components case..."; ln -s components Components; fi
-          if [ ! -d "resources" ] && [ -d "Resources" ]; then echo "Fixing resources case..."; ln -s Resources resources; fi
-      - name: Build Linux executable (ARM64)
-        # Explicitly target arm64
-        run: pyinstaller SBY_OST_Tool_Linux.spec --noconfirm --target-arch arm64
-      - name: Upload Linux build (ARM64)
-        uses: actions/upload-artifact@v4
-        with:
-          name: SBY_OST_Tool-Linux-arm64
-          path: dist/SBY_OST_Tool
+  # build-linux-arm64: # Commented out - Requires Larger Runners - Same as windows arm
+  #   runs-on: ubuntu-latest-arm64
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up Python 3.12.3 (ARM64)
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.12.3'
+  #         architecture: arm64
+  #     - name: Install system dependencies (ARM64)
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install -y python3-dev libgl1-mesa-dev libxkbcommon-x11-0 libpulse-dev libasound2-dev
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install -r requirements.txt
+  #         pip install pyinstaller pillow
+  #     - name: Create PNG icon for Linux
+  #       run: |
+  #         python -c "
+  #         from PIL import Image
+  #         try:
+  #             img = Image.open('icon.ico')
+  #             img.save('icon.png')
+  #             print('Generated icon.png')
+  #         except FileNotFoundError:
+  #             print('Warning: icon.ico not found, skipping PNG icon creation.')
+  #         except Exception as e:
+  #             print(f'Warning: PNG icon creation failed: {e}')
+  #         "
+  #     - name: Check directory structure and fix case (if needed)
+  #       run: |
+  #         echo "Current directory structure:"
+  #         ls -la
+  #         if [ ! -d "Components" ] && [ -d "components" ]; then echo "Fixing Components case..."; ln -s components Components; fi
+  #         if [ ! -d "resources" ] && [ -d "Resources" ]; then echo "Fixing resources case..."; ln -s Resources resources; fi
+  #     - name: Build Linux executable (ARM64)
+  #       run: pyinstaller SBY_OST_Tool_Linux.spec --noconfirm --target-arch arm64 # Target arch set in spec for consistency if uncommented
+  #     - name: Upload Linux build (ARM64)
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: SBY_OST_Tool-Linux-arm64
+  #         path: dist/SBY_OST_Tool
