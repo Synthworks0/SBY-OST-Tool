@@ -13,7 +13,8 @@ def collect_directory(dir_path, target_dir):
             for file in files:
                 source_path = os.path.join(root, file)
                 # Calculate the relative path for the destination
-                dest_path = os.path.join(target_dir, os.path.relpath(root, os.path.dirname(dir_path)))
+                # Ensure all resources go directly to Resources/ folder by prepending 'Resources/' to the path
+                dest_path = os.path.join('Resources', target_dir, os.path.relpath(root, os.path.dirname(dir_path)))
                 collected_data.append((source_path, dest_path))
     return collected_data
 
@@ -40,17 +41,17 @@ else:
 
 # Add QML files
 if os.path.exists('main.qml'):
-    app_datas.append(('main.qml', '.'))
+    app_datas.append(('main.qml', 'Resources'))
 else:
     print("Warning: 'main.qml' not found.")
 if os.path.exists('MainContent.qml'):
-    app_datas.append(('MainContent.qml', '.'))
+    app_datas.append(('MainContent.qml', 'Resources'))
 else:
     print("Warning: 'MainContent.qml' not found.")
 
 # Add icon for later use
 if os.path.exists('icon.ico'):
-    app_datas.append(('icon.ico', '.'))
+    app_datas.append(('icon.ico', 'Resources'))
 
 a = Analysis(
     ['rename.py'],
@@ -111,4 +112,5 @@ app = BUNDLE(
         'LSApplicationCategoryType': 'public.app-category.utilities',
         'LSMinimumSystemVersion': '10.15'
     },
+    append_pkg=False
 )
