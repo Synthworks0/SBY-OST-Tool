@@ -60,10 +60,11 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.12.3 (Universal)
+      - name: Set up Python 3.12.3 (ARM64)
         uses: actions/setup-python@v5
         with:
           python-version: '3.12.3'
+          architecture: 'arm64'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -101,7 +102,7 @@ jobs:
             echo "Skipping iconutil as icon.iconset was not created."
           fi
       - name: Build macOS app (ARM64)
-        run: pyinstaller SBY_OST_Tool_Mac.spec --target-arch=arm64 --noconfirm
+        run: pyinstaller SBY_OST_Tool_Mac.spec --noconfirm
       - name: Upload macOS build (ARM64)
         uses: actions/upload-artifact@v4
         with:
@@ -112,10 +113,11 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.12.3 (Universal)
+      - name: Set up Python 3.12.3 (x86_64)
         uses: actions/setup-python@v5
         with:
           python-version: '3.12.3'
+          architecture: 'x64'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -153,7 +155,7 @@ jobs:
             echo "Skipping iconutil as icon.iconset was not created."
           fi
       - name: Build macOS app (x86_64)
-        run: pyinstaller SBY_OST_Tool_Mac.spec --target-arch=x86_64 --noconfirm
+        run: pyinstaller SBY_OST_Tool_Mac.spec --noconfirm
       - name: Upload macOS build (x86_64)
         uses: actions/upload-artifact@v4
         with:
