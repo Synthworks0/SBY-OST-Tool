@@ -2,12 +2,15 @@ import os
 import sys
 import logging
 import tempfile
+import atexit
 from datetime import datetime
 from PySide6.QtCore import QtMsgType, qInstallMessageHandler
 
 class DebugLogger:
     def __init__(self, debug_enabled=False):
         self.debug_enabled = debug_enabled
+        self._qt_prev_handler = None
+        self._qt_handler_installed = False
         if not debug_enabled:
             return
 
@@ -42,21 +45,44 @@ class DebugLogger:
         
         self.logger.addHandler(file_handler)
 
-        # Install Qt message handler
-        def qt_message_handler(msg_type, context, message):
-            level_map = {
-                QtMsgType.QtDebugMsg: self.debug,
-                QtMsgType.QtInfoMsg: self.info,
-                QtMsgType.QtWarningMsg: self.warning,
-                QtMsgType.QtCriticalMsg: self.error,
-                QtMsgType.QtFatalMsg: self.error
-            }
-            
-            log_func = level_map.get(msg_type, self.info)
-            file_info = f"{context.file}:{context.line}" if hasattr(context, 'file') else "Unknown location"
-            log_func(f"[QML] {file_info} - {message}")
+        # Install Qt message handler safely. On macOS frozen builds this can crash at teardown
+        # when Qt emits messages after Python finalization. Allow opt-in via env, otherwise
+        # install for other platforms.
+        install_qt_handler = os.environ.get('APP_ENABLE_QT_LOGGING') == '1'
+        if not (sys.platform == 'darwin' and getattr(sys, 'frozen', False)):
+            install_qt_handler = True
 
-        qInstallMessageHandler(qt_message_handler)
+        if install_qt_handler:
+            def qt_message_handler(msg_type, context, message):
+                try:
+                    level_map = {
+                        QtMsgType.QtDebugMsg: self.debug,
+                        QtMsgType.QtInfoMsg: self.info,
+                        QtMsgType.QtWarningMsg: self.warning,
+                        QtMsgType.QtCriticalMsg: self.error,
+                        QtMsgType.QtFatalMsg: self.error
+                    }
+                    log_func = level_map.get(msg_type, self.info)
+                    file_info = f"{getattr(context, 'file', None)}:{getattr(context, 'line', None)}"
+                    log_func(f"[QML] {file_info} - {message}")
+                except Exception:
+                    pass
+
+            try:
+                self._qt_prev_handler = qInstallMessageHandler(qt_message_handler)
+                self._qt_handler_installed = True
+            except Exception:
+                self._qt_prev_handler = None
+                self._qt_handler_installed = False
+
+        def _restore_qt_handler():
+            try:
+                if self._qt_handler_installed:
+                    qInstallMessageHandler(self._qt_prev_handler)
+                    self._qt_handler_installed = False
+            except Exception:
+                pass
+        atexit.register(_restore_qt_handler)
 
     def debug(self, message):
         if self.debug_enabled:
