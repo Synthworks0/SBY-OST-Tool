@@ -6,48 +6,80 @@ import sys
 import json
 import time
 import tempfile
-import resources_rc
-from mutagen.flac import FLAC
-import PySide6.QtMultimedia
-from PySide6.QtCore import QObject, Slot, Property, Signal, QUrl, QDir, QTimer, QThread, QLibraryInfo
-from PySide6.QtQml import QQmlApplicationEngine
-from PySide6.QtWidgets import QApplication, QFileSystemModel
-from PySide6.QtGui import QIcon
-from PySide6.QtCore import QResource
-from debug_logger import DebugLogger
 
-# Enable or disable debug logging
-DEBUG_MODE = True
-debug_logger = DebugLogger(DEBUG_MODE)
-
+# Configure critical Qt environment BEFORE importing PySide6 or any module that imports PySide6
 os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "1"
 os.environ.setdefault("QT_DEBUG_PLUGINS", "1")
 
-# Prefer FFmpeg backend unless the environment overrides it
-if "QT_MEDIA_BACKEND" not in os.environ:
-    os.environ["QT_MEDIA_BACKEND"] = "ffmpeg"
-os.environ.setdefault("QT_MULTIMEDIA_PREFERRED_PLUGINS", "ffmpeg")
-
-
 def _get_runtime_root_dir() -> str:
-    """Return the directory that contains the executable (frozen) or this file (script)."""
     if getattr(sys, 'frozen', False):
         return os.path.dirname(sys.executable)
     return os.path.dirname(os.path.abspath(__file__))
 
-
 def _get_app_resources_dir() -> str:
-    """Return the folder where non-code resources (QML, assets) are stored at runtime.
-
-    For macOS .app bundles created by PyInstaller, resources live in ../Resources relative
-    to the executable. For other platforms and for dev runs, use the source folder.
-    """
     runtime_root = _get_runtime_root_dir()
     if getattr(sys, 'frozen', False) and sys.platform == 'darwin':
-        # e.g. .../Contents/Resources
         mac_resources = os.path.abspath(os.path.join(runtime_root, '..', 'Resources'))
         return mac_resources if os.path.isdir(mac_resources) else runtime_root
     return runtime_root
+
+def _configure_qt_env_early() -> None:
+    if "QT_MEDIA_BACKEND" not in os.environ:
+        os.environ["QT_MEDIA_BACKEND"] = "ffmpeg"
+    os.environ.setdefault("QT_MULTIMEDIA_PREFERRED_PLUGINS", "ffmpeg")
+
+    # On macOS force Cocoa and set plugin/qml roots ahead of time
+    runtime_root = _get_runtime_root_dir()
+    resources_dir = _get_app_resources_dir()
+    if sys.platform == 'darwin':
+        os.environ.setdefault('QT_QPA_PLATFORM', 'cocoa')
+
+    plugin_roots = [
+        os.path.join(runtime_root, 'PySide6', 'Qt', 'plugins'),
+        os.path.join(resources_dir, 'PySide6', 'Qt', 'plugins'),
+        os.path.join(runtime_root, 'Qt', 'plugins'),
+        os.path.join(resources_dir, 'Qt', 'plugins'),
+    ]
+    qml_roots = [
+        os.path.join(runtime_root, 'PySide6', 'Qt', 'qml'),
+        os.path.join(resources_dir, 'PySide6', 'Qt', 'qml'),
+    ]
+
+    existing_plugin_path = os.environ.get('QT_PLUGIN_PATH', '')
+    merged_plugin_path = os.pathsep.join([
+        *(p for p in plugin_roots if os.path.isdir(p)),
+        *(existing_plugin_path.split(os.pathsep) if existing_plugin_path else []),
+    ])
+    if merged_plugin_path:
+        os.environ['QT_PLUGIN_PATH'] = merged_plugin_path
+
+    for root in plugin_roots:
+        platforms_dir = os.path.join(root, 'platforms')
+        if os.path.isdir(platforms_dir):
+            os.environ.setdefault('QT_QPA_PLATFORM_PLUGIN_PATH', platforms_dir)
+            break
+
+    existing_qml_path = os.environ.get('QML2_IMPORT_PATH', '')
+    merged_qml_path = os.pathsep.join([
+        *(p for p in qml_roots if os.path.isdir(p)),
+        *(existing_qml_path.split(os.pathsep) if existing_qml_path else []),
+    ])
+    if merged_qml_path:
+        os.environ['QML2_IMPORT_PATH'] = merged_qml_path
+
+# Apply early Qt env before any PySide6 import
+_configure_qt_env_early()
+
+import resources_rc
+from mutagen.flac import FLAC
+from PySide6.QtCore import QObject, Slot, Property, Signal, QUrl, QDir, QTimer, QThread, QLibraryInfo, QResource
+from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtWidgets import QApplication, QFileSystemModel
+from PySide6.QtGui import QIcon
+from debug_logger import DebugLogger
+
+DEBUG_MODE = True
+debug_logger = DebugLogger(DEBUG_MODE)
 
 albums = {
     "Bunny Girl Senpai": {

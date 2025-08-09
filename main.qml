@@ -4,7 +4,6 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import Qt5Compat.GraphicalEffects
 import QtQuick.Window 2.15
-import QtMultimedia
 
 ApplicationWindow {
     id: window
