@@ -33,16 +33,23 @@ def _configure_qt_env_early() -> None:
     resources_dir = _get_app_resources_dir()
     if sys.platform == 'darwin':
         os.environ.setdefault('QT_QPA_PLATFORM', 'cocoa')
+    elif sys.platform.startswith('linux'):
+        # Default to X11 via xcb on Linux/WSL; Wayland still works via XWayland
+        os.environ.setdefault('QT_QPA_PLATFORM', 'xcb')
 
     plugin_roots = [
         os.path.join(runtime_root, 'PySide6', 'Qt', 'plugins'),
         os.path.join(resources_dir, 'PySide6', 'Qt', 'plugins'),
         os.path.join(runtime_root, 'Qt', 'plugins'),
         os.path.join(resources_dir, 'Qt', 'plugins'),
+        # PyInstaller one-dir layout on Windows/Linux
+        os.path.join(runtime_root, '_internal', 'PySide6', 'plugins'),
     ]
     qml_roots = [
         os.path.join(runtime_root, 'PySide6', 'Qt', 'qml'),
         os.path.join(resources_dir, 'PySide6', 'Qt', 'qml'),
+        # PyInstaller one-dir layout on Windows/Linux
+        os.path.join(runtime_root, '_internal', 'PySide6', 'qml'),
     ]
 
     existing_plugin_path = os.environ.get('QT_PLUGIN_PATH', '')
@@ -1498,7 +1505,16 @@ def main():
     engine.rootContext().setContextProperty("renamer", renamer)
     debug_logger.info("RenamerBackend initialized and set as context property")
     
-    qml_file = os.path.join(resources_dir, "main.qml")
+    # Resolve QML file robustly across layouts:
+    # - macOS .app: Contents/Resources/main.qml
+    # - Windows/Linux one-dir: alongside executable
+    # - Windows/Linux PyInstaller _internal: top-level path still correct
+    qml_candidates = [
+        os.path.join(resources_dir, "main.qml"),
+        os.path.join(runtime_root, "main.qml"),
+        os.path.join(runtime_root, "_internal", "main.qml"),
+    ]
+    qml_file = next((p for p in qml_candidates if os.path.exists(p)), qml_candidates[0])
     debug_logger.info(f"Loading QML file: {qml_file}")
     
     engine.load(QUrl.fromLocalFile(qml_file))
