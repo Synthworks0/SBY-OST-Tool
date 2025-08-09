@@ -6,10 +6,10 @@ from PyInstaller.utils.hooks import get_package_paths
 block_cipher = None
 
 def collect_directory_to_resources(dir_path, bundle_subdir):
-    """Collect files under dir_path into Contents/Resources/<bundle_subdir>/... inside the app bundle.
+    """Collect files under dir_path for inclusion in Contents/Resources/<bundle_subdir>/...
 
-    PyInstaller's datas expects (src, dest) where dest is relative to app bundle root.
-    On macOS, Resources root is 'SBY_OST_Tool.app/Contents/Resources/'.
+    NOTE: The dest should be relative to Contents/Resources. Ensure we do not add
+    an extra 'Resources' level to avoid double nesting.
     """
     collected = []
     if not os.path.exists(dir_path):
@@ -18,8 +18,7 @@ def collect_directory_to_resources(dir_path, bundle_subdir):
         for file in files:
             src = os.path.join(root, file)
             rel = os.path.relpath(root, dir_path)
-            # Place into Contents/Resources/<bundle_subdir>/<rel>
-            dest = os.path.join('Resources', bundle_subdir, rel)
+            dest = os.path.join(bundle_subdir, rel)
             collected.append((src, dest))
     return collected
 
@@ -39,19 +38,19 @@ if os.path.exists('resources'):
 else:
     print("Warning: resources directory not found.")
 
-# QML at top-level of Resources
+# QML at top-level (PyInstaller will place in Contents/Resources)
 if os.path.exists('main.qml'):
-    app_datas.append(('main.qml', 'Resources'))
+    app_datas.append(('main.qml', '.'))
 else:
     print("Warning: main.qml not found.")
 if os.path.exists('MainContent.qml'):
-    app_datas.append(('MainContent.qml', 'Resources'))
+    app_datas.append(('MainContent.qml', '.'))
 else:
     print("Warning: MainContent.qml not found.")
 
 # Icons used at runtime
 if os.path.exists('icon.ico'):
-    app_datas.append(('icon.ico', 'Resources'))
+    app_datas.append(('icon.ico', '.'))
 
 # Force-bundle Qt Multimedia FFmpeg backend plugin and its FFmpeg runtime libraries
 try:
@@ -60,7 +59,8 @@ try:
     multimedia_plugin_dir = os.path.join(qt_plugins_root, 'multimedia')
     if os.path.isdir(multimedia_plugin_dir):
         for name in os.listdir(multimedia_plugin_dir):
-            if name.endswith('.dylib'):
+            # Keep only ffmpeg and AVFoundation backends to reduce size
+            if name.endswith('.dylib') and ('ffmpeg' in name or 'darwin' in name or 'avfoundation' in name):
                 src = os.path.join(multimedia_plugin_dir, name)
                 dest = os.path.join('PySide6', 'Qt', 'plugins', 'multimedia')
                 app_datas.append((src, dest))
@@ -80,11 +80,11 @@ try:
     else:
         print("Warning: Qt platforms plugin directory not found; relying on PyInstaller hooks.")
 
-    # Common imageformats plugins
+    # Imageformats plugins - limit to PNG and JPEG
     imageformats_dir = os.path.join(qt_plugins_root, 'imageformats')
     if os.path.isdir(imageformats_dir):
         for name in os.listdir(imageformats_dir):
-            if name.endswith('.dylib'):
+            if name in ('libqpng.dylib', 'libqjpeg.dylib'):
                 src = os.path.join(imageformats_dir, name)
                 dest = os.path.join('PySide6', 'Qt', 'plugins', 'imageformats')
                 app_datas.append((src, dest))
@@ -107,7 +107,7 @@ try:
                 app_datas.append((src, dest))
                 print(f"Bundling runtime library: {name}")
 
-    # Bundle required QML modules used by the app
+    # Bundle required QML modules used by the app (limit set)
     qml_root = os.path.join(pyside6_pkg_dir, 'Qt', 'qml')
     def collect_qml_module(module_name):
         module_dir = os.path.join(qml_root, module_name)
@@ -122,10 +122,9 @@ try:
         else:
             print(f"Warning: QML module not found: {module_name}")
 
-    # Modules referenced in QML
+    # Modules referenced in QML (minimal set)
     collect_qml_module('Qt5Compat/GraphicalEffects')
     collect_qml_module('QtMultimedia')
-    collect_qml_module('QtQuick')
     collect_qml_module('QtQuick/Controls')
     collect_qml_module('QtQuick/Controls/Material')
     collect_qml_module('QtQuick/Layouts')

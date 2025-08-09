@@ -762,8 +762,21 @@ albums = {
 class Renamer:
     def __init__(self):
         resources_dir = _get_app_resources_dir()
-        # Root where the app's data assets are stored (contains the 'resources' folder)
-        self._resources_root = os.path.join(resources_dir, "resources")
+        runtime_root = _get_runtime_root_dir()
+        candidate_roots = [
+            os.path.join(resources_dir, "resources"),
+            os.path.join(runtime_root, "_internal", "resources"),
+            os.path.join(runtime_root, "resources"),
+            os.path.join(resources_dir, "Resources", "resources"),
+            os.path.join(runtime_root, "Resources", "resources"),
+            # As a last resort, allow resources_dir itself if it already is the resources folder
+            resources_dir,
+        ]
+        self._resources_root = next((p for p in candidate_roots if os.path.isdir(p) and os.path.isdir(os.path.join(p, "SBY Soundtracks"))), candidate_roots[0])
+        try:
+            debug_logger.info(f"Resolved resources root: {self._resources_root}")
+        except Exception:
+            pass
         self.base_dir = os.path.join(self._resources_root, "SBY Soundtracks")
         self.albums = albums
         self.qml_path = os.path.join(resources_dir, "main.qml")
@@ -1513,6 +1526,8 @@ def main():
         os.path.join(resources_dir, "main.qml"),
         os.path.join(runtime_root, "main.qml"),
         os.path.join(runtime_root, "_internal", "main.qml"),
+        os.path.join(resources_dir, "Resources", "main.qml"),
+        os.path.join(runtime_root, "Resources", "main.qml"),
     ]
     qml_file = next((p for p in qml_candidates if os.path.exists(p)), qml_candidates[0])
     debug_logger.info(f"Loading QML file: {qml_file}")
