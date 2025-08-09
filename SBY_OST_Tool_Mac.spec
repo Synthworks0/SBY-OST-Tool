@@ -1,6 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 import os
+from PyInstaller.utils.hooks import get_package_paths
 
 block_cipher = None
 
@@ -52,6 +53,33 @@ else:
 if os.path.exists('icon.ico'):
     app_datas.append(('icon.ico', 'Resources'))
 
+# Force-bundle Qt Multimedia FFmpeg backend plugin and its FFmpeg runtime libraries
+try:
+    pyside6_pkg_dir = get_package_paths('PySide6')[1]
+    qt_plugins_root = os.path.join(pyside6_pkg_dir, 'Qt', 'plugins')
+    multimedia_plugin_dir = os.path.join(qt_plugins_root, 'multimedia')
+    if os.path.isdir(multimedia_plugin_dir):
+        for name in os.listdir(multimedia_plugin_dir):
+            if name.endswith('.dylib') and ('ffmpeg' in name or 'qtmedia_ffmpeg' in name or 'qffmpeg' in name):
+                src = os.path.join(multimedia_plugin_dir, name)
+                dest = os.path.join('Resources', 'Qt', 'plugins', 'multimedia')
+                app_datas.append((src, dest))
+                print(f"Bundling Qt multimedia ffmpeg plugin: {name}")
+    else:
+        print("Warning: Qt multimedia plugin directory not found; relying on PyInstaller hooks.")
+
+    # Add FFmpeg libs that the plugin depends on under Resources/Qt/lib so @rpath resolves
+    qt_lib_root = os.path.join(pyside6_pkg_dir, 'Qt', 'lib')
+    if os.path.isdir(qt_lib_root):
+        for name in os.listdir(qt_lib_root):
+            if name.endswith('.dylib') and (name.startswith('libav') or name.startswith('libsw')):
+                src = os.path.join(qt_lib_root, name)
+                dest = os.path.join('Resources', 'Qt', 'lib')
+                app_datas.append((src, dest))
+                print(f"Bundling FFmpeg runtime library: {name}")
+except Exception as e:
+    print(f"Warning: failed to force-bundle Qt multimedia ffmpeg plugin/libs: {e}")
+
 a = Analysis(
     ['rename.py'],
     pathex=['.'],
@@ -72,24 +100,6 @@ a = Analysis(
     noarchive=False,
     optimize=0,
 )
-
-# Explicitly collect Qt Multimedia FFmpeg backend plugin for macOS before building
-from PyInstaller.utils.hooks import get_package_paths
-try:
-    pyside6_pkg_dir = get_package_paths('PySide6')[1]
-    qt_plugins_root = os.path.join(pyside6_pkg_dir, 'Qt', 'plugins')
-    multimedia_plugin_dir = os.path.join(qt_plugins_root, 'multimedia')
-    if os.path.isdir(multimedia_plugin_dir):
-        for name in os.listdir(multimedia_plugin_dir):
-            if name.endswith('.dylib') and ('ffmpeg' in name or 'qtmedia_ffmpeg' in name or 'qffmpeg' in name):
-                src = os.path.join(multimedia_plugin_dir, name)
-                dest = os.path.join('Resources', 'Qt', 'plugins', 'multimedia')
-                a.datas.append((src, dest))
-                print(f"Bundling Qt multimedia ffmpeg plugin: {name}")
-    else:
-        print("Warning: Qt multimedia plugin directory not found; relying on PyInstaller hooks.")
-except Exception as e:
-    print(f"Warning: failed to force-bundle Qt multimedia ffmpeg plugin: {e}")
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
