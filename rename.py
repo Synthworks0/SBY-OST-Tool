@@ -21,23 +21,33 @@ DEBUG_MODE = True
 debug_logger = DebugLogger(DEBUG_MODE)
 
 os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "1"
-os.environ["QT_DEBUG_PLUGINS"] = "1"
-os.environ["QT_MEDIA_BACKEND"] = "ffmpeg"
-os.environ["QT_MULTIMEDIA_PREFERRED_PLUGINS"] = "ffmpeg"
+os.environ.setdefault("QT_DEBUG_PLUGINS", "1")
 
-ffmpeg_paths = [
-    '/usr/local/opt/ffmpeg/lib',
-    '/opt/homebrew/opt/ffmpeg/lib',
-    '/usr/local/lib',
-    '/opt/homebrew/lib'
-]
+# Prefer FFmpeg backend unless the environment overrides it
+if "QT_MEDIA_BACKEND" not in os.environ:
+    os.environ["QT_MEDIA_BACKEND"] = "ffmpeg"
+os.environ.setdefault("QT_MULTIMEDIA_PREFERRED_PLUGINS", "ffmpeg")
 
-for path in ffmpeg_paths:
-    if os.path.exists(path):
-        if 'DYLD_LIBRARY_PATH' in os.environ:
-            os.environ['DYLD_LIBRARY_PATH'] = f"{path}:{os.environ['DYLD_LIBRARY_PATH']}"
-        else:
-            os.environ['DYLD_LIBRARY_PATH'] = path
+
+def _get_runtime_root_dir() -> str:
+    """Return the directory that contains the executable (frozen) or this file (script)."""
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.abspath(__file__))
+
+
+def _get_app_resources_dir() -> str:
+    """Return the folder where non-code resources (QML, assets) are stored at runtime.
+
+    For macOS .app bundles created by PyInstaller, resources live in ../Resources relative
+    to the executable. For other platforms and for dev runs, use the source folder.
+    """
+    runtime_root = _get_runtime_root_dir()
+    if getattr(sys, 'frozen', False) and sys.platform == 'darwin':
+        # e.g. .../Contents/Resources
+        mac_resources = os.path.abspath(os.path.join(runtime_root, '..', 'Resources'))
+        return mac_resources if os.path.isdir(mac_resources) else runtime_root
+    return runtime_root
 
 albums = {
     "Bunny Girl Senpai": {
@@ -712,16 +722,12 @@ albums = {
 
 class Renamer:
     def __init__(self):
-        if getattr(sys, 'frozen', False):
-            # Running as compiled exe
-            base_path = sys._MEIPASS
-        else:
-            # Running as script
-            base_path = os.path.dirname(os.path.abspath(__file__))
-        
-        self.base_dir = os.path.join(base_path, "resources", "SBY Soundtracks")
+        resources_dir = _get_app_resources_dir()
+        # Root where the app's data assets are stored (contains the 'resources' folder)
+        self._resources_root = os.path.join(resources_dir, "resources")
+        self.base_dir = os.path.join(self._resources_root, "SBY Soundtracks")
         self.albums = albums
-        self.qml_path = os.path.join(base_path, "main.qml")
+        self.qml_path = os.path.join(resources_dir, "main.qml")
 
     def rename_files(self, album_name, language):
         try:
@@ -771,6 +777,11 @@ class RenamerBackend(QObject, Renamer):
     def __init__(self):
         QObject.__init__(self)
         Renamer.__init__(self)
+        # Ensure QML can resolve the resources prefix to our packaged resources folder
+        try:
+            QDir.addSearchPath("resources", self.get_resource_path())
+        except Exception as e:
+            debug_logger.error(f"Failed to add QML resources search path: {e}")
         self._current_album = list(self.albums.keys())[0]
         self._current_language = "English"
         self._output_folder = ""
@@ -998,13 +1009,14 @@ class RenamerBackend(QObject, Renamer):
         return self._album_states.get(self._current_album, "extract")
 
     def get_resource_path(self, *paths):
-        if getattr(sys, 'frozen', False):
-            base_path = sys._MEIPASS
-        else:
-            base_path = os.path.dirname(os.path.abspath(__file__))
-        return os.path.join(base_path, "resources", *paths)
+        # Point to the packaged 'resources' directory cross-platform
+        try:
+            resources_dir = self._resources_root
+        except AttributeError:
+            # Fallback for safety if base init didn't run as expected
+            resources_dir = os.path.join(_get_app_resources_dir(), "resources")
+        return os.path.join(resources_dir, *paths)
 
-    QDir.addSearchPath("resources", get_resource_path("resources"))
 
     @Slot(result=bool)
     def check_files_exist(self):
@@ -1340,29 +1352,52 @@ def main():
 
     debug_logger.info("Starting GUI application...")
 
+    runtime_root = _get_runtime_root_dir()
+    resources_dir = _get_app_resources_dir()
     if getattr(sys, 'frozen', False):
-        # Running as compiled exe
-        base_path = sys._MEIPASS
-        debug_logger.info(f"Running as frozen application from: {base_path}")
+        debug_logger.info(f"Running as frozen application. runtime_root={runtime_root}, resources_dir={resources_dir}")
     else:
-        # Running as script
-        base_path = os.path.dirname(os.path.abspath(__file__))
-        debug_logger.info(f"Running as script from: {base_path}")
+        debug_logger.info(f"Running as script. runtime_root={runtime_root}")
 
-    # Log Qt library paths
     debug_logger.info(f"Qt library paths: {app.libraryPaths()}")
-    
-    # Force Qt to look for plugins in the bundle
-    if getattr(sys, 'frozen', False):
-        plugin_path = os.path.join(base_path, 'Qt', 'plugins')
-        app.addLibraryPath(plugin_path)
-        debug_logger.info(f"Added plugin path: {plugin_path}")
 
-    icon_path = os.path.join(base_path, "icon.ico")
+    # Force Qt to look for plugins in the bundle (PyInstaller/PySide6 layouts)
+    if getattr(sys, 'frozen', False):
+        plugin_candidates = [
+            os.path.join(runtime_root, 'PySide6', 'Qt', 'plugins'),
+            os.path.join(runtime_root, 'Qt', 'plugins'),
+            os.path.join(runtime_root, 'plugins'),
+            # macOS .app Resources path
+            os.path.join(resources_dir, 'PySide6', 'Qt', 'plugins'),
+            os.path.join(resources_dir, 'Qt', 'plugins'),
+            os.path.join(resources_dir, 'plugins'),
+        ]
+        for p in plugin_candidates:
+            if os.path.isdir(p):
+                app.addLibraryPath(p)
+                debug_logger.info(f"Added plugin path: {p}")
+        debug_logger.info(f"Qt library paths (post-add): {app.libraryPaths()}")
+
+        # On macOS, if the FFmpeg multimedia plugin is not present, fall back to AVFoundation
+        if sys.platform == 'darwin':
+            mm_dirs = [os.path.join(p, 'multimedia') for p in plugin_candidates]
+            ffmpeg_plugin_names = [
+                'libqtmedia_ffmpeg.dylib',           # Qt6 FFmpeg backend
+                'libqffmpegmediaplugin.dylib',       # Older naming
+                'libffmpegmediaplugin.dylib',        # Fallback naming just in case
+                'ffmpegmediaplugin.dylib',
+            ]
+            ffmpeg_present = any(
+                os.path.exists(os.path.join(d, n)) for d in mm_dirs for n in ffmpeg_plugin_names if os.path.isdir(d)
+            )
+            if not ffmpeg_present:
+                os.environ['QT_MEDIA_BACKEND'] = 'darwin'
+                debug_logger.info("FFmpeg multimedia plugin not found; forcing QT_MEDIA_BACKEND=darwin (AVFoundation)")
+
+    icon_path = os.path.join(resources_dir, "icon.ico")
     app_icon = QIcon(icon_path)
     app.setWindowIcon(app_icon)
 
-    # Enable QML debugging
     if DEBUG_MODE:
         os.environ['QML_DEBUG_MESSAGES'] = '1'
         debug_logger.info("QML debugging enabled")
@@ -1374,7 +1409,7 @@ def main():
     engine.rootContext().setContextProperty("renamer", renamer)
     debug_logger.info("RenamerBackend initialized and set as context property")
     
-    qml_file = os.path.join(base_path, "main.qml")
+    qml_file = os.path.join(resources_dir, "main.qml")
     debug_logger.info(f"Loading QML file: {qml_file}")
     
     engine.load(QUrl.fromLocalFile(qml_file))

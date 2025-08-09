@@ -4,52 +4,51 @@ import os
 
 block_cipher = None
 
-# Function to collect all files from a directory recursively
-def collect_directory(dir_path, target_dir):
-    collected_data = []
-    if os.path.exists(dir_path):
-        # Walk through the directory and collect all files
-        for root, _, files in os.walk(dir_path):
-            for file in files:
-                source_path = os.path.join(root, file)
-                # Calculate the relative path for the destination
-                # Ensure all resources go directly to Resources/ folder by prepending 'Resources/' to the path
-                dest_path = os.path.join('Resources', target_dir, os.path.relpath(root, os.path.dirname(dir_path)))
-                collected_data.append((source_path, dest_path))
-    return collected_data
+def collect_directory_to_resources(dir_path, bundle_subdir):
+    """Collect files under dir_path into Contents/Resources/<bundle_subdir>/... inside the app bundle.
+
+    PyInstaller's datas expects (src, dest) where dest is relative to app bundle root.
+    On macOS, Resources root is 'SBY_OST_Tool.app/Contents/Resources/'.
+    """
+    collected = []
+    if not os.path.exists(dir_path):
+        return collected
+    for root, _, files in os.walk(dir_path):
+        for file in files:
+            src = os.path.join(root, file)
+            rel = os.path.relpath(root, dir_path)
+            # Place into Contents/Resources/<bundle_subdir>/<rel>
+            dest = os.path.join('Resources', bundle_subdir, rel)
+            collected.append((src, dest))
+    return collected
 
 # Collect data files with case-insensitive fallback
 app_datas = []
 
-# Process Components folder
-components_dir = 'Components'
-if not os.path.exists(components_dir) and os.path.exists('components'):
-    components_dir = 'components'
+# Components -> Contents/Resources/components
+components_dir = 'components' if os.path.exists('components') else 'Components'
 if os.path.exists(components_dir):
-    app_datas.extend(collect_directory(components_dir, components_dir))
+    app_datas.extend(collect_directory_to_resources(components_dir, 'components'))
 else:
-    print(f"Warning: '{components_dir}' or 'components' directory not found.")
+    print("Warning: components directory not found.")
 
-# Process resources folder
-resources_dir = 'resources'
-if not os.path.exists(resources_dir) and os.path.exists('Resources'):
-    resources_dir = 'Resources'
-if os.path.exists(resources_dir):
-    app_datas.extend(collect_directory(resources_dir, resources_dir))
+# Resources -> Contents/Resources/resources
+if os.path.exists('resources'):
+    app_datas.extend(collect_directory_to_resources('resources', 'resources'))
 else:
-    print(f"Warning: '{resources_dir}' or 'Resources' directory not found.")
+    print("Warning: resources directory not found.")
 
-# Add QML files
+# QML at top-level of Resources
 if os.path.exists('main.qml'):
     app_datas.append(('main.qml', 'Resources'))
 else:
-    print("Warning: 'main.qml' not found.")
+    print("Warning: main.qml not found.")
 if os.path.exists('MainContent.qml'):
     app_datas.append(('MainContent.qml', 'Resources'))
 else:
-    print("Warning: 'MainContent.qml' not found.")
+    print("Warning: MainContent.qml not found.")
 
-# Add icon for later use
+# Icons used at runtime
 if os.path.exists('icon.ico'):
     app_datas.append(('icon.ico', 'Resources'))
 
@@ -58,7 +57,11 @@ a = Analysis(
     pathex=['.'],
     binaries=[],
     datas=app_datas,
-    hiddenimports=['PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtCore', 'PySide6.QtGui', 'PySide6.QtMultimedia'],
+    hiddenimports=[
+        'PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtCore', 'PySide6.QtGui', 'PySide6.QtMultimedia',
+        # Ensure platform/backends get tracked
+        'PySide6.QtOpenGL',
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -69,6 +72,24 @@ a = Analysis(
     noarchive=False,
     optimize=0,
 )
+
+# Explicitly collect Qt Multimedia FFmpeg backend plugin for macOS before building
+from PyInstaller.utils.hooks import get_package_paths
+try:
+    pyside6_pkg_dir = get_package_paths('PySide6')[1]
+    qt_plugins_root = os.path.join(pyside6_pkg_dir, 'Qt', 'plugins')
+    multimedia_plugin_dir = os.path.join(qt_plugins_root, 'multimedia')
+    if os.path.isdir(multimedia_plugin_dir):
+        for name in os.listdir(multimedia_plugin_dir):
+            if name.endswith('.dylib') and ('ffmpeg' in name or 'qtmedia_ffmpeg' in name or 'qffmpeg' in name):
+                src = os.path.join(multimedia_plugin_dir, name)
+                dest = os.path.join('Resources', 'Qt', 'plugins', 'multimedia')
+                a.datas.append((src, dest))
+                print(f"Bundling Qt multimedia ffmpeg plugin: {name}")
+    else:
+        print("Warning: Qt multimedia plugin directory not found; relying on PyInstaller hooks.")
+except Exception as e:
+    print(f"Warning: failed to force-bundle Qt multimedia ffmpeg plugin: {e}")
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(

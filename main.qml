@@ -73,5 +73,10 @@ ApplicationWindow {
         id: mainLoader
         source: "MainContent.qml"
         anchors.fill: parent
+        onLoaded: {
+            if (item && coverColorAnalyzer) {
+                item.coverColorAnalyzer = coverColorAnalyzer
+            }
+        }
     }
 }

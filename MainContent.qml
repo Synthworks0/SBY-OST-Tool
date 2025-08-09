@@ -10,6 +10,16 @@ Item {
     id: root
     anchors.fill: parent
 
+    // Fallback to avoid undefined access during loading
+    property var coverColorAnalyzer: ({
+        dominantColor: "#5cc4f1",
+        backgroundColor: "#182f74",
+        accentColor: "#063c94",
+        textColor: "#ffffff",
+        extraColors: ["#e5eef3", "#f8f4c4", "#ecd4e2", "#d5ebdc", "#fbd3c9", "#fcfcf4"],
+        setColors: function(album) {}
+    })
+
     property int colorIndex: 0
     property color currentColor: coverColorAnalyzer.extraColors[colorIndex]
     property color nextColor: coverColorAnalyzer.extraColors[(colorIndex + 1) % coverColorAnalyzer.extraColors.length]
@@ -578,10 +588,9 @@ Item {
                     outputFolderText.text = folder
                 }
 
-                onOpened: {
-                    audioExplorer.close()
-                }
+                onOpened: { audioExplorer.close() }
 
+                onRequestScroll: scrollTimer.start()
                 onClosed: {}
             }
 
@@ -608,10 +617,9 @@ Item {
                     }
                 }
 
-                onOpened: {
-                    folderExplorer.close()
-                }
+                onOpened: { folderExplorer.close() }
 
+                onRequestScroll: scrollTimer.start()
                 onClosed: {}
             }
         }

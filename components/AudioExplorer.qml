@@ -16,6 +16,7 @@ Item {
 
     signal opened()
     signal closed()
+    signal requestScroll()
 
     function open() {
         isOpen = true;
@@ -25,8 +26,8 @@ Item {
     function close() {
         if (isOpen) {
             isOpen = false
-            // Wait for opacity animation to start
-            Qt.callLater(scrollTimer.start)
+            // Ask parent to handle scrolling animation
+            Qt.callLater(requestScroll)
             closed()
         }
     }

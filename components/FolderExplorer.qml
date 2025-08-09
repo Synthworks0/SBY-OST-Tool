@@ -21,6 +21,7 @@ Item {
 
     signal opened()
     signal closed()
+    signal requestScroll()
 
     function open() {
         isOpen = true
@@ -32,9 +33,8 @@ Item {
     function close() {
         if (isOpen) {
             isOpen = false
-            if (scrollView.contentHeight > scrollView.height && scrollView.contentItem.contentY > 0) {
-                Qt.callLater(scrollTimer.start)
-            }
+            // Ask parent to handle scrolling animation
+            Qt.callLater(requestScroll)
             closed()
         }
     }
