@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import tempfile
 from datetime import datetime
 from PySide6.QtCore import QtMsgType, qInstallMessageHandler
 
@@ -10,14 +11,21 @@ class DebugLogger:
         if not debug_enabled:
             return
 
-        # Create logs directory if it doesn't exist
-        if getattr(sys, 'frozen', False):
-            base_path = os.path.dirname(sys.executable)
-        else:
-            base_path = os.path.dirname(os.path.abspath(__file__))
-            
-        logs_dir = os.path.join(base_path, 'logs')
-        os.makedirs(logs_dir, exist_ok=True)
+        app_name = 'SBY_OST_Tool'
+        try:
+            if sys.platform == 'darwin':
+                # ~/Library/Logs/SBY_OST_Tool
+                base_dir = os.path.expanduser('~/Library/Logs')
+            elif sys.platform.startswith('win'):
+                base_dir = os.path.join(os.environ.get('LOCALAPPDATA', os.path.expanduser('~')), app_name)
+            else:
+                # Linux/Unix: ~/.local/state/SBY_OST_Tool
+                base_dir = os.path.expanduser('~/.local/state')
+            logs_dir = os.path.join(base_dir, app_name)
+            os.makedirs(logs_dir, exist_ok=True)
+        except Exception:
+            logs_dir = os.path.join(tempfile.gettempdir(), app_name, 'logs')
+            os.makedirs(logs_dir, exist_ok=True)
 
         # Set up logging
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')

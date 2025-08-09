@@ -9,7 +9,7 @@ import tempfile
 import resources_rc
 from mutagen.flac import FLAC
 import PySide6.QtMultimedia
-from PySide6.QtCore import QObject, Slot, Property, Signal, QUrl, QDir, QTimer, QThread
+from PySide6.QtCore import QObject, Slot, Property, Signal, QUrl, QDir, QTimer, QThread, QLibraryInfo
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtWidgets import QApplication, QFileSystemModel
 from PySide6.QtGui import QIcon
@@ -138,7 +138,7 @@ albums = {
                 "The Same Dream", "Something Important", "Amulet", "Promise", "Kaede's Wish", "Contemplation", "Silent Rain", "Reunion", "Happy Times",
                 "Sakuta's Adolescence Syndrome", "Walking Home Together", "Growing Anxiety", "Sense of Discomfort", "Doubt", "Sakuta's Determination", "No Matter What", "Just a Little More Patience", "Amulet and a Promise", "Mai's Kindness",
                 "Relief", "Because I Gave It My All", "Family", "Invisible Mystery", "Congratulations on Your Enrollment"
-            ] #Translated by me
+            ] # Translated by me
         }
     },
     "Extras": {
@@ -1346,20 +1346,70 @@ class RenamerBackend(QObject, Renamer):
         self._include_track_numbers = value
 
 def main():
+    runtime_root = _get_runtime_root_dir()
+    resources_dir = _get_app_resources_dir()
+    try:
+        # Prefer Cocoa platform explicitly on macOS
+        if sys.platform == 'darwin':
+            os.environ.setdefault('QT_QPA_PLATFORM', 'cocoa')
+
+        plugin_roots = [
+            os.path.join(runtime_root, 'PySide6', 'Qt', 'plugins'),
+            os.path.join(resources_dir, 'PySide6', 'Qt', 'plugins'),
+            os.path.join(runtime_root, 'Qt', 'plugins'),
+            os.path.join(resources_dir, 'Qt', 'plugins'),
+        ]
+        qml_roots = [
+            os.path.join(runtime_root, 'PySide6', 'Qt', 'qml'),
+            os.path.join(resources_dir, 'PySide6', 'Qt', 'qml'),
+        ]
+
+        existing_plugin_path = os.environ.get('QT_PLUGIN_PATH', '')
+        merged_plugin_path = os.pathsep.join([
+            *(p for p in plugin_roots if os.path.isdir(p)),
+            *(existing_plugin_path.split(os.pathsep) if existing_plugin_path else []),
+        ])
+        if merged_plugin_path:
+            os.environ['QT_PLUGIN_PATH'] = merged_plugin_path
+
+        for root in plugin_roots:
+            platforms_dir = os.path.join(root, 'platforms')
+            if os.path.isdir(platforms_dir):
+                os.environ.setdefault('QT_QPA_PLATFORM_PLUGIN_PATH', platforms_dir)
+                break
+
+        existing_qml_path = os.environ.get('QML2_IMPORT_PATH', '')
+        merged_qml_path = os.pathsep.join([
+            *(p for p in qml_roots if os.path.isdir(p)),
+            *(existing_qml_path.split(os.pathsep) if existing_qml_path else []),
+        ])
+        if merged_qml_path:
+            os.environ['QML2_IMPORT_PATH'] = merged_qml_path
+    except Exception as e:
+        debug_logger.error(f"Failed to configure Qt environment: {e}")
+
     app = QApplication.instance()
     if app is None:
         app = QApplication(sys.argv)
 
     debug_logger.info("Starting GUI application...")
 
-    runtime_root = _get_runtime_root_dir()
-    resources_dir = _get_app_resources_dir()
     if getattr(sys, 'frozen', False):
         debug_logger.info(f"Running as frozen application. runtime_root={runtime_root}, resources_dir={resources_dir}")
     else:
         debug_logger.info(f"Running as script. runtime_root={runtime_root}")
 
+    debug_logger.info(f"QT_PLUGIN_PATH={os.environ.get('QT_PLUGIN_PATH', '')}")
+    debug_logger.info(f"QT_QPA_PLATFORM_PLUGIN_PATH={os.environ.get('QT_QPA_PLATFORM_PLUGIN_PATH', '')}")
+    debug_logger.info(f"QML2_IMPORT_PATH={os.environ.get('QML2_IMPORT_PATH', '')}")
     debug_logger.info(f"Qt library paths: {app.libraryPaths()}")
+    try:
+        debug_logger.info(f"QLibraryInfo PluginsPath: {QLibraryInfo.path(QLibraryInfo.PluginsPath)}")
+        debug_logger.info(f"QLibraryInfo LibraryExecutablesPath: {QLibraryInfo.path(QLibraryInfo.LibraryExecutablesPath)}")
+        debug_logger.info(f"QLibraryInfo QmlImportsPath: {QLibraryInfo.path(QLibraryInfo.QmlImportsPath)}")
+        debug_logger.info(f"QLibraryInfo LibrariesPath: {QLibraryInfo.path(QLibraryInfo.LibrariesPath)}")
+    except Exception as e:
+        debug_logger.warning(f"Failed to query QLibraryInfo paths: {e}")
 
     # Force Qt to look for plugins in the bundle (PyInstaller/PySide6 layouts)
     if getattr(sys, 'frozen', False):
@@ -1403,6 +1453,13 @@ def main():
         debug_logger.info("QML debugging enabled")
 
     engine = QQmlApplicationEngine()
+    for qml_root in [
+        os.path.join(runtime_root, 'PySide6', 'Qt', 'qml'),
+        os.path.join(resources_dir, 'PySide6', 'Qt', 'qml'),
+    ]:
+        if os.path.isdir(qml_root):
+            engine.addImportPath(qml_root)
+            debug_logger.info(f"Added QML import path: {qml_root}")
     debug_logger.info("QML Engine created")
     
     renamer = RenamerBackend()
@@ -1413,6 +1470,11 @@ def main():
     debug_logger.info(f"Loading QML file: {qml_file}")
     
     engine.load(QUrl.fromLocalFile(qml_file))
+    try:
+        for warning in engine.warnings():
+            debug_logger.warning(str(warning))
+    except Exception:
+        pass
     
     if not engine.rootObjects():
         debug_logger.error(f"Failed to load QML file: {qml_file}")

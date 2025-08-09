@@ -60,23 +60,76 @@ try:
     multimedia_plugin_dir = os.path.join(qt_plugins_root, 'multimedia')
     if os.path.isdir(multimedia_plugin_dir):
         for name in os.listdir(multimedia_plugin_dir):
-            if name.endswith('.dylib') and ('ffmpeg' in name or 'qtmedia_ffmpeg' in name or 'qffmpeg' in name):
+            if name.endswith('.dylib'):
                 src = os.path.join(multimedia_plugin_dir, name)
-                dest = os.path.join('Resources', 'Qt', 'plugins', 'multimedia')
+                dest = os.path.join('PySide6', 'Qt', 'plugins', 'multimedia')
                 app_datas.append((src, dest))
-                print(f"Bundling Qt multimedia ffmpeg plugin: {name}")
+                print(f"Bundling Qt multimedia plugin: {name}")
     else:
         print("Warning: Qt multimedia plugin directory not found; relying on PyInstaller hooks.")
 
-    # Add FFmpeg libs that the plugin depends on under Resources/Qt/lib so @rpath resolves
+    # Ensure platform plugins (esp. libqcocoa.dylib) are bundled
+    platforms_plugin_dir = os.path.join(qt_plugins_root, 'platforms')
+    if os.path.isdir(platforms_plugin_dir):
+        for name in os.listdir(platforms_plugin_dir):
+            if name.endswith('.dylib'):
+                src = os.path.join(platforms_plugin_dir, name)
+                dest = os.path.join('PySide6', 'Qt', 'plugins', 'platforms')
+                app_datas.append((src, dest))
+                print(f"Bundling Qt platform plugin: {name}")
+    else:
+        print("Warning: Qt platforms plugin directory not found; relying on PyInstaller hooks.")
+
+    # Common imageformats plugins
+    imageformats_dir = os.path.join(qt_plugins_root, 'imageformats')
+    if os.path.isdir(imageformats_dir):
+        for name in os.listdir(imageformats_dir):
+            if name.endswith('.dylib'):
+                src = os.path.join(imageformats_dir, name)
+                dest = os.path.join('PySide6', 'Qt', 'plugins', 'imageformats')
+                app_datas.append((src, dest))
+                print(f"Bundling Qt imageformats plugin: {name}")
+    else:
+        print("Warning: Qt imageformats plugin directory not found; relying on PyInstaller hooks.")
+
+    # Add FFmpeg libs that the plugin depends on; place under PySide6/Qt/lib so @rpath resolves via ../../lib
     qt_lib_root = os.path.join(pyside6_pkg_dir, 'Qt', 'lib')
     if os.path.isdir(qt_lib_root):
+        needed_prefixes = (
+            'libav', 'libsw',  # FFmpeg core libs
+            'libz', 'libbz2', 'liblzma', 'libzstd',  # common compression deps
+            'libiconv', 'libcharset',  # text/locale deps
+        )
         for name in os.listdir(qt_lib_root):
-            if name.endswith('.dylib') and (name.startswith('libav') or name.startswith('libsw')):
+            if name.endswith('.dylib') and name.startswith(needed_prefixes):
                 src = os.path.join(qt_lib_root, name)
-                dest = os.path.join('Resources', 'Qt', 'lib')
+                dest = os.path.join('PySide6', 'Qt', 'lib')
                 app_datas.append((src, dest))
-                print(f"Bundling FFmpeg runtime library: {name}")
+                print(f"Bundling runtime library: {name}")
+
+    # Bundle required QML modules used by the app
+    qml_root = os.path.join(pyside6_pkg_dir, 'Qt', 'qml')
+    def collect_qml_module(module_name):
+        module_dir = os.path.join(qml_root, module_name)
+        if os.path.isdir(module_dir):
+            for root, _, files in os.walk(module_dir):
+                for f in files:
+                    src = os.path.join(root, f)
+                    rel = os.path.relpath(root, qml_root)
+                    dest = os.path.join('PySide6', 'Qt', 'qml', rel)
+                    app_datas.append((src, dest))
+            print(f"Bundling QML module: {module_name}")
+        else:
+            print(f"Warning: QML module not found: {module_name}")
+
+    # Modules referenced in QML
+    collect_qml_module('Qt5Compat/GraphicalEffects')
+    collect_qml_module('QtMultimedia')
+    collect_qml_module('QtQuick')
+    collect_qml_module('QtQuick/Controls')
+    collect_qml_module('QtQuick/Controls/Material')
+    collect_qml_module('QtQuick/Layouts')
+    collect_qml_module('QtQuick/Window')
 except Exception as e:
     print(f"Warning: failed to force-bundle Qt multimedia ffmpeg plugin/libs: {e}")
 
