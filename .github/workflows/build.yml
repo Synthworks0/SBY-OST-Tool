@@ -124,39 +124,13 @@ jobs:
       - name: Build artifact
         run: pyinstaller ${{ matrix.spec }} --noconfirm
 
-      - name: Package artifact (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          $dist = Resolve-Path '${{ matrix.dist-path }}'
-          $archive = '${{ matrix.archive-name }}'
-          if (Test-Path $archive) { Remove-Item $archive -Force }
-          Compress-Archive -Path (Join-Path $dist '*') -DestinationPath $archive
-
-      - name: Package artifact (Linux)
-        if: startsWith(matrix.os, 'ubuntu')
-        shell: bash
-        run: |
-          DIST='${{ matrix.dist-path }}'
-          ARCHIVE='${{ matrix.archive-name }}'
-          rm -f "$ARCHIVE"
-          tar -czf "$ARCHIVE" -C "$(dirname "$DIST")" "$(basename "$DIST")"
-
-      - name: Package artifact (macOS)
+      - name: Cleanup build artifacts (macOS)
         if: matrix.os == 'macos-latest'
-        shell: bash
-        run: |
-          ARCHIVE='${{ matrix.archive-name }}'
-          APP_NAME=$(basename '${{ matrix.dist-path }}')
-          cd dist
-          rm -f "$ARCHIVE"
-          zip -r "$ARCHIVE" "$APP_NAME"
-          mv "$ARCHIVE" ../"$ARCHIVE"
-          cd ..
-          rm -rf icon.iconset || true
+        run: rm -rf icon.iconset || true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: ${{ matrix.archive-name }}
+          path: ${{ matrix.dist-path }}
           if-no-files-found: error
