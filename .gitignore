@@ -19,5 +19,3 @@ config.json
 .history/
 .cursorignore
 soundtrack_tool/__pycache__/
-# Large audio assets - use R2 for distribution
-soundtrack_tool/assets/SBY Soundtracks/
