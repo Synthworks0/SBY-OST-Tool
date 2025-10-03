@@ -112,48 +112,48 @@ jobs:
                   resized2 = img.resize((size * 2, size * 2))
                   resized2.save(iconset / f'icon_{size}x{size}@2x.png')
           PY
-                    iconutil -c icns icon.iconset
-                    mv icon.icns resources/icon.icns 2>/dev/null || true
+          iconutil -c icns icon.iconset
+          mv icon.icns resources/icon.icns 2>/dev/null || true
 
-                - name: Compile sources
-                  run: python -m compileall soundtrack_tool rename.py
+      - name: Compile sources
+        run: python -m compileall soundtrack_tool rename.py
 
-                - name: Build artifact
-                  run: pyinstaller ${{ matrix.spec }} --noconfirm
+      - name: Build artifact
+        run: pyinstaller ${{ matrix.spec }} --noconfirm
 
-                - name: Package artifact (Windows)
-                  if: matrix.os == 'windows-latest'
-                  run: |
-                    $dist = Resolve-Path '${{ matrix.dist-path }}'
-                    $archive = '${{ matrix.archive-name }}'
-                    if (Test-Path $archive) { Remove-Item $archive -Force }
-                    Compress-Archive -Path (Join-Path $dist '*') -DestinationPath $archive
+      - name: Package artifact (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          $dist = Resolve-Path '${{ matrix.dist-path }}'
+          $archive = '${{ matrix.archive-name }}'
+          if (Test-Path $archive) { Remove-Item $archive -Force }
+          Compress-Archive -Path (Join-Path $dist '*') -DestinationPath $archive
 
-                - name: Package artifact (Linux)
-                  if: startsWith(matrix.os, 'ubuntu')
-                  shell: bash
-                  run: |
-                    DIST='${{ matrix.dist-path }}'
-                    ARCHIVE='${{ matrix.archive-name }}'
-                    rm -f "$ARCHIVE"
-                    tar -czf "$ARCHIVE" -C "$(dirname "$DIST")" "$(basename "$DIST")"
+      - name: Package artifact (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        shell: bash
+        run: |
+          DIST='${{ matrix.dist-path }}'
+          ARCHIVE='${{ matrix.archive-name }}'
+          rm -f "$ARCHIVE"
+          tar -czf "$ARCHIVE" -C "$(dirname "$DIST")" "$(basename "$DIST")"
 
-                - name: Package artifact (macOS)
-                  if: matrix.os == 'macos-latest'
-                  shell: bash
-                  run: |
-                    ARCHIVE='${{ matrix.archive-name }}'
-                    APP_NAME=$(basename '${{ matrix.dist-path }}')
-                    cd dist
-                    rm -f "$ARCHIVE"
-                    zip -r "$ARCHIVE" "$APP_NAME"
-                    mv "$ARCHIVE" ../"$ARCHIVE"
-                    cd ..
-                    rm -rf icon.iconset || true
+      - name: Package artifact (macOS)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          ARCHIVE='${{ matrix.archive-name }}'
+          APP_NAME=$(basename '${{ matrix.dist-path }}')
+          cd dist
+          rm -f "$ARCHIVE"
+          zip -r "$ARCHIVE" "$APP_NAME"
+          mv "$ARCHIVE" ../"$ARCHIVE"
+          cd ..
+          rm -rf icon.iconset || true
 
-                - name: Upload artifact
-                  uses: actions/upload-artifact@v4
-                  with:
-                    name: ${{ matrix.artifact-name }}
-                    path: ${{ matrix.archive-name }}
-                  if-no-files-found: error
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.archive-name }}
+          if-no-files-found: error
