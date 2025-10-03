@@ -1,0 +1,159 @@
+name: Build Artifacts
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  actions: read
+  packages: read
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            python: '3.11'
+            mode: standalone
+            spec: SBY_OST_Tool.spec
+            artifact-name: sby-ost-tool-windows-standalone
+            dist-path: dist/SBY_OST_Tool
+            archive-name: SBY_OST_Tool-windows-standalone.zip
+          - os: windows-latest
+            python: '3.11'
+            mode: streaming
+            spec: SBY_OST_Tool_Remote.spec
+            artifact-name: sby-ost-tool-windows-streaming
+            dist-path: dist/SBY_OST_Tool_Remote
+            archive-name: SBY_OST_Tool-windows-streaming.zip
+          - os: ubuntu-latest
+            python: '3.11'
+            mode: standalone
+            spec: SBY_OST_Tool_Linux.spec
+            artifact-name: sby-ost-tool-linux-standalone
+            dist-path: dist/SBY_OST_Tool
+            archive-name: SBY_OST_Tool-linux-standalone.tar.gz
+          - os: ubuntu-latest
+            python: '3.11'
+            mode: streaming
+            spec: SBY_OST_Tool_Remote_Linux.spec
+            artifact-name: sby-ost-tool-linux-streaming
+            dist-path: dist/SBY_OST_Tool_Remote
+            archive-name: SBY_OST_Tool-linux-streaming.tar.gz
+          - os: macos-latest
+            python: '3.11'
+            mode: standalone
+            spec: SBY_OST_Tool_Mac.spec
+            artifact-name: sby-ost-tool-macos-standalone
+            dist-path: dist/SBY_OST_Tool.app
+            archive-name: SBY_OST_Tool-macos-standalone.zip
+          - os: macos-latest
+            python: '3.11'
+            mode: streaming
+            spec: SBY_OST_Tool_Remote_Mac.spec
+            artifact-name: sby-ost-tool-macos-streaming
+            dist-path: dist/SBY_OST_Tool_Remote.app
+            archive-name: SBY_OST_Tool-macos-streaming.zip
+    runs-on: ${{ matrix.os }}
+
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      SBY_ASSET_MODE: ${{ matrix.mode == 'streaming' && 'remote' || '' }}
+      SBY_R2_BASE_URL: ${{ secrets.SBY_R2_BASE_URL }}
+      SBY_R2_BUCKET: ${{ secrets.SBY_R2_BUCKET }}
+      SBY_R2_ENDPOINT: ${{ secrets.SBY_R2_ENDPOINT }}
+      SBY_R2_ACCESS_KEY: ${{ secrets.SBY_R2_ACCESS_KEY }}
+      SBY_R2_SECRET_KEY: ${{ secrets.SBY_R2_SECRET_KEY }}
+      SBY_R2_REGION: ${{ secrets.SBY_R2_REGION }}
+      SBY_R2_PREFIX: ${{ secrets.SBY_R2_PREFIX }}
+      SBY_R2_PRESIGN_TTL: ${{ secrets.SBY_R2_PRESIGN_TTL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install system dependencies (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-dev libgl1-mesa-dev libxkbcommon-x11-0 libpulse-dev libasound2-dev
+
+      - name: Install build tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller pillow
+
+      - name: Generate macOS icon
+        if: matrix.os == 'macos-latest'
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from PIL import Image
+          ICON_SIZES = [16, 32, 64, 128, 256, 512, 1024]
+          iconset = Path('icon.iconset')
+          iconset.mkdir(exist_ok=True)
+          img = Image.open('icon.ico')
+          for size in ICON_SIZES:
+              resized = img.resize((size, size))
+              resized.save(iconset / f'icon_{size}x{size}.png')
+              if size < 512:
+                  resized2 = img.resize((size * 2, size * 2))
+                  resized2.save(iconset / f'icon_{size}x{size}@2x.png')
+          PY
+                    iconutil -c icns icon.iconset
+                    mv icon.icns resources/icon.icns 2>/dev/null || true
+
+                - name: Compile sources
+                  run: python -m compileall soundtrack_tool rename.py
+
+                - name: Build artifact
+                  run: pyinstaller ${{ matrix.spec }} --noconfirm
+
+                - name: Package artifact (Windows)
+                  if: matrix.os == 'windows-latest'
+                  run: |
+                    $dist = Resolve-Path '${{ matrix.dist-path }}'
+                    $archive = '${{ matrix.archive-name }}'
+                    if (Test-Path $archive) { Remove-Item $archive -Force }
+                    Compress-Archive -Path (Join-Path $dist '*') -DestinationPath $archive
+
+                - name: Package artifact (Linux)
+                  if: startsWith(matrix.os, 'ubuntu')
+                  shell: bash
+                  run: |
+                    DIST='${{ matrix.dist-path }}'
+                    ARCHIVE='${{ matrix.archive-name }}'
+                    rm -f "$ARCHIVE"
+                    tar -czf "$ARCHIVE" -C "$(dirname "$DIST")" "$(basename "$DIST")"
+
+                - name: Package artifact (macOS)
+                  if: matrix.os == 'macos-latest'
+                  shell: bash
+                  run: |
+                    ARCHIVE='${{ matrix.archive-name }}'
+                    APP_NAME=$(basename '${{ matrix.dist-path }}')
+                    cd dist
+                    rm -f "$ARCHIVE"
+                    zip -r "$ARCHIVE" "$APP_NAME"
+                    mv "$ARCHIVE" ../"$ARCHIVE"
+                    cd ..
+                    rm -rf icon.iconset || true
+
+                - name: Upload artifact
+                  uses: actions/upload-artifact@v4
+                  with:
+                    name: ${{ matrix.artifact-name }}
+                    path: ${{ matrix.archive-name }}
+                  if-no-files-found: error

@@ -1,0 +1,23 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec.build/
+*.log
+*.zip
+*.tar.gz
+icon.iconset/
+.env
+cloudflare.env
+cache/
+config.json
+*.DS_Store
+.idea/
+.vscode/
+.history/
+.cursorignore
+soundtrack_tool/__pycache__/
+# Large audio assets - use R2 for distribution
+soundtrack_tool/assets/SBY Soundtracks/
