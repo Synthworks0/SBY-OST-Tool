@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -19,7 +18,6 @@ class SongEntry:
     track_number: int
     is_remote: bool
     relative_path: Optional[str] = None
-
 
 class AudioCatalog:
     def __init__(self, locator: ResourceLocator, config: AppConfig, r2_client=None) -> None:
@@ -184,7 +182,6 @@ class AudioCatalog:
                 return candidate
         flacs = sorted(base_dir.glob("*.flac"))
         return flacs[0] if flacs else None
-
 
 def _format_duration(duration: Optional[int]) -> str:
     if not duration:

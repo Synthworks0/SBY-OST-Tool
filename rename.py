@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import multiprocessing
 import os
 import sys
@@ -34,7 +33,6 @@ def _log_qt_environment(app: QApplication) -> None:
     except Exception as exc:  # pragma: no cover - logging helper
         debug_logger.warning(f"Failed to query QLibraryInfo paths: {exc}")
 
-
 def _add_plugin_paths(app: QApplication, locator: ResourceLocator) -> None:
     if not getattr(sys, "frozen", False):
         return
@@ -66,7 +64,6 @@ def _add_plugin_paths(app: QApplication, locator: ResourceLocator) -> None:
             if DEBUG_MODE:
                 debug_logger.info("FFmpeg multimedia plugin not found; forcing QT_MEDIA_BACKEND=darwin")
 
-
 def _load_qml(engine: QQmlApplicationEngine, locator: ResourceLocator) -> None:
     for import_path in [
         locator.runtime_root / "PySide6" / "Qt" / "qml",
@@ -86,7 +83,6 @@ def _load_qml(engine: QQmlApplicationEngine, locator: ResourceLocator) -> None:
             debug_logger.warning(str(warning))
     except Exception:
         pass
-
 
 def main() -> int:
     app = QApplication.instance() or QApplication(sys.argv)

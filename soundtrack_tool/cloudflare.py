@@ -1,11 +1,9 @@
 from __future__ import annotations
-
 import logging
 import os
 from pathlib import Path
 from threading import Event
 from typing import Optional
-
 import requests
 
 from .config import AppConfig
@@ -21,9 +19,7 @@ class R2Client:
         self._prefix = (config.r2.prefix or "").strip().strip("/")
         
         if not self._base_url:
-            raise RuntimeError(
-                "Missing R2 base URL"
-            )
+            raise RuntimeError("Missing R2 base URL")
 
     def _object_key(self, relative_path: str) -> str:
         rel = relative_path.replace("\\", "/").lstrip("/")

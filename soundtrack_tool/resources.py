@@ -1,7 +1,5 @@
 from __future__ import annotations
-
 from pathlib import Path
-
 from .environment import get_app_resources_dir, get_runtime_root
 
 

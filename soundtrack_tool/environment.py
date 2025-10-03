@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import os
 import sys
 from pathlib import Path
@@ -22,7 +21,6 @@ def get_app_resources_dir(runtime_root: Path | None = None) -> Path:
             return candidate
     return runtime
 
-
 def _merge_env_paths(env_key: str, candidates: Sequence[Path], logger=None) -> None:
     existing = os.environ.get(env_key, "")
     merged: list[str] = []
@@ -36,7 +34,6 @@ def _merge_env_paths(env_key: str, candidates: Sequence[Path], logger=None) -> N
         if logger:
             logger.info(f"Set {env_key}={os.environ[env_key]}")
 
-
 def _set_platform_plugin_path(plugin_roots: Sequence[Path], logger=None) -> None:
     for root in plugin_roots:
         platforms = root / "platforms"
@@ -45,7 +42,6 @@ def _set_platform_plugin_path(plugin_roots: Sequence[Path], logger=None) -> None
             if logger:
                 logger.info(f"QT_QPA_PLATFORM_PLUGIN_PATH={platforms}")
             break
-
 
 def configure_qt_environment(logger=None) -> None:
     os.environ.setdefault("QT_ENABLE_HIGHDPI_SCALING", "1")
@@ -76,7 +72,6 @@ def configure_qt_environment(logger=None) -> None:
     _merge_env_paths("QT_PLUGIN_PATH", plugin_candidates, logger)
     _merge_env_paths("QML2_IMPORT_PATH", qml_candidates, logger)
     _set_platform_plugin_path(plugin_candidates, logger)
-
 
 __all__ = [
     "configure_qt_environment",

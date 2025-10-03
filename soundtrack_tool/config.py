@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import os
 from dataclasses import dataclass
 from enum import Enum
@@ -13,19 +12,16 @@ def _get_env(key: str, default: str | None = None) -> str | None:
     cleaned = value.strip().strip("\"'")
     return cleaned if cleaned else default
 
-
 class AssetMode(str, Enum):
     AUTO = "auto"
     LOCAL = "local"
     REMOTE = "remote"
-
 
 @dataclass
 class R2Settings:
     enabled: bool
     base_url: Optional[str]
     prefix: str
-
 
 @dataclass
 class AppConfig:
@@ -40,9 +36,7 @@ class AppConfig:
             return False
         return self.r2.enabled
 
-
 DEFAULT_PREFIX = ""
-
 
 def load_app_config() -> AppConfig:
     mode = AssetMode((_get_env("SBY_ASSET_MODE", "auto") or "auto").lower())

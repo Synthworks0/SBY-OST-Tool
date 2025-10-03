@@ -6,6 +6,7 @@ import atexit
 from datetime import datetime
 from PySide6.QtCore import QtMsgType, qInstallMessageHandler
 
+
 class DebugLogger:
     def __init__(self, debug_enabled=False):
         self.debug_enabled = debug_enabled

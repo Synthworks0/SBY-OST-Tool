@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import os
 import sys
 from pathlib import Path
@@ -7,8 +6,6 @@ from typing import Iterable, List
 
 
 class FileSystemService:
-    """Cross-platform file-system helpers used by the Qt backend."""
-
     def list_drives(self) -> list[str]:
         if os.name == "nt":
             return self._list_windows_drives()

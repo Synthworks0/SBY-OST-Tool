@@ -1,9 +1,7 @@
 from __future__ import annotations
-
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-
 from PySide6.QtCore import QObject, Property, QTimer, QUrl, Signal, Slot, QCoreApplication
 from PySide6.QtCore import QDir
 from threading import Event

@@ -1,10 +1,8 @@
 from __future__ import annotations
-
 import hashlib
 import threading
 from pathlib import Path
 from typing import Iterable
-
 from .cloudflare import R2Client
 
 
