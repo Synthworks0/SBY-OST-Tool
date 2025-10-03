@@ -15,8 +15,8 @@ class R2Client:
     def __init__(self, config: AppConfig, cancel_event: Optional[Event] = None) -> None:
         self._config = config
         self._cancel_event = cancel_event
-        self._base_url = (config.r2.base_url or "").strip().rstrip("/")
-        self._prefix = (config.r2.prefix or "").strip().strip("/")
+        self._base_url = (config.r2.base_url or "").strip().strip('"\'').rstrip("/")
+        self._prefix = (config.r2.prefix or "").strip().strip('"\'').strip("/")
         
         if not self._base_url:
             raise RuntimeError("Missing R2 base URL")

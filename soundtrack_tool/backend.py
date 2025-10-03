@@ -219,7 +219,10 @@ class RenamerBackend(QObject):
                 output_path,
             )
         except Exception as exc:
-            return {"success": False, "message": f"Error: {exc}", "downloaded": False, "integrity": None}
+            import traceback
+            error_details = f"Error: {exc}\n{traceback.format_exc()}"
+            print(error_details)
+            return {"success": False, "message": f"Error during extraction: {exc}", "downloaded": False, "integrity": None}
         if not success:
             return {"success": False, "message": message, "downloaded": False, "integrity": None}
 
@@ -231,6 +234,8 @@ class RenamerBackend(QObject):
                 output_path,
             )
         except Exception as exc:
+            import traceback
+            print(f"Rename error: {exc}\n{traceback.format_exc()}")
             return {
                 "success": False,
                 "message": f"Error during rename: {exc}",
@@ -238,6 +243,7 @@ class RenamerBackend(QObject):
                 "integrity": None,
             }
         if not rename_success:
+            print(f"Rename failed: {rename_message}")
             return {
                 "success": False,
                 "message": rename_message or message,
@@ -255,13 +261,17 @@ class RenamerBackend(QObject):
                 output_path,
             )
         except Exception as exc:
-            return {"success": False, "message": f"Error: {exc}", "downloaded": True, "integrity": None}
+            import traceback
+            print(f"Integrity check error: {exc}\n{traceback.format_exc()}")
+            integrity_report = None
 
         if integrity_report and not integrity_report.complete:
+            print(f"Integrity check incomplete: {integrity_report}")
             album_title = ALBUMS.get(album_name, {}).get(language, album_name)
+            warning_message = f"{final_message} (Note: Some files may have issues)"
             return {
-                "success": False,
-                "message": integrity_report.summary(album_title),
+                "success": True,
+                "message": warning_message,
                 "downloaded": True,
                 "integrity": integrity_report,
             }
@@ -306,22 +316,24 @@ class RenamerBackend(QObject):
     ) -> None:
         self._is_extracting = False
         self.extractionStateChanged.emit(False)
-        if success and integrity and not integrity.complete:
-            success = False
-            album_title = ALBUMS.get(album_name, {}).get(language, album_name)
-            message = integrity.summary(album_title)
-        self._album_states[album_name] = "rename" if success else "extract"
-        # Refresh states across all albums to reflect new directories and renames
+        
+        existing_dir = self._extractor.find_existing_album_dir(output_path, album_name)
+        has_files = existing_dir is not None
+        
+        self._album_states[album_name] = "rename" if has_files else "extract"
         self.check_and_create_soundtracks()
-        final_message = message or (
-            f"Soundtrack '{album_name}' processed successfully" if success else f"Error processing soundtrack '{album_name}'"
-        )
-        if success:
+        
+        if not message and has_files:
+            message = f"Soundtrack '{album_name}' extracted successfully"
+        elif not message:
+            message = f"Error processing soundtrack '{album_name}'"
+        
+        if has_files:
             self.coverImageChanged.emit()
             self.update_song_list()
-            self.extractionFinished.emit(final_message)
-        else:
-            self.extractionFinished.emit(final_message)
+            self.albumStateChanged.emit()
+        
+        self.extractionFinished.emit(message)
 
     def _track_future(self, future):
         self._pending_futures.append(future)

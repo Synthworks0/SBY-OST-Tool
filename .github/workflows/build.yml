@@ -124,9 +124,11 @@ jobs:
           from pathlib import Path
           config = {}
           if os.environ.get("BUILD_MODE") == "streaming":
+              base_url = os.environ.get("R2_BASE_URL", "").strip().strip('"\'')
+              prefix = os.environ.get("R2_PREFIX", "").strip().strip('"\'')
               config["asset_mode"] = "remote"
-              config["r2_base_url"] = os.environ.get("R2_BASE_URL", "")
-              config["r2_prefix"] = os.environ.get("R2_PREFIX", "")
+              config["r2_base_url"] = base_url
+              config["r2_prefix"] = prefix
           Path("runtime_config.json").write_text(json.dumps(config, indent=2))
 
       - name: Compile sources

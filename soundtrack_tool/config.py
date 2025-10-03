@@ -65,9 +65,10 @@ def load_app_config() -> AppConfig:
     mode_str = runtime_config.get("asset_mode") or _get_env("SBY_ASSET_MODE", "auto") or "auto"
     mode = AssetMode(mode_str.lower())
     
-    base_url = runtime_config.get("r2_base_url") or _get_env("SBY_R2_BASE_URL")
+    base_url = runtime_config.get("r2_base_url") or _get_env("SBY_R2_BASE_URL") or ""
     prefix = runtime_config.get("r2_prefix") or _get_env("SBY_R2_PREFIX", DEFAULT_PREFIX) or ""
-    prefix = prefix.strip().strip("/")
+    base_url = base_url.strip().strip('"\'')
+    prefix = prefix.strip().strip('"\'').strip("/")
 
     r2_enabled = bool(base_url)
     r2_settings = R2Settings(
