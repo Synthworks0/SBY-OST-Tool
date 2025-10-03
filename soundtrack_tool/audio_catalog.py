@@ -82,6 +82,8 @@ class AudioCatalog:
         return entries
 
     def _build_remote(self, album_name: str, language: str) -> list[SongEntry]:
+        if not self._r2:
+            return []
         manifest = ASSET_MANIFEST.get(album_name)
         if not manifest:
             return []

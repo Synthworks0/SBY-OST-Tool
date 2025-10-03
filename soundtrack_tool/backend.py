@@ -233,9 +233,9 @@ class RenamerBackend(QObject):
         except Exception as exc:
             return {
                 "success": False,
-                "message": f"Error: {exc}",
+                "message": f"Error during rename: {exc}",
                 "downloaded": True,
-                "integrity": integrity_report,
+                "integrity": None,
             }
         if not rename_success:
             return {

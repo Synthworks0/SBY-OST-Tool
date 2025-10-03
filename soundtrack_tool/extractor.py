@@ -106,7 +106,7 @@ class SoundtrackExtractor:
         include_track_numbers: bool,
         output_folder: Path,
     ) -> Tuple[bool, str]:
-        if self._use_remote or self._ensure_remote_client():
+        if self._use_remote:
             return self._download_remote_album(album_name, output_folder)
 
         album_data = ALBUMS.get(album_name)
@@ -116,10 +116,7 @@ class SoundtrackExtractor:
         if not source_dir.exists():
             if self._ensure_remote_client():
                 return self._download_remote_album(album_name, output_folder)
-            error_message = f"Error: Soundtrack '{album_name}' not found"
-            if self._lazy_remote_error:
-                error_message += f" (remote unavailable: {self._lazy_remote_error})"
-            return False, error_message
+            return False, f"Error: Soundtrack files not found at {source_dir}"
 
         collection_root = self.ensure_collection_root(output_folder)
         destination = collection_root / album_data.get(language, album_data["English"])
