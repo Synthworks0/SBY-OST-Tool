@@ -106,3 +106,21 @@ coll = COLLECT(
     upx_exclude=[],
     name='SBY_OST_Tool_Remote',
 )
+
+# Create the .app bundle
+icon_file = 'icon.icns' if os.path.exists('icon.icns') else None
+app = BUNDLE(
+    coll,
+    name='SBY_OST_Tool_Remote.app',
+    icon=icon_file,
+    bundle_identifier='com.synthworks.sbyosttool.remote',
+    info_plist={
+        'CFBundleShortVersionString': '3.0.0',
+        'CFBundleVersion': '3',
+        'CFBundleGetInfoString': 'SBY OST Tool (Streaming)',
+        'NSHighResolutionCapable': 'True',
+        'NSRequiresAquaSystemAppearance': 'False',
+        'LSApplicationCategoryType': 'public.app-category.utilities',
+        'LSMinimumSystemVersion': '10.15',
+    },
+)

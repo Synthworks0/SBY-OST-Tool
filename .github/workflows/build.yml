@@ -76,6 +76,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -97,6 +99,7 @@ jobs:
       - name: Generate macOS icon
         if: matrix.os == 'macos-latest'
         run: |
+          mkdir -p resources
           python - <<'PY'
           import os
           from pathlib import Path
