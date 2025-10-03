@@ -112,6 +112,18 @@ jobs:
           iconutil -c icns icon.iconset
           mv icon.icns resources/icon.icns 2>/dev/null || true
 
+      - name: Write runtime config
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+          config = {}
+          if "${{ matrix.mode }}" == "streaming":
+              config["asset_mode"] = "remote"
+              config["r2_base_url"] = "${{ secrets.SBY_R2_BASE_URL }}"
+              config["r2_prefix"] = "${{ secrets.SBY_R2_PREFIX }}"
+          Path("runtime_config.json").write_text(json.dumps(config, indent=2))
+
       - name: Compile sources
         run: python -m compileall soundtrack_tool rename.py
 

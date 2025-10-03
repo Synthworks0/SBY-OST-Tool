@@ -1,11 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import os
+def existing(path): return os.path.exists(path)
+
 common_datas = [
     ('main.qml', '.'),
     ('MainContent.qml', '.'),
     ('components', 'components'),
     ('resources/icons', 'resources/icons'),
 ]
+if existing('runtime_config.json'):
+    common_datas.append(('runtime_config.json', '.'))
 
 hidden_imports = [
     'PySide6.QtQml',

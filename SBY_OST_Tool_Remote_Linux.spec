@@ -23,6 +23,7 @@ candidate_datas = [
     include(components_dir, 'components'),
     include(icons_dir, 'resources/icons'),
     include('icon.ico', '.'),
+    include('runtime_config.json', '.'),
 ]
 
 datas = [entry for entry in candidate_datas if entry]

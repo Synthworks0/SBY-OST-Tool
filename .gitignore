@@ -13,6 +13,7 @@ icon.iconset/
 cloudflare.env
 cache/
 config.json
+runtime_config.json
 *.DS_Store
 .idea/
 .vscode/
