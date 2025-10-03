@@ -35,6 +35,7 @@ class ResourceLocator:
 
     def application_icon_path(self, name: str = "icon.ico") -> Path:
         candidates = [
+            self.runtime_root / "_internal" / name,
             self.app_resources_dir / name,
             self.resources_root / name,
             self.runtime_root / name,
@@ -70,8 +71,8 @@ class ResourceLocator:
 
     def _detect_resources_root(self) -> Path:
         candidates: list[Path] = [
-            self.app_resources_dir / "resources",
             self.runtime_root / "_internal" / "resources",
+            self.app_resources_dir / "resources",
             self.runtime_root / "resources",
             self.app_resources_dir / "Resources" / "resources",
             self.runtime_root / "Resources" / "resources",
@@ -81,7 +82,9 @@ class ResourceLocator:
 
     def _detect_soundtrack_root(self) -> Path:
         candidates = [
+            self.runtime_root / "_internal" / "soundtrack_tool" / "assets" / "SBY Soundtracks",
             self.runtime_root / "soundtrack_tool" / "assets" / "SBY Soundtracks",
+            self.app_resources_dir / "soundtrack_tool" / "assets" / "SBY Soundtracks",
             self.app_resources_dir / "assets" / "SBY Soundtracks",
             self.resources_root / "SBY Soundtracks",
             self.app_resources_dir / "SBY Soundtracks",

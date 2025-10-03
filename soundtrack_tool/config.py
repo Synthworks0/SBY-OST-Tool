@@ -14,8 +14,6 @@ def _get_env(key: str, default: str | None = None) -> str | None:
     return cleaned if cleaned else default
 
 
-
-
 class AssetMode(str, Enum):
     AUTO = "auto"
     LOCAL = "local"
@@ -25,13 +23,8 @@ class AssetMode(str, Enum):
 @dataclass
 class R2Settings:
     enabled: bool
-    bucket: Optional[str]
-    endpoint_url: Optional[str]
-    access_key: Optional[str]
-    secret_key: Optional[str]
+    base_url: Optional[str]
     prefix: str
-    region: Optional[str]
-    presign_ttl: int
 
 
 @dataclass
@@ -49,33 +42,18 @@ class AppConfig:
 
 
 DEFAULT_PREFIX = ""
-DEFAULT_PRESIGN_TTL = 3600
 
 
 def load_app_config() -> AppConfig:
     mode = AssetMode((_get_env("SBY_ASSET_MODE", "auto") or "auto").lower())
-    bucket = _get_env("SBY_R2_BUCKET")
-    endpoint = _get_env("SBY_R2_ENDPOINT")
-    access_key = _get_env("SBY_R2_ACCESS_KEY")
-    secret_key = _get_env("SBY_R2_SECRET_KEY")
-    region = _get_env("SBY_R2_REGION")
+    base_url = _get_env("SBY_R2_BASE_URL")
     prefix = (_get_env("SBY_R2_PREFIX", DEFAULT_PREFIX) or "").strip().strip("/")
-    presign_raw = _get_env("SBY_R2_PRESIGN_TTL", str(DEFAULT_PRESIGN_TTL)) or str(DEFAULT_PRESIGN_TTL)
-    try:
-        presign_ttl = int(presign_raw)
-    except ValueError:
-        presign_ttl = DEFAULT_PRESIGN_TTL
 
-    r2_enabled = bool(bucket and endpoint and access_key and secret_key)
+    r2_enabled = bool(base_url)
     r2_settings = R2Settings(
         enabled=r2_enabled,
-        bucket=bucket,
-        endpoint_url=endpoint,
-        access_key=access_key,
-        secret_key=secret_key,
+        base_url=base_url,
         prefix=prefix,
-        region=region,
-        presign_ttl=presign_ttl,
     )
     return AppConfig(asset_mode=mode, r2=r2_settings)
 

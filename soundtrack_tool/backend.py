@@ -48,8 +48,8 @@ class RenamerBackend(QObject):
         self._settings = AppSettings(self._locator.runtime_root / "config.json")
         self._executor = ThreadPoolExecutor(max_workers=4)
         self._pending_futures: list = []
-        self._cover_cache = CoverCache(self._locator.runtime_root)
-        if self._config.use_remote and self._r2_client:
+        self._cover_cache = CoverCache(self._locator.runtime_root) if self._config.use_remote else None
+        if self._config.use_remote and self._r2_client and self._cover_cache:
             self._track_future(self._executor.submit(self._cover_cache.prefetch_all, ASSET_MANIFEST, self._r2_client))
 
         QDir.addSearchPath("resources", str(self._locator.resources_root))
@@ -465,7 +465,7 @@ class RenamerBackend(QObject):
 
     @Property(str, notify=coverImageChanged)
     def cover_image(self) -> str:
-        if self._config.use_remote and self._r2_client:
+        if self._config.use_remote and self._r2_client and self._cover_cache:
             manifest = ASSET_MANIFEST.get(self._current_album)
             if manifest:
                 cover_rel = manifest.get("cover")

@@ -65,13 +65,7 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       SBY_ASSET_MODE: ${{ matrix.mode == 'streaming' && 'remote' || '' }}
       SBY_R2_BASE_URL: ${{ secrets.SBY_R2_BASE_URL }}
-      SBY_R2_BUCKET: ${{ secrets.SBY_R2_BUCKET }}
-      SBY_R2_ENDPOINT: ${{ secrets.SBY_R2_ENDPOINT }}
-      SBY_R2_ACCESS_KEY: ${{ secrets.SBY_R2_ACCESS_KEY }}
-      SBY_R2_SECRET_KEY: ${{ secrets.SBY_R2_SECRET_KEY }}
-      SBY_R2_REGION: ${{ secrets.SBY_R2_REGION }}
       SBY_R2_PREFIX: ${{ secrets.SBY_R2_PREFIX }}
-      SBY_R2_PRESIGN_TTL: ${{ secrets.SBY_R2_PRESIGN_TTL }}
 
     steps:
       - name: Checkout
@@ -134,3 +128,4 @@ jobs:
           name: ${{ matrix.artifact-name }}
           path: ${{ matrix.dist-path }}
           if-no-files-found: error
+          overwrite: true
