@@ -318,17 +318,17 @@ class RenamerBackend(QObject):
         self._is_extracting = False
         self.extractionStateChanged.emit(False)
         
-        self.check_and_create_soundtracks(emit_signal=False)
+        existing_dir = self._extractor.find_existing_album_dir(output_path, album_name)
+        has_files = existing_dir is not None
+        
+        self._album_states[album_name] = "rename" if has_files else "extract"
         
         if not message:
-            existing_dir = self._extractor.find_existing_album_dir(output_path, album_name)
-            has_files = existing_dir is not None
             if has_files:
                 message = f"Soundtrack '{album_name}' extracted successfully"
             else:
                 message = f"Error processing soundtrack '{album_name}'"
         
-        has_files = self._album_states.get(album_name) == "rename"
         if has_files:
             self.coverImageChanged.emit()
             self.update_song_list()
@@ -336,7 +336,9 @@ class RenamerBackend(QObject):
         self.albumStateChanged.emit()
         self.canExtractChanged.emit()
         
-        QTimer.singleShot(100, lambda: self.extractionFinished.emit(message))
+        QCoreApplication.processEvents()
+        
+        self.extractionFinished.emit(message)
 
     def _track_future(self, future):
         self._pending_futures.append(future)

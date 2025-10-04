@@ -1020,11 +1020,11 @@ Item {
                     getContrastColor(lerpColor(currentColor, nextColor, colorProgress)) :
                     coverColorAnalyzer.textColor)
             resultDialog.open()
-            progressPoller.stop()
-            // Force action button label refresh since album states may have changed
+            progressPoller.stop()           
             if (typeof renamer !== "undefined" && renamer) {
-                actionButton.text = renamer.get_current_album_state() === "extract" ? "Extract Soundtrack" : "Rename Files"
-                actionButton.enabled = renamer.can_extract() && (!renamer.is_extracting || renamer.get_current_album_state() !== "extract")
+                var currentState = renamer.get_current_album_state()
+                actionButton.text = currentState === "extract" ? "Extract Soundtrack" : "Rename Files"
+                actionButton.enabled = renamer.can_extract() && (!renamer.is_extracting || currentState !== "extract")
             }
         }
         function onExtractionStateChanged(isExtracting) {
@@ -1043,7 +1043,8 @@ Item {
         }
         function onAlbumStateChanged() {
             if (typeof renamer !== "undefined" && renamer) {
-                actionButton.text = renamer.get_current_album_state() === "extract" ? "Extract Soundtrack" : "Rename Files"
+                var currentState = renamer.get_current_album_state()
+                actionButton.text = currentState === "extract" ? "Extract Soundtrack" : "Rename Files"
             }
         }
         function onCanExtractChanged() {
