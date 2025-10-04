@@ -294,6 +294,7 @@ class RenamerBackend(QObject):
         integrity = result.get("integrity")
         QTimer.singleShot(
             0,
+            self,
             lambda: self._finalize_extraction(
                 album_name,
                 language,
@@ -322,6 +323,8 @@ class RenamerBackend(QObject):
         has_files = existing_dir is not None
         
         self._album_states[album_name] = "rename" if has_files else "extract"
+        if self._current_album == album_name:
+            self.albumStateChanged.emit()
         
         if not message:
             if has_files:
@@ -333,6 +336,7 @@ class RenamerBackend(QObject):
             self.coverImageChanged.emit()
             self.update_song_list()
         
+        # Ensure the exposed current album state is accurate for QML bindings
         self.albumStateChanged.emit()
         self.canExtractChanged.emit()
         
