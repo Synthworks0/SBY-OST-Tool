@@ -1065,16 +1065,13 @@ Item {
             if (progress && progress.complete) {
                 progressTitle.text = "Download complete."
                 progressDetail.text = "All files are present and renamed."
-                remoteProgressDialog.closeIfOpen()
                 progressPoller.stop()
                 // Sync backend state to ensure button/state update immediately
                 renamer.sync_with_local_completion()
-                // Trigger final result dialog for confirmation
-                resultText.text = "Soundtrack '" + albumComboBox.currentText + "' processed successfully"
-                resultText.color = albumComboBox.currentText === "Extras" ?
-                    getContrastColor(lerpColor(currentColor, nextColor, colorProgress)) :
-                    coverColorAnalyzer.textColor
-                resultDialog.open()
+                // Start fade-out transition
+                remoteProgressDialog.closeIfOpen()
+                // Wait for fade-out animation to complete before showing success dialog
+                fadeTransitionTimer.start()
             } else if (progress && progress.expected > 0) {
                 progressTitle.text = "Downloading soundtrack... (" + progress.found + "/" + progress.expected + ")"
                 progressDetail.text = "Files are being saved and renamed."
@@ -1084,6 +1081,20 @@ Item {
             }
         }
         function restart() { stop(); start() }
+    }
+
+    // Timer to delay showing result dialog after download completes, allowing smooth fade-out
+    Timer {
+        id: fadeTransitionTimer
+        interval: 300  // Match the exit animation duration
+        repeat: false
+        onTriggered: {
+            resultText.text = "Soundtrack '" + albumComboBox.currentText + "' processed successfully"
+            resultText.color = albumComboBox.currentText === "Extras" ?
+                getContrastColor(lerpColor(currentColor, nextColor, colorProgress)) :
+                coverColorAnalyzer.textColor
+            resultDialog.open()
+        }
     }
 
     // Ensure backend operations are cancelled if the window is closed mid-extraction

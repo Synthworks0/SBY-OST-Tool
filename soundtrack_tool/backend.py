@@ -331,7 +331,9 @@ class RenamerBackend(QObject):
         if has_files:
             self.coverImageChanged.emit()
             self.update_song_list()
-            self.albumStateChanged.emit()
+        
+        self.albumStateChanged.emit()
+        self.canExtractChanged.emit()
         
         self.extractionFinished.emit(message)
 
@@ -481,8 +483,11 @@ class RenamerBackend(QObject):
                 cover_rel = manifest.get("cover")
                 if cover_rel:
                     try:
-                        local_cover = self._cover_cache.get_cover_path(cover_rel, self._r2_client)
-                        return QUrl.fromLocalFile(str(local_cover)).toString()
+                        destination = self._cover_cache._destination_for(cover_rel)
+                        if destination.exists():
+                            return QUrl.fromLocalFile(str(destination)).toString()
+                        self._track_future(self._executor.submit(self._cover_cache.get_cover_path, cover_rel, self._r2_client))
+                        return QUrl(self._r2_client.build_url(cover_rel)).toString()
                     except Exception:
                         try:
                             return QUrl(self._r2_client.build_url(cover_rel)).toString()
@@ -516,6 +521,7 @@ class RenamerBackend(QObject):
             return
         self._current_language = language
         self.currentLanguageChanged.emit()
+        self.check_and_create_soundtracks()
         self.albumStateChanged.emit()
         self.update_song_list()
 
