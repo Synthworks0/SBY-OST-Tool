@@ -160,12 +160,13 @@ class RenamerBackend(QObject):
     def join_paths(self, path1: str, path2: str) -> str:
         return self._filesystem.join(path1, path2)
 
-    def check_and_create_soundtracks(self) -> None:
+    def check_and_create_soundtracks(self, emit_signal: bool = True) -> None:
         if not self._output_folder:
             return
         states = self._extractor.album_states(Path(self._output_folder))
         self._album_states.update(states)
-        self.albumStateChanged.emit()
+        if emit_signal:
+            self.albumStateChanged.emit()
 
     def check_rename_soundtrack(self, album_name: str) -> None:
         if not self._output_folder:
@@ -317,17 +318,17 @@ class RenamerBackend(QObject):
         self._is_extracting = False
         self.extractionStateChanged.emit(False)
         
-        existing_dir = self._extractor.find_existing_album_dir(output_path, album_name)
-        has_files = existing_dir is not None
+        self.check_and_create_soundtracks(emit_signal=False)
         
-        self._album_states[album_name] = "rename" if has_files else "extract"
-        self.check_and_create_soundtracks()
+        if not message:
+            existing_dir = self._extractor.find_existing_album_dir(output_path, album_name)
+            has_files = existing_dir is not None
+            if has_files:
+                message = f"Soundtrack '{album_name}' extracted successfully"
+            else:
+                message = f"Error processing soundtrack '{album_name}'"
         
-        if not message and has_files:
-            message = f"Soundtrack '{album_name}' extracted successfully"
-        elif not message:
-            message = f"Error processing soundtrack '{album_name}'"
-        
+        has_files = self._album_states.get(album_name) == "rename"
         if has_files:
             self.coverImageChanged.emit()
             self.update_song_list()
@@ -335,7 +336,7 @@ class RenamerBackend(QObject):
         self.albumStateChanged.emit()
         self.canExtractChanged.emit()
         
-        self.extractionFinished.emit(message)
+        QTimer.singleShot(100, lambda: self.extractionFinished.emit(message))
 
     def _track_future(self, future):
         self._pending_futures.append(future)
@@ -408,6 +409,7 @@ class RenamerBackend(QObject):
             expected = self._extractor.expected_track_count(self._current_album, self._current_language)
             found = self._extractor.count_effective_tracks(Path(self._output_folder), self._current_album, self._current_language)
             complete = False
+            
             if expected > 0 and found >= expected:
                 try:
                     report = self._extractor.verify_album_integrity(
@@ -419,6 +421,7 @@ class RenamerBackend(QObject):
                     complete = bool(report and report.complete)
                 except Exception:
                     complete = False
+            
             return {"expected": int(expected), "found": int(found), "complete": bool(complete)}
         except Exception:
             return {"expected": 0, "found": 0, "complete": False}

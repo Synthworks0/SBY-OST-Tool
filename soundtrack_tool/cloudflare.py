@@ -42,7 +42,6 @@ class R2Client:
                 for chunk in response.iter_content(chunk_size=65536):
                     if chunk:
                         if self._cancel_event is not None and self._cancel_event.is_set():
-                            # Abort download and remove partial file
                             try:
                                 response.close()
                             finally:
@@ -52,6 +51,8 @@ class R2Client:
                                     pass
                             raise RuntimeError("Download cancelled")
                         fh.write(chunk)
+                fh.flush()
+                os.fsync(fh.fileno())
 
 
 __all__ = ["R2Client"]

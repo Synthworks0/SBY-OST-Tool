@@ -217,9 +217,11 @@ class SoundtrackExtractor:
         target_dir, _ = self.locate_album_dir(output_folder, album_name, language)
         if not target_dir:
             return 0
+        if not target_dir.exists():
+            return 0
         if album_name == "Extras":
-            return sum(1 for _ in target_dir.rglob("*.flac"))
-        return sum(1 for _ in target_dir.glob("*.flac"))
+            return sum(1 for p in target_dir.rglob("*.flac") if p.is_file() and p.stat().st_size > 0)
+        return sum(1 for p in target_dir.glob("*.flac") if p.is_file() and p.stat().st_size > 0)
 
     def count_available_tracks(self, output_folder: Path, album_name: str, language: str) -> int:
         return self.count_effective_tracks(output_folder, album_name, language)
