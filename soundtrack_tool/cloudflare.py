@@ -36,23 +36,35 @@ class R2Client:
         logger.debug("Downloading %s to %s", url, destination)
         destination.parent.mkdir(parents=True, exist_ok=True)
         
-        with requests.get(url, stream=True, timeout=60) as response:
-            response.raise_for_status()
-            with destination.open("wb") as fh:
-                for chunk in response.iter_content(chunk_size=65536):
-                    if chunk:
-                        if self._cancel_event is not None and self._cancel_event.is_set():
-                            try:
-                                response.close()
-                            finally:
-                                try:
-                                    destination.unlink(missing_ok=True)
-                                except Exception:
-                                    pass
-                            raise RuntimeError("Download cancelled")
-                        fh.write(chunk)
-                fh.flush()
-                os.fsync(fh.fileno())
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                with requests.get(url, stream=True, timeout=60) as response:
+                    response.raise_for_status()
+                    with destination.open("wb") as fh:
+                        for chunk in response.iter_content(chunk_size=65536):
+                            if chunk:
+                                if self._cancel_event is not None and self._cancel_event.is_set():
+                                    try:
+                                        response.close()
+                                    finally:
+                                        try:
+                                            destination.unlink(missing_ok=True)
+                                        except Exception:
+                                            pass
+                                    raise RuntimeError("Download cancelled")
+                                fh.write(chunk)
+                        fh.flush()
+                        os.fsync(fh.fileno())
+                return
+            except (requests.exceptions.ChunkedEncodingError, 
+                    requests.exceptions.ConnectionError) as exc:
+                if attempt < max_retries - 1:
+                    logger.warning(f"Download attempt {attempt + 1} failed: {exc}. Retrying...")
+                    if destination.exists():
+                        destination.unlink()
+                    continue
+                raise
 
 
 __all__ = ["R2Client"]

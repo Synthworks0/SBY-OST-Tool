@@ -168,7 +168,7 @@ Item {
             anchors.fill: parent
             gradient: Gradient {
                 orientation: Gradient.Vertical
-                GradientStop { position: 0; color: Qt.rgba(overlayColor.r, overlayColor.g, overlayColor.b, 0.55) }
+                GradientStop { position: 0; color: Qt.rgba(remoteProgressBackdrop.overlayColor.r, remoteProgressBackdrop.overlayColor.g, remoteProgressBackdrop.overlayColor.b, 0.55) }
                 GradientStop { position: 1; color: Qt.rgba(0, 0, 0, 0.55) }
             }
             visible: remoteProgressDialog.visible
@@ -999,7 +999,7 @@ Item {
                     text: parent.text
                     font: parent.font
                     color: isExtras 
-                        ? getContrastColor(dialogButtonColor)
+                        ? getContrastColor(resultDialog.dialogButtonColor)
                         : coverColorAnalyzer.textColor
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter

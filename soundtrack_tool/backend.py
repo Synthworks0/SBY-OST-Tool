@@ -251,31 +251,36 @@ class RenamerBackend(QObject):
                 "downloaded": True,
                 "integrity": None,
             }
-        final_message = rename_message or message
+        
+        is_remote = self._config.use_remote and self._extractor._use_remote
+        if is_remote:
+            final_message = f"Soundtrack '{album_name}' downloaded successfully"
+        else:
+            final_message = message
 
         integrity_report: AlbumIntegrityReport | None = None
-        try:
-            integrity_report = self._extractor.verify_album_integrity(
-                album_name,
-                language,
-                include_numbers,
-                output_path,
-            )
-        except Exception as exc:
-            import traceback
-            print(f"Integrity check error: {exc}\n{traceback.format_exc()}")
-            integrity_report = None
+        if album_name != "Extras":
+            try:
+                integrity_report = self._extractor.verify_album_integrity(
+                    album_name,
+                    language,
+                    include_numbers,
+                    output_path,
+                )
+            except Exception as exc:
+                import traceback
+                print(f"Integrity check error: {exc}\n{traceback.format_exc()}")
+                integrity_report = None
 
-        if integrity_report and not integrity_report.complete:
-            print(f"Integrity check incomplete: {integrity_report}")
-            album_title = ALBUMS.get(album_name, {}).get(language, album_name)
-            warning_message = f"{final_message} (Note: Some files may have issues)"
-            return {
-                "success": True,
-                "message": warning_message,
-                "downloaded": True,
-                "integrity": integrity_report,
-            }
+            if integrity_report and not integrity_report.complete:
+                print(f"Integrity check incomplete: {integrity_report}")
+                warning_message = f"{final_message} (Note: Some files may have issues)"
+                return {
+                    "success": True,
+                    "message": warning_message,
+                    "downloaded": True,
+                    "integrity": integrity_report,
+                }
 
         return {
             "success": True,

@@ -24,6 +24,7 @@ candidate_datas = [
     include(icons_dir, 'resources/icons'),
     include('icon.ico', '.'),
     include('runtime_config.json', '.'),
+    include('resources/fonts', 'resources/fonts'),
 ]
 
 datas = [entry for entry in candidate_datas if entry]

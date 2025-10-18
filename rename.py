@@ -94,6 +94,21 @@ def main() -> int:
     _add_plugin_paths(app, locator)
     _log_qt_environment(app)
 
+    if sys.platform.startswith('linux'):
+        from PySide6.QtGui import QFontDatabase
+        from pathlib import Path
+        
+        if getattr(sys, 'frozen', False):
+            fonts_dir = Path(sys._MEIPASS) / 'resources' / 'fonts'
+        else:
+            fonts_dir = Path(__file__).parent / 'resources' / 'fonts'
+        
+        if fonts_dir.exists():
+            for font_file in fonts_dir.glob('*.otf'):
+                font_id = QFontDatabase.addApplicationFont(str(font_file))
+                if font_id != -1:
+                    debug_logger.info(f"Loaded font: {font_file.name}")
+
     engine = QQmlApplicationEngine()
     renamer = RenamerBackend()
     engine.rootContext().setContextProperty("renamer", renamer)

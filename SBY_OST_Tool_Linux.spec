@@ -25,6 +25,7 @@ candidate_datas = [
     include(icons_dir, 'resources/icons'),
     include(soundtrack_dir, 'soundtrack_tool/assets/SBY Soundtracks'),
     include('icon.ico', '.'),
+    include('resources/fonts', 'resources/fonts'),
 ]
 
 datas = [entry for entry in candidate_datas if entry]

@@ -17,12 +17,15 @@ class FileSystemService:
             return []
         entries: list[dict[str, object]] = []
         for child in sorted(directory.iterdir(), key=lambda c: (not c.is_dir(), c.name.lower())):
-            if child.is_dir():
-                entries.append({
-                    "name": child.name,
-                    "path": str(child),
-                    "isDir": True,
-                })
+            try:
+                if child.is_dir():
+                    entries.append({
+                        "name": child.name,
+                        "path": str(child),
+                        "isDir": True,
+                    })
+            except (PermissionError, OSError):
+                continue
         return entries
 
     def create_folder(self, parent_path: str | Path, folder_name: str) -> Path | None:
