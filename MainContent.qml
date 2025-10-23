@@ -101,6 +101,7 @@ Item {
             asynchronous: true
             smooth: true
             mipmap: true
+            antialiasing: true
 
             onStatusChanged: {
                 if (status === Image.Ready) {
@@ -275,14 +276,22 @@ Item {
             BusyIndicator {
                 id: busyIndicator
                 Layout.alignment: Qt.AlignHCenter
-                implicitWidth: 48 * remoteProgressDialog.popupScale
-                implicitHeight: 48 * remoteProgressDialog.popupScale
+                implicitWidth: 64 * remoteProgressDialog.popupScale
+                implicitHeight: 64 * remoteProgressDialog.popupScale
                 running: false
+                visible: running
                 Material.accent: coverColorAnalyzer.accentColor
+                
+                contentItem: Item {
+                    implicitWidth: busyIndicator.implicitWidth
+                    implicitHeight: busyIndicator.implicitHeight
+                }
             }
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
+                Layout.fillWidth: true
+                Layout.maximumWidth: remoteProgressDialog.implicitWidth - 64 * remoteProgressDialog.popupScale
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: 18 * remoteProgressDialog.popupScale
                 font.weight: Font.Medium
@@ -295,6 +304,8 @@ Item {
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
+                Layout.fillWidth: true
+                Layout.maximumWidth: remoteProgressDialog.implicitWidth - 64 * remoteProgressDialog.popupScale
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: 13 * remoteProgressDialog.popupScale
                 opacity: 0.75
@@ -307,14 +318,17 @@ Item {
 
             // Hidden text elements to simplify dynamic binding updates
             Text { id: progressTitle; visible: false; text: "Downloading soundtrack." }
-            Text { id: progressDetail; visible: false; text: "This may take a minute depending on your connection." }
+            Text { id: progressDetail; visible: false; text: "This may take a minute." }
         }
     }
 
     ScrollView {
         id: scrollView
         anchors.fill: parent
-        anchors.margins: 10
+        anchors.leftMargin: 17
+        anchors.rightMargin: 10
+        anchors.topMargin: 10
+        anchors.bottomMargin: 10
         contentWidth: availableWidth
         clip: true
 
@@ -335,6 +349,9 @@ Item {
                     cache: true
                     asynchronous: true
                     fillMode: Image.PreserveAspectFit
+                    smooth: true
+                    mipmap: true
+                    antialiasing: true
 
                     onStatusChanged: {
                         if (status === Image.Ready) {
@@ -409,10 +426,13 @@ Item {
                     rightPadding: albumComboBox.indicator.width + albumComboBox.spacing
                     text: albumComboBox.displayText
                     font.pixelSize: 14
+                    font.family: "Noto Sans JP"
                     color: albumComboBox.currentText === "Extras"
                         ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
                         : coverColorAnalyzer.textColor
                     verticalAlignment: Text.AlignVCenter
+                    renderType: Text.NativeRendering
+                    antialiasing: true
                 }
 
                 delegate: ItemDelegate {
@@ -423,8 +443,11 @@ Item {
                             ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
                             : coverColorAnalyzer.textColor
                         font.pixelSize: 14
+                        font.family: "Noto Sans JP"
                         elide: Text.ElideRight
                         verticalAlignment: Text.AlignVCenter
+                        renderType: Text.NativeRendering
+                        antialiasing: true
                     }
                     highlighted: albumComboBox.highlightedIndex === index
                     background: Rectangle {
@@ -489,10 +512,13 @@ Item {
                     rightPadding: languageComboBox.indicator.width + languageComboBox.spacing
                     text: languageComboBox.displayText
                     font.pixelSize: 14
+                    font.family: "Noto Sans JP"
                     color: albumComboBox.currentText === "Extras"
                         ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
                         : coverColorAnalyzer.textColor
                     verticalAlignment: Text.AlignVCenter
+                    renderType: Text.NativeRendering
+                    antialiasing: true
                 }
 
                 delegate: ItemDelegate {
@@ -503,8 +529,11 @@ Item {
                             ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
                             : coverColorAnalyzer.textColor
                         font.pixelSize: 14
+                        font.family: "Noto Sans JP"
                         elide: Text.ElideRight
                         verticalAlignment: Text.AlignVCenter
+                        renderType: Text.NativeRendering
+                        antialiasing: true
                     }
                     highlighted: languageComboBox.highlightedIndex === index
                     background: Rectangle {
@@ -845,6 +874,8 @@ Item {
         title: {
             if (resultText.text.startsWith("Error:")) {
                 return "Operation Failed"
+            } else if (root.isRemote && resultText.text.includes("downloaded")) {
+                return "Download Complete"
             } else if (resultText.text.includes("extracted")) {
                 return "Extraction Complete"
             } else {
@@ -943,7 +974,10 @@ Item {
                 text: resultDialog.title
                 color: getContrastColor(resultDialog.dialogHeaderColor)
                 font.pixelSize: 16 * window.scaleFactor
-                font.bold: true
+                font.family: "Noto Sans JP"
+                font.weight: Font.Medium
+                renderType: Text.NativeRendering
+                antialiasing: true
             }
         }
 
@@ -961,9 +995,12 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14 * window.scaleFactor
+                    font.family: "Noto Sans JP"
                     color: getContrastColor(resultDialog.dialogBackgroundColor)
                     textFormat: Text.PlainText
                     elide: Text.ElideRight
+                    renderType: Text.NativeRendering
+                    antialiasing: true
                 }
             }
         }
@@ -1090,7 +1127,7 @@ Item {
         interval: 300  // Match the exit animation duration
         repeat: false
         onTriggered: {
-            resultText.text = "Soundtrack '" + albumComboBox.currentText + "' processed successfully"
+            resultText.text = "Soundtrack '" + (renamer ? renamer.current_album_localized : albumComboBox.currentText) + "' processed successfully"
             resultText.color = albumComboBox.currentText === "Extras" ?
                 getContrastColor(lerpColor(currentColor, nextColor, colorProgress)) :
                 coverColorAnalyzer.textColor

@@ -87,6 +87,7 @@ Item {
                     text: currentPath || "Select Folder"
                     color: isExtras ? getContrastColor(root.backgroundColor) : root.textColor
                     font.pixelSize: 14
+                    font.family: "Noto Sans JP"
                     Layout.fillWidth: true
                     elide: Text.ElideMiddle
                 }
@@ -122,6 +123,7 @@ Item {
                         Label {
                             text: modelData.name
                             color: isExtras ? getContrastColor(root.backgroundColor) : root.textColor
+                            font.family: "Noto Sans JP"
                             Layout.fillWidth: true
                             elide: Text.ElideRight
                         }

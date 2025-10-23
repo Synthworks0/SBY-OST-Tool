@@ -22,6 +22,7 @@ candidate_datas = [
     include('MainContent.qml', '.'),
     include(components_dir, 'components'),
     include(icons_dir, 'resources/icons'),
+    include('icon.png', '.'),
     include('icon.ico', '.'),
     include('runtime_config.json', '.'),
     include('resources/fonts', 'resources/fonts'),

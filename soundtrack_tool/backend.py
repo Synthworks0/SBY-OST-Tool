@@ -87,6 +87,13 @@ class RenamerBackend(QObject):
     def current_album(self) -> str:
         return self._current_album
 
+    @Property(str, notify=currentLanguageChanged)
+    def current_album_localized(self) -> str:
+        if self._current_album in ALBUMS:
+            album_data = ALBUMS[self._current_album]
+            return album_data.get(self._current_language, album_data.get("English", self._current_album))
+        return self._current_album
+
     def _load_last_output_folder(self) -> None:
         last_folder = self._settings.load_last_output_folder()
         if last_folder:
@@ -253,8 +260,9 @@ class RenamerBackend(QObject):
             }
         
         is_remote = self._config.use_remote and self._extractor._use_remote
+        localized_album_name = ALBUMS.get(album_name, {}).get(language, album_name)
         if is_remote:
-            final_message = f"Soundtrack '{album_name}' downloaded successfully"
+            final_message = f"Soundtrack '{localized_album_name}' downloaded successfully"
         else:
             final_message = message
 

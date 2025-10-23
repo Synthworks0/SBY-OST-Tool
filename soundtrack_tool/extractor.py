@@ -130,7 +130,8 @@ class SoundtrackExtractor:
         else:
             self._extract_regular_album(source_dir, destination, include_track_numbers)
 
-        return True, f"Soundtrack '{album_name}' extracted successfully"
+        localized_name = album_data.get(language, album_name)
+        return True, f"Soundtrack '{localized_name}' extracted successfully"
 
     def rename_album(
         self,

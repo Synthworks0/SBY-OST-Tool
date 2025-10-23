@@ -32,6 +32,20 @@ class ResourceLocator:
         return self.app_resources_dir / "main.qml"
 
     def application_icon_path(self, name: str = "icon.ico") -> Path:
+        import sys
+        
+        if sys.platform.startswith('linux'):
+            png_name = name.replace('.ico', '.png')
+            png_candidates = [
+                self.runtime_root / "_internal" / png_name,
+                self.app_resources_dir / png_name,
+                self.resources_root / png_name,
+                self.runtime_root / png_name,
+            ]
+            for candidate in png_candidates:
+                if candidate.exists():
+                    return candidate
+        
         candidates = [
             self.runtime_root / "_internal" / name,
             self.app_resources_dir / name,

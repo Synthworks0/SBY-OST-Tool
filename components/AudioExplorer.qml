@@ -87,10 +87,20 @@ Item {
     }
 
     property var songList: renamerObject ? renamerObject.songList : []
+    property string currentlyPlayingSource: ""
+    property int currentPlaybackState: MediaPlayer.StoppedState
 
     MediaPlayer {
         id: mediaPlayer
         audioOutput: audioOutput
+        
+        onSourceChanged: {
+            root.currentlyPlayingSource = source.toString()
+        }
+        
+        onPlaybackStateChanged: {
+            root.currentPlaybackState = playbackState
+        }
     }
 
     AudioOutput {
@@ -120,7 +130,7 @@ Item {
                     width: songListView.width
                     height: 40
 
-                    property bool isPlaying: mediaPlayer.source === model.filePath && mediaPlayer.playbackState === MediaPlayer.PlayingState
+                    property bool isPlaying: root.currentlyPlayingSource === model.filePath && root.currentPlaybackState === MediaPlayer.PlayingState
 
                     RowLayout {
                         anchors {
@@ -154,8 +164,11 @@ Item {
                         Text {
                             text: model.title
                             color: isExtras ? getContrastColor(root.backgroundColor) : root.textColor
+                            font.family: "Noto Sans JP"
                             Layout.fillWidth: true
                             elide: Text.ElideRight
+                            renderType: Text.NativeRendering
+                            antialiasing: true
                         }
 
                         Text {
