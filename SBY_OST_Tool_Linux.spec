@@ -86,3 +86,20 @@ coll = COLLECT(
     upx_exclude=[],
     name='SBY_OST_Tool',
 )
+
+import os
+import stat
+import shutil
+desktop_src = 'SBY_OST_Tool.desktop'
+icon_src = 'icon.png'
+dist_root = os.path.join(DISTPATH, 'SBY_OST_Tool')
+if os.path.exists(desktop_src):
+    desktop_dest = os.path.join(dist_root, 'SBY_OST_Tool.desktop')
+    shutil.copy2(desktop_src, desktop_dest)
+    # Make executable
+    st = os.stat(desktop_dest)
+    os.chmod(desktop_dest, st.st_mode | stat.S_IEXEC | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+if os.path.exists(icon_src):
+    icon_dest = os.path.join(dist_root, 'icon.png')
+    if not os.path.exists(icon_dest):
+        shutil.copy2(icon_src, icon_dest)
