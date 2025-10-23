@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SBY OST Tool
+Comment=Seishun Buta Yarou Soundtrack Tool
+Exec=./SBY_OST_Tool %U
+Icon=icon.png
+Terminal=false
+Categories=Audio;AudioVideo;Multimedia;
+StartupWMClass=SBY_OST_Tool
+

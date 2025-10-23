@@ -131,12 +131,16 @@ Item {
                     height: 40
 
                     property bool isPlaying: {
-                        if (root.currentlyPlayingSource === model.filePath && 
-                            root.currentPlaybackState === MediaPlayer.PlayingState) {
+                        var currentSource = mediaPlayer.source.toString()
+                        var modelPath = model.filePath.toString()
+                        
+                        if ((currentSource === modelPath || root.currentlyPlayingSource === modelPath) && 
+                            (mediaPlayer.playbackState === MediaPlayer.PlayingState || 
+                             root.currentPlaybackState === MediaPlayer.PlayingState)) {
                             return true
                         }
-                        return mediaPlayer.source.toString() === model.filePath && 
-                               mediaPlayer.playbackState === MediaPlayer.PlayingState
+                        
+                        return false
                     }
 
                     RowLayout {

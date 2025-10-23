@@ -26,6 +26,7 @@ candidate_datas = [
     include(soundtrack_dir, 'soundtrack_tool/assets/SBY Soundtracks'),
     include('icon.png', '.'),
     include('icon.ico', '.'),
+    include('SBY_OST_Tool.desktop', '.'),
     include('resources/fonts', 'resources/fonts'),
 ]
 

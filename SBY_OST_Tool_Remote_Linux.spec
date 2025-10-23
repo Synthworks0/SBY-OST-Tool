@@ -24,6 +24,7 @@ candidate_datas = [
     include(icons_dir, 'resources/icons'),
     include('icon.png', '.'),
     include('icon.ico', '.'),
+    include('SBY_OST_Tool.desktop', '.'),
     include('runtime_config.json', '.'),
     include('resources/fonts', 'resources/fonts'),
 ]
