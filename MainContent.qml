@@ -102,6 +102,10 @@ Item {
             smooth: true
             mipmap: true
             antialiasing: true
+            sourceSize: Qt.size(width * 2, height * 2)
+            layer.enabled: true
+            layer.smooth: true
+            layer.textureSize: Qt.size(width * 2, height * 2)
 
             onStatusChanged: {
                 if (status === Image.Ready) {
@@ -193,7 +197,7 @@ Item {
         closePolicy: Popup.NoAutoClose
         parent: root
         implicitWidth: Math.min(360 * (window.scaleFactor || 1), root.width - 40)
-        implicitHeight: 180 * (window.scaleFactor || 1)
+        implicitHeight: 220 * (window.scaleFactor || 1)
         width: implicitWidth
         height: implicitHeight
         x: Math.round((root.width - width) / 2)
@@ -281,11 +285,6 @@ Item {
                 running: false
                 visible: running
                 Material.accent: coverColorAnalyzer.accentColor
-                
-                contentItem: Item {
-                    implicitWidth: busyIndicator.implicitWidth
-                    implicitHeight: busyIndicator.implicitHeight
-                }
             }
 
             Text {
@@ -325,7 +324,7 @@ Item {
     ScrollView {
         id: scrollView
         anchors.fill: parent
-        anchors.leftMargin: 17
+        anchors.leftMargin: 20
         anchors.rightMargin: 10
         anchors.topMargin: 10
         anchors.bottomMargin: 10
@@ -352,6 +351,10 @@ Item {
                     smooth: true
                     mipmap: true
                     antialiasing: true
+                    sourceSize: Qt.size(width * 2, height * 2)
+                    layer.enabled: true
+                    layer.smooth: true
+                    layer.textureSize: Qt.size(width * 2, height * 2)
 
                     onStatusChanged: {
                         if (status === Image.Ready) {

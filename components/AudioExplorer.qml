@@ -130,7 +130,14 @@ Item {
                     width: songListView.width
                     height: 40
 
-                    property bool isPlaying: root.currentlyPlayingSource === model.filePath && root.currentPlaybackState === MediaPlayer.PlayingState
+                    property bool isPlaying: {
+                        if (root.currentlyPlayingSource === model.filePath && 
+                            root.currentPlaybackState === MediaPlayer.PlayingState) {
+                            return true
+                        }
+                        return mediaPlayer.source.toString() === model.filePath && 
+                               mediaPlayer.playbackState === MediaPlayer.PlayingState
+                    }
 
                     RowLayout {
                         anchors {

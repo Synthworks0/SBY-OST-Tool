@@ -119,10 +119,29 @@ def main() -> int:
         return -1
 
     icon_path = locator.application_icon_path()
-    app.setWindowIcon(QIcon(str(icon_path)))
+    icon = QIcon(str(icon_path))
+    
+    if str(icon_path).endswith('.png'):
+        from PySide6.QtGui import QPixmap
+        from PySide6.QtCore import Qt
+        for size in [16, 32, 48, 64, 128]:
+            pixmap = QPixmap(str(icon_path)).scaled(
+                size, size, 
+                Qt.AspectRatioMode.KeepAspectRatio, 
+                Qt.TransformationMode.SmoothTransformation
+            )
+            if not pixmap.isNull():
+                icon.addPixmap(pixmap)
+    
+    app.setWindowIcon(icon)
+    
+    if sys.platform.startswith('linux'):
+        app.setDesktopFileName("SBY_OST_Tool")
 
     window = engine.rootObjects()[0]
-    window.setProperty("iconPath", QUrl.fromLocalFile(str(icon_path)))
+    
+    if hasattr(window, 'setIcon'):
+        window.setIcon(icon)
 
     return app.exec()
 
