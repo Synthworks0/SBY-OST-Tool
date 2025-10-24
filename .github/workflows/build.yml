@@ -89,28 +89,49 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller pillow
+      
+      - name: Generate multi-resolution Windows icon
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          
+          img = Image.open('icon.png')
+          
+          icon_sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+          
+          img.save('icon.ico', format='ICO', sizes=icon_sizes)
+          print(f"Generated multi-resolution icon.ico with sizes: {icon_sizes}")
+          PY
 
-      - name: Generate macOS icon
+      - name: Generate multi-resolution icons
         if: matrix.os == 'macos-latest'
         run: |
-          mkdir -p resources
           python - <<'PY'
           import os
           from pathlib import Path
           from PIL import Image
-          ICON_SIZES = [16, 32, 64, 128, 256, 512, 1024]
+          
+          source_img = Image.open('icon.png')
+          
+          ICNS_SIZES = [16, 32, 64, 128, 256]
           iconset = Path('icon.iconset')
           iconset.mkdir(exist_ok=True)
-          img = Image.open('icon.ico')
-          for size in ICON_SIZES:
-              resized = img.resize((size, size))
+          
+          for size in ICNS_SIZES:
+              resized = source_img.resize((size, size), Image.LANCZOS)
               resized.save(iconset / f'icon_{size}x{size}.png')
-              if size < 512:
-                  resized2 = img.resize((size * 2, size * 2))
+              if size <= 128:
+                  resized2 = source_img.resize((size * 2, size * 2), Image.LANCZOS)
                   resized2.save(iconset / f'icon_{size}x{size}@2x.png')
+          
+          print("Generated macOS iconset")
           PY
+          
           iconutil -c icns icon.iconset
-          mv icon.icns . || cp icon.icns .
+          rm -rf icon.iconset
+          
+          ls -lh icon.icns
 
       - name: Write runtime config
         shell: python
@@ -136,10 +157,6 @@ jobs:
 
       - name: Build artifact
         run: pyinstaller ${{ matrix.spec }} --noconfirm
-
-      - name: Cleanup build artifacts (macOS)
-        if: matrix.os == 'macos-latest'
-        run: rm -rf icon.iconset || true
 
       - name: Sign macOS app (ad-hoc)
         if: matrix.os == 'macos-latest'
