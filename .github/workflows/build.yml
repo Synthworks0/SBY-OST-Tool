@@ -141,10 +141,30 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: rm -rf icon.iconset || true
 
+      - name: Create archive (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          cd dist
+          ditto -c -k --sequesterRsrc --keepParent "$(basename ${{ matrix.dist-path }})" "../${{ matrix.archive-name }}"
+          cd ..
+
+      - name: Create archive (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          cd dist
+          tar -czf "../${{ matrix.archive-name }}" "$(basename ${{ matrix.dist-path }})"
+          cd ..
+
+      - name: Create archive (Windows)
+        if: startsWith(matrix.os, 'windows')
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "${{ matrix.dist-path }}" -DestinationPath "${{ matrix.archive-name }}"
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: ${{ matrix.dist-path }}
+          path: ${{ matrix.archive-name }}
           if-no-files-found: error
           overwrite: true

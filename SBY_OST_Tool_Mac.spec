@@ -24,6 +24,7 @@ def collect_directory_to_resources(dir_path, bundle_subdir):
 
 # Collect data files with case-insensitive fallback
 app_datas = []
+app_binaries = []
 
 # Components -> Contents/Resources/components
 components_dir = 'components' if os.path.exists('components') else 'Components'
@@ -69,7 +70,7 @@ try:
             if name.endswith('.dylib') and ('ffmpeg' in name or 'darwin' in name or 'avfoundation' in name):
                 src = os.path.join(multimedia_plugin_dir, name)
                 dest = os.path.join('PySide6', 'Qt', 'plugins', 'multimedia')
-                app_datas.append((src, dest))
+                app_binaries.append((src, dest))
                 print(f"Bundling Qt multimedia plugin: {name}")
     else:
         print("Warning: Qt multimedia plugin directory not found; relying on PyInstaller hooks.")
@@ -81,7 +82,7 @@ try:
             if name.endswith('.dylib'):
                 src = os.path.join(platforms_plugin_dir, name)
                 dest = os.path.join('PySide6', 'Qt', 'plugins', 'platforms')
-                app_datas.append((src, dest))
+                app_binaries.append((src, dest))
                 print(f"Bundling Qt platform plugin: {name}")
     else:
         print("Warning: Qt platforms plugin directory not found; relying on PyInstaller hooks.")
@@ -93,7 +94,7 @@ try:
             if name in ('libqpng.dylib', 'libqjpeg.dylib'):
                 src = os.path.join(imageformats_dir, name)
                 dest = os.path.join('PySide6', 'Qt', 'plugins', 'imageformats')
-                app_datas.append((src, dest))
+                app_binaries.append((src, dest))
                 print(f"Bundling Qt imageformats plugin: {name}")
     else:
         print("Warning: Qt imageformats plugin directory not found; relying on PyInstaller hooks.")
@@ -110,7 +111,7 @@ try:
             if name.endswith('.dylib') and name.startswith(needed_prefixes):
                 src = os.path.join(qt_lib_root, name)
                 dest = os.path.join('PySide6', 'Qt', 'lib')
-                app_datas.append((src, dest))
+                app_binaries.append((src, dest))
                 print(f"Bundling runtime library: {name}")
 
     # Bundle required QML modules used by the app (limit set)
@@ -141,7 +142,7 @@ except Exception as e:
 a = Analysis(
     ['rename.py'],
     pathex=['.'],
-    binaries=[],
+    binaries=app_binaries,
     datas=app_datas,
     hiddenimports=[
         'PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtCore', 'PySide6.QtGui', 'PySide6.QtMultimedia',
@@ -178,17 +179,24 @@ exe = EXE(
     entitlements_file=None,
 )
 
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=False,
+    upx_exclude=[],
+    name='SBY_OST_Tool',
+)
+
 # Check for icon.icns
 icon_file = 'icon.icns' if os.path.exists('icon.icns') else None
 if not icon_file:
     print("Warning: icon.icns not found. App will not have a custom icon.")
 
-# Create BUNDLE with proper binary and data file inclusion
 app = BUNDLE(
-    exe,
-    a.binaries,      # Include binaries
-    a.zipfiles,      # Include zipfiles
-    a.datas,         # Include data files explicitly
+    coll,
     name='SBY_OST_Tool.app',
     icon=icon_file,
     bundle_identifier='com.synthworks.sbyosttool',
@@ -205,5 +213,4 @@ app = BUNDLE(
         # This is added to ensure app runs natively on the target architecture
         'LSRequiresNativeExecution': True
     },
-    append_pkg=False
 )
