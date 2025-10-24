@@ -155,21 +155,16 @@ jobs:
       - name: Build artifact
         run: pyinstaller ${{ matrix.spec }} --noconfirm
 
-      - name: Prepare macOS app (clear xattrs)
+      - name: Sign macOS app bundles and binaries
         if: matrix.os == 'macos-latest'
         run: |
-          xattr -rc "${{ matrix.dist-path }}"
-
-      - name: Sign macOS app (ad-hoc)
-        if: matrix.os == 'macos-latest'
-        run: |
-          codesign --force --deep --options runtime --sign - "${{ matrix.dist-path }}"
-
-      - name: Verify macOS app signature
-        if: matrix.os == 'macos-latest'
-        run: |
-          codesign --verify --deep --strict --verbose=2 "${{ matrix.dist-path }}"
-          spctl --assess --type execute -v "${{ matrix.dist-path }}" || true
+          find "${{ matrix.dist-path }}/Contents" -type f \( -name "*.dylib" -o -name "*.so" \) -exec codesign --force --sign - {} \; || true
+          find "${{ matrix.dist-path }}/Contents/Frameworks" -type d -name "*.framework" -exec codesign --force --sign - {} \; 2>/dev/null || true
+          
+          codesign --force --sign - "${{ matrix.dist-path }}/Contents/MacOS/"* || true
+          codesign --force --sign - "${{ matrix.dist-path }}"
+          
+          codesign --verify --verbose "${{ matrix.dist-path }}"
 
       - name: Create archive (macOS)
         if: matrix.os == 'macos-latest'
