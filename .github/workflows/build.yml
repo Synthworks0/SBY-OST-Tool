@@ -160,26 +160,38 @@ jobs:
         run: |
           chmod +x "${{ matrix.dist-path }}/Contents/MacOS/"*
 
+      - name: Remove existing signatures
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "Removing all existing signatures to avoid Team ID mismatches..."
+          
+          find "${{ matrix.dist-path }}/Contents" -type f \( -name "*.dylib" -o -name "*.so" \) -exec codesign --remove-signature {} \; 2>/dev/null || true
+          
+          find "${{ matrix.dist-path }}/Contents/Frameworks" -type d -name "*.framework" -exec codesign --remove-signature {} \; 2>/dev/null || true
+          
+          codesign --remove-signature "${{ matrix.dist-path }}/Contents/MacOS/"* 2>/dev/null || true
+          
+          codesign --remove-signature "${{ matrix.dist-path }}" 2>/dev/null || true
+          
+          echo "All existing signatures removed."
+
       - name: Sign macOS app bundles and binaries
         if: matrix.os == 'macos-latest'
         run: |
-          echo "Signing all dylibs and shared libraries..."
-          find "${{ matrix.dist-path }}/Contents" -type f \( -name "*.dylib" -o -name "*.so" \) -exec codesign --force --sign - --timestamp=none {} \; || true
-          
-          echo "Signing all frameworks..."
-          find "${{ matrix.dist-path }}/Contents/Frameworks" -type d -name "*.framework" -exec codesign --force --deep --sign - --timestamp=none {} \; 2>/dev/null || true
-          
-          echo "Signing main executable(s)..."
-          codesign --force --sign - --timestamp=none "${{ matrix.dist-path }}/Contents/MacOS/"* || true
-          
-          echo "Signing entire app bundle with deep and options runtime..."
-          codesign --force --deep --sign - --options runtime --timestamp=none "${{ matrix.dist-path }}"
+          echo "Signing with ad-hoc signature (single Team ID for all components)..."
+      
+          codesign --force --deep --sign - "${{ matrix.dist-path }}"
           
           echo "Verifying signature..."
           codesign --verify --deep --verbose=2 "${{ matrix.dist-path }}"
           
-          echo "Checking signature status..."
-          codesign -dvvv "${{ matrix.dist-path }}" 2>&1 | head -20
+          echo "Checking signature details..."
+          codesign -dvvv "${{ matrix.dist-path }}" 2>&1 | head -30
+          
+          echo "Checking Python framework signature..."
+          if [ -f "${{ matrix.dist-path }}/Contents/Frameworks/Python.framework/Versions/3.11/Python" ]; then
+            codesign -dvvv "${{ matrix.dist-path }}/Contents/Frameworks/Python.framework/Versions/3.11/Python" 2>&1 | head -15
+          fi
 
       - name: Verify app bundle size (macOS)
         if: matrix.os == 'macos-latest'
