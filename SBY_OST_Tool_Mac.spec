@@ -173,7 +173,7 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=False,  # Disable UPX for macOS
+    upx=False,
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=True,
@@ -211,9 +211,5 @@ app = BUNDLE(
         'NSRequiresAquaSystemAppearance': 'False',
         'LSApplicationCategoryType': 'public.app-category.utilities',
         'LSMinimumSystemVersion': '10.15',
-        # Add CPU architecture compatibility flags
-        'LSArchitecturePriority': ['x86_64', 'arm64'] if exe.target_arch is None else [exe.target_arch],
-        # This is added to ensure app runs natively on the target architecture
-        'LSRequiresNativeExecution': True
     },
 )

@@ -153,7 +153,12 @@ jobs:
         run: python -m compileall soundtrack_tool rename.py
 
       - name: Build artifact
-        run: pyinstaller ${{ matrix.spec }} --noconfirm
+        run: pyinstaller ${{ matrix.spec }} --noconfirm --clean
+
+      - name: Fix macOS executable permissions
+        if: matrix.os == 'macos-latest'
+        run: |
+          chmod +x "${{ matrix.dist-path }}/Contents/MacOS/"*
 
       - name: Sign macOS app bundles and binaries
         if: matrix.os == 'macos-latest'
