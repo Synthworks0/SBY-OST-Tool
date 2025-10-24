@@ -1,7 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 import os
-from PyInstaller.utils.hooks import get_package_paths
 
 block_cipher = None
 
@@ -44,21 +43,6 @@ if os.path.exists('icon.ico'):
 if os.path.exists('runtime_config.json'):
     app_datas.append(('runtime_config.json', '.'))
 
-try:
-    pyside6_pkg_dir = get_package_paths('PySide6')[1]
-    qt_plugins_root = os.path.join(pyside6_pkg_dir, 'Qt', 'plugins')
-    multimedia_plugin_dir = os.path.join(qt_plugins_root, 'multimedia')
-    if os.path.isdir(multimedia_plugin_dir):
-        for name in os.listdir(multimedia_plugin_dir):
-            if name.endswith('.dylib') and ('ffmpeg' in name or 'darwin' in name or 'avfoundation' in name):
-                src = os.path.join(multimedia_plugin_dir, name)
-                dest = os.path.join('PySide6', 'Qt', 'plugins', 'multimedia')
-                app_datas.append((src, dest))
-                print(f"Bundling Qt multimedia plugin: {name}")
-    else:
-        print("Warning: Qt multimedia plugin directory not found; relying on PyInstaller hooks.")
-except Exception as exc:
-    print(f"Warning: unable to collect multimedia plugins: {exc}")
 
 hidden_imports = [
     'PySide6.QtQml',

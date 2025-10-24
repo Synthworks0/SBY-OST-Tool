@@ -163,20 +163,53 @@ jobs:
       - name: Sign macOS app bundles and binaries
         if: matrix.os == 'macos-latest'
         run: |
-          find "${{ matrix.dist-path }}/Contents" -type f \( -name "*.dylib" -o -name "*.so" \) -exec codesign --force --sign - {} \; || true
-          find "${{ matrix.dist-path }}/Contents/Frameworks" -type d -name "*.framework" -exec codesign --force --sign - {} \; 2>/dev/null || true
+          echo "Signing all dylibs and shared libraries..."
+          find "${{ matrix.dist-path }}/Contents" -type f \( -name "*.dylib" -o -name "*.so" \) -exec codesign --force --sign - --timestamp=none {} \; || true
           
-          codesign --force --sign - "${{ matrix.dist-path }}/Contents/MacOS/"* || true
-          codesign --force --sign - "${{ matrix.dist-path }}"
+          echo "Signing all frameworks..."
+          find "${{ matrix.dist-path }}/Contents/Frameworks" -type d -name "*.framework" -exec codesign --force --deep --sign - --timestamp=none {} \; 2>/dev/null || true
           
-          codesign --verify --verbose "${{ matrix.dist-path }}"
+          echo "Signing main executable(s)..."
+          codesign --force --sign - --timestamp=none "${{ matrix.dist-path }}/Contents/MacOS/"* || true
+          
+          echo "Signing entire app bundle with deep and options runtime..."
+          codesign --force --deep --sign - --options runtime --timestamp=none "${{ matrix.dist-path }}"
+          
+          echo "Verifying signature..."
+          codesign --verify --deep --verbose=2 "${{ matrix.dist-path }}"
+          
+          echo "Checking signature status..."
+          codesign -dvvv "${{ matrix.dist-path }}" 2>&1 | head -20
+
+      - name: Verify app bundle size (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "=== App Bundle Size Breakdown ==="
+          du -sh "${{ matrix.dist-path }}"
+          echo ""
+          echo "=== Contents Directory Sizes ==="
+          du -sh "${{ matrix.dist-path }}/Contents/"*
+          echo ""
+          echo "=== Checking for PySide6 duplication ==="
+          if [ -d "${{ matrix.dist-path }}/Contents/Resources/PySide6" ]; then
+            echo "WARNING: PySide6 found in Resources (should only be in Frameworks):"
+            du -sh "${{ matrix.dist-path }}/Contents/Resources/PySide6"
+          else
+            echo "✓ No PySide6 in Resources (correct)"
+          fi
+          if [ -d "${{ matrix.dist-path }}/Contents/Frameworks/PySide6" ]; then
+            echo "✓ PySide6 found in Frameworks:"
+            du -sh "${{ matrix.dist-path }}/Contents/Frameworks/PySide6"
+          fi
 
       - name: Create archive (macOS)
         if: matrix.os == 'macos-latest'
         run: |
           cd dist
-          zip -r "../${{ matrix.archive-name }}" "$(basename ${{ matrix.dist-path }})"
+          ditto -c -k --sequesterRsrc --keepParent "$(basename ${{ matrix.dist-path }})" "../${{ matrix.archive-name }}"
           cd ..
+          echo "Created archive: ${{ matrix.archive-name }}"
+          ls -lh "${{ matrix.archive-name }}"
 
       - name: Create archive (Linux)
         if: startsWith(matrix.os, 'ubuntu')
