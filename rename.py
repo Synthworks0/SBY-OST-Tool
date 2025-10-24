@@ -134,14 +134,8 @@ def main() -> int:
                 icon.addPixmap(pixmap)
     
     app.setWindowIcon(icon)
-    
-    if sys.platform.startswith('linux'):
-        app.setDesktopFileName("SBY_OST_Tool")
 
     window = engine.rootObjects()[0]
-    
-    if hasattr(window, 'setIcon'):
-        window.setIcon(icon)
 
     return app.exec()
 
