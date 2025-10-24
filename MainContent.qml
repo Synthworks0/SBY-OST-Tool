@@ -434,7 +434,7 @@ Item {
                         ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
                         : coverColorAnalyzer.textColor
                     verticalAlignment: Text.AlignVCenter
-                    renderType: Text.NativeRendering
+                    renderType: Text.QtRendering
                     antialiasing: true
                 }
 
@@ -449,7 +449,7 @@ Item {
                         font.family: "Noto Sans JP"
                         elide: Text.ElideRight
                         verticalAlignment: Text.AlignVCenter
-                        renderType: Text.NativeRendering
+                        renderType: Text.QtRendering
                         antialiasing: true
                     }
                     highlighted: albumComboBox.highlightedIndex === index
@@ -520,7 +520,7 @@ Item {
                         ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
                         : coverColorAnalyzer.textColor
                     verticalAlignment: Text.AlignVCenter
-                    renderType: Text.NativeRendering
+                    renderType: Text.QtRendering
                     antialiasing: true
                 }
 
@@ -535,7 +535,7 @@ Item {
                         font.family: "Noto Sans JP"
                         elide: Text.ElideRight
                         verticalAlignment: Text.AlignVCenter
-                        renderType: Text.NativeRendering
+                        renderType: Text.QtRendering
                         antialiasing: true
                     }
                     highlighted: languageComboBox.highlightedIndex === index
@@ -979,7 +979,7 @@ Item {
                 font.pixelSize: 16 * window.scaleFactor
                 font.family: "Noto Sans JP"
                 font.weight: Font.Medium
-                renderType: Text.NativeRendering
+                renderType: Text.QtRendering
                 antialiasing: true
             }
         }
@@ -1002,7 +1002,7 @@ Item {
                     color: getContrastColor(resultDialog.dialogBackgroundColor)
                     textFormat: Text.PlainText
                     elide: Text.ElideRight
-                    renderType: Text.NativeRendering
+                    renderType: Text.QtRendering
                     antialiasing: true
                 }
             }

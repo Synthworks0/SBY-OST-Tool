@@ -178,7 +178,7 @@ Item {
                             font.family: "Noto Sans JP"
                             Layout.fillWidth: true
                             elide: Text.ElideRight
-                            renderType: Text.NativeRendering
+                            renderType: Text.QtRendering
                             antialiasing: true
                         }
 
