@@ -43,7 +43,7 @@ if os.path.exists('icon.ico'):
     app_datas.append(('icon.ico', '.'))
 
 if os.path.exists('runtime_config.json'):
-    app_datas.append(('runtime_config.json', '.'))
+    app_datas.append(('runtime_config.json', '_internal'))
 
 try:
     pyside6_pkg_dir = get_package_paths('PySide6')[1]

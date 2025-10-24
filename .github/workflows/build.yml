@@ -155,10 +155,18 @@ jobs:
       - name: Build artifact
         run: pyinstaller ${{ matrix.spec }} --noconfirm
 
-      - name: Sign macOS app (ad-hoc)
+      - name: Prepare and sign macOS app
         if: matrix.os == 'macos-latest'
         run: |
-          codesign --force --deep --sign - "${{ matrix.dist-path }}"
+          xattr -cr "${{ matrix.dist-path }}" || true
+          chmod -R u+rw,go+r "${{ matrix.dist-path }}"
+          find "${{ matrix.dist-path }}/Contents/MacOS" -type f -exec chmod +x {} \; 2>/dev/null || true
+          find "${{ matrix.dist-path }}" -type f \( -name "*.dylib" -o -name "*.so" \) -exec codesign --force --timestamp=none --sign - {} \; 2>/dev/null || true    
+          find "${{ matrix.dist-path }}/Contents/Frameworks" -type d -depth 1 -exec codesign --force --timestamp=none --sign - {} \; 2>/dev/null || true    
+          find "${{ matrix.dist-path }}/Contents/MacOS" -type f -perm +111 -exec codesign --force --timestamp=none --sign - {} \;         
+          codesign --force --deep --timestamp=none --sign - --options runtime "${{ matrix.dist-path }}"    
+          codesign --verify --deep --strict --verbose=2 "${{ matrix.dist-path }}" 2>&1 || echo "Warning: Signature verification had issues but continuing"
+          codesign -dv "${{ matrix.dist-path }}" 2>&1 || true
 
       - name: Create archive (macOS)
         if: matrix.os == 'macos-latest'
@@ -178,8 +186,11 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         shell: pwsh
         run: |
+          $distPath = "${{ matrix.dist-path }}"
+          $folderName = Split-Path -Leaf $distPath
+          $archiveName = "${{ matrix.archive-name }}"
           cd dist
-          Compress-Archive -Path "$(Split-Path -Leaf '${{ matrix.dist-path }}')" -DestinationPath "../${{ matrix.archive-name }}"
+          Compress-Archive -Path $folderName -DestinationPath "..\$archiveName"
           cd ..
 
       - name: Upload artifact
