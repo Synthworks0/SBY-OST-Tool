@@ -155,6 +155,21 @@ jobs:
       - name: Build artifact
         run: pyinstaller ${{ matrix.spec }} --noconfirm --clean
 
+      - name: Inspect macOS app bundle structure
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "=== App Bundle Structure ==="
+          ls -laR "${{ matrix.dist-path }}"
+          echo ""
+          echo "=== Info.plist Contents ==="
+          plutil -p "${{ matrix.dist-path }}/Contents/Info.plist"
+          echo ""
+          echo "=== MacOS Directory ==="
+          ls -lah "${{ matrix.dist-path }}/Contents/MacOS/"
+          echo ""
+          echo "=== Executable file info ==="
+          file "${{ matrix.dist-path }}/Contents/MacOS/"*
+
       - name: Fix macOS executable permissions
         if: matrix.os == 'macos-latest'
         run: |

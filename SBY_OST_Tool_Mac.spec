@@ -204,6 +204,8 @@ app = BUNDLE(
     icon=icon_file,
     bundle_identifier='com.synthworks.sbyosttool',
     info_plist={
+        'CFBundleExecutable': 'SBY_OST_Tool',
+        'CFBundleName': 'SBY OST Tool',
         'CFBundleShortVersionString': '1.0.0',
         'CFBundleVersion': '1',
         'CFBundleGetInfoString': 'SBY OST Tool',

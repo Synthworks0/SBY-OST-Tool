@@ -120,6 +120,8 @@ app = BUNDLE(
     icon=icon_file,
     bundle_identifier='com.synthworks.sbyosttool.remote',
     info_plist={
+        'CFBundleExecutable': 'SBY_OST_Tool_Remote',
+        'CFBundleName': 'SBY OST Tool',
         'CFBundleShortVersionString': '3.0.0',
         'CFBundleVersion': '3',
         'CFBundleGetInfoString': 'SBY OST Tool (Streaming)',
