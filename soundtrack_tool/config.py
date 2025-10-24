@@ -47,6 +47,7 @@ def _load_runtime_config() -> dict:
         config_candidates = [
             base_path / 'runtime_config.json',
             base_path / '_internal' / 'runtime_config.json',
+            base_path.parent / 'Resources' / 'runtime_config.json',
         ]
     else:
         config_candidates = [Path('runtime_config.json')]

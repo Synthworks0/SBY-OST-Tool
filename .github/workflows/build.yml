@@ -155,18 +155,21 @@ jobs:
       - name: Build artifact
         run: pyinstaller ${{ matrix.spec }} --noconfirm
 
-      - name: Prepare and sign macOS app
+      - name: Prepare macOS app (clear xattrs)
         if: matrix.os == 'macos-latest'
         run: |
-          xattr -cr "${{ matrix.dist-path }}" || true
-          chmod -R u+rw,go+r "${{ matrix.dist-path }}"
-          find "${{ matrix.dist-path }}/Contents/MacOS" -type f -exec chmod +x {} \; 2>/dev/null || true
-          find "${{ matrix.dist-path }}" -type f \( -name "*.dylib" -o -name "*.so" \) -exec codesign --force --timestamp=none --sign - {} \; 2>/dev/null || true    
-          find "${{ matrix.dist-path }}/Contents/Frameworks" -type d -depth 1 -exec codesign --force --timestamp=none --sign - {} \; 2>/dev/null || true    
-          find "${{ matrix.dist-path }}/Contents/MacOS" -type f -perm +111 -exec codesign --force --timestamp=none --sign - {} \;         
-          codesign --force --deep --timestamp=none --sign - --options runtime "${{ matrix.dist-path }}"    
-          codesign --verify --deep --strict --verbose=2 "${{ matrix.dist-path }}" 2>&1 || echo "Warning: Signature verification had issues but continuing"
-          codesign -dv "${{ matrix.dist-path }}" 2>&1 || true
+          xattr -rc "${{ matrix.dist-path }}"
+
+      - name: Sign macOS app (ad-hoc)
+        if: matrix.os == 'macos-latest'
+        run: |
+          codesign --force --deep --options runtime --sign - "${{ matrix.dist-path }}"
+
+      - name: Verify macOS app signature
+        if: matrix.os == 'macos-latest'
+        run: |
+          codesign --verify --deep --strict --verbose=2 "${{ matrix.dist-path }}"
+          spctl --assess --type execute -v "${{ matrix.dist-path }}" || true
 
       - name: Create archive (macOS)
         if: matrix.os == 'macos-latest'
@@ -182,18 +185,17 @@ jobs:
           tar -czf "../${{ matrix.archive-name }}" "$(basename ${{ matrix.dist-path }})"
           cd ..
 
-      - name: Create archive (Windows)
+      - name: Upload artifact (Windows)
         if: startsWith(matrix.os, 'windows')
-        shell: pwsh
-        run: |
-          $distPath = "${{ matrix.dist-path }}"
-          $folderName = Split-Path -Leaf $distPath
-          $archiveName = "${{ matrix.archive-name }}"
-          cd dist
-          Compress-Archive -Path $folderName -DestinationPath "..\$archiveName"
-          cd ..
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.dist-path }}
+          if-no-files-found: error
+          overwrite: true
 
-      - name: Upload artifact
+      - name: Upload artifact (Linux/macOS)
+        if: matrix.os != 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
