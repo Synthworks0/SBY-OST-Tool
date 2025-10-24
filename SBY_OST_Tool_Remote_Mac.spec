@@ -101,27 +101,19 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
 )
-coll = COLLECT(
+icon_file = 'icon.icns' if os.path.exists('icon.icns') else None
+if not icon_file:
+    print("Warning: icon.icns not found. App will not have a custom icon.")
+
+app = BUNDLE(
     exe,
     a.binaries,
     a.zipfiles,
     a.datas,
-    strip=False,
-    upx=False,
-    upx_exclude=[],
-    name='SBY_OST_Tool_Remote',
-)
-
-# Create the .app bundle
-icon_file = 'icon.icns' if os.path.exists('icon.icns') else None
-app = BUNDLE(
-    coll,
     name='SBY_OST_Tool_Remote.app',
     icon=icon_file,
     bundle_identifier='com.synthworks.sbyosttool.remote',
     info_plist={
-        'CFBundleExecutable': 'SBY_OST_Tool_Remote',
-        'CFBundleName': 'SBY OST Tool',
         'CFBundleShortVersionString': '3.0.0',
         'CFBundleVersion': '3',
         'CFBundleGetInfoString': 'SBY OST Tool (Streaming)',
@@ -130,4 +122,5 @@ app = BUNDLE(
         'LSApplicationCategoryType': 'public.app-category.utilities',
         'LSMinimumSystemVersion': '10.15',
     },
+    append_pkg=False
 )
