@@ -18,7 +18,6 @@ def collect_directory_to_resources(dir_path, bundle_subdir):
     return collected
 
 app_datas = []
-app_binaries = []
 components_dir = 'components' if os.path.exists('components') else 'Components'
 if os.path.exists(components_dir):
     app_datas.extend(collect_directory_to_resources(components_dir, 'components'))
@@ -54,7 +53,10 @@ try:
             if name.endswith('.dylib') and ('ffmpeg' in name or 'darwin' in name or 'avfoundation' in name):
                 src = os.path.join(multimedia_plugin_dir, name)
                 dest = os.path.join('PySide6', 'Qt', 'plugins', 'multimedia')
-                app_binaries.append((src, dest))
+                app_datas.append((src, dest))
+                print(f"Bundling Qt multimedia plugin: {name}")
+    else:
+        print("Warning: Qt multimedia plugin directory not found; relying on PyInstaller hooks.")
 except Exception as exc:
     print(f"Warning: unable to collect multimedia plugins: {exc}")
 
@@ -69,7 +71,7 @@ hidden_imports = [
 a = Analysis(
     ['rename.py'],
     pathex=[],
-    binaries=app_binaries,
+    binaries=[],
     datas=app_datas,
     hiddenimports=hidden_imports,
     hookspath=[],

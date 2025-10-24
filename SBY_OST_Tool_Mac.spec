@@ -38,7 +38,6 @@ if os.path.exists('resources'):
 else:
     print("Warning: resources directory not found.")
 
-
 soundtrack_dir = os.path.join('soundtrack_tool', 'assets', 'SBY Soundtracks')
 if os.path.exists(soundtrack_dir):
     app_datas.extend(collect_directory_to_resources(soundtrack_dir, 'soundtrack_tool/assets/SBY Soundtracks'))
@@ -186,12 +185,11 @@ icon_file = 'icon.icns' if os.path.exists('icon.icns') else None
 if not icon_file:
     print("Warning: icon.icns not found. App will not have a custom icon.")
 
-# Create BUNDLE with proper binary and data file inclusion
 app = BUNDLE(
     exe,
-    a.binaries,      # Include binaries
-    a.zipfiles,      # Include zipfiles
-    a.datas,         # Include data files explicitly
+    a.binaries,
+    a.zipfiles,
+    a.datas,
     name='SBY_OST_Tool.app',
     icon=icon_file,
     bundle_identifier='com.synthworks.sbyosttool',
@@ -203,6 +201,8 @@ app = BUNDLE(
         'NSRequiresAquaSystemAppearance': 'False',
         'LSApplicationCategoryType': 'public.app-category.utilities',
         'LSMinimumSystemVersion': '10.15',
+        'LSArchitecturePriority': ['x86_64', 'arm64'] if exe.target_arch is None else [exe.target_arch],
+        'LSRequiresNativeExecution': True
     },
     append_pkg=False
 )
