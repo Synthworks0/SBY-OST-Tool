@@ -163,14 +163,17 @@ jobs:
       - name: Fix malformed Qt frameworks and clean metadata
         if: matrix.os == 'macos-latest'
         run: |
+          # Use absolute path to avoid directory issues
+          APP_BUNDLE="${{ github.workspace }}/${{ matrix.dist-path }}"
+          
           echo "Removing extended attributes that prevent signing..."
-          xattr -cr "${{ matrix.dist-path }}"
+          xattr -cr "$APP_BUNDLE"
           
           echo "Removing malformed Qt frameworks that can't be signed..."
           # PyInstaller copies Qt frameworks without proper bundle structure
           # These cause "bundle format unrecognized" errors during signing
           # We delete them because Qt functionality is in the .dylib files, not the .framework bundles
-          QT_FRAMEWORKS_DIR="${{ matrix.dist-path }}/Contents/Frameworks/PySide6/Qt/lib"
+          QT_FRAMEWORKS_DIR="$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/lib"
           if [ -d "$QT_FRAMEWORKS_DIR" ]; then
             echo "Found Qt frameworks directory, removing malformed frameworks..."
             FRAMEWORK_COUNT=$(find "$QT_FRAMEWORKS_DIR" -name "*.framework" -type d | wc -l | tr -d ' ')
@@ -219,33 +222,44 @@ jobs:
         env:
           DEVELOPER_ID: ${{ secrets.APPLE_DEVELOPER_ID }}
         run: |
+          # Use absolute path to avoid directory issues
+          APP_BUNDLE="${{ github.workspace }}/${{ matrix.dist-path }}"
+          
           echo "Signing with Apple Developer ID: $DEVELOPER_ID"
+          echo "App bundle path: $APP_BUNDLE"
+          
+          # Verify app bundle exists before signing
+          if [ ! -d "$APP_BUNDLE" ]; then
+            echo "ERROR: App bundle not found at $APP_BUNDLE"
+            ls -la "${{ github.workspace }}/dist/" || echo "dist directory not found"
+            exit 1
+          fi
           
           # Sign Python.framework first (it's properly structured)
-          if [ -d "${{ matrix.dist-path }}/Contents/Frameworks/Python.framework" ]; then
+          if [ -d "$APP_BUNDLE/Contents/Frameworks/Python.framework" ]; then
             echo "Signing Python.framework..."
-            codesign --force --deep --sign "$DEVELOPER_ID" --options runtime --timestamp "${{ matrix.dist-path }}/Contents/Frameworks/Python.framework"
+            codesign --force --deep --sign "$DEVELOPER_ID" --options runtime --timestamp "$APP_BUNDLE/Contents/Frameworks/Python.framework"
           fi
           
           # Sign main executable(s)
           echo "Signing main executable..."
-          for executable in "${{ matrix.dist-path }}/Contents/MacOS/"*; do
+          for executable in "$APP_BUNDLE/Contents/MacOS/"*; do
             codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$executable"
           done
           
           # Sign the entire app bundle with --deep
           # Malformed frameworks have been removed, so deep signing will succeed
           echo "Signing entire app bundle with deep signature..."
-          codesign --force --deep --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "${{ matrix.dist-path }}"
+          codesign --force --deep --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$APP_BUNDLE"
           
           echo "✓ App bundle signed successfully"
           
           # Verify signature
-          codesign --verify --deep --strict --verbose=2 "${{ matrix.dist-path }}"
+          codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
           echo "✓ Signature verified"
           
           # Display signature info
-          codesign -dvvv "${{ matrix.dist-path }}" 2>&1 | head -30
+          codesign -dvvv "$APP_BUNDLE" 2>&1 | head -30
 
       - name: Notarize macOS app bundle
         if: matrix.os == 'macos-latest'
