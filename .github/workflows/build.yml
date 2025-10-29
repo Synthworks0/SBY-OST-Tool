@@ -243,7 +243,6 @@ jobs:
             --team-id "$APPLE_TEAM_ID" \
             --password "$APPLE_APP_PASSWORD" \
             --wait \
-            --timeout 30m
           
           # Check if notarization succeeded
           if [ $? -eq 0 ]; then
