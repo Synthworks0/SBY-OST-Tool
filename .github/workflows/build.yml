@@ -160,37 +160,116 @@ jobs:
         run: |
           chmod +x "${{ matrix.dist-path }}/Contents/MacOS/"*
 
-      - name: Remove existing signatures
+      - name: Import Code Signing Certificate
         if: matrix.os == 'macos-latest'
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
         run: |
-          echo "Removing all existing signatures to avoid Team ID mismatches..."
+          # Create temporary keychain for signing
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
           
-          find "${{ matrix.dist-path }}/Contents" -type f \( -name "*.dylib" -o -name "*.so" \) -exec codesign --remove-signature {} \; 2>/dev/null || true
+          # Decode the certificate from base64
+          echo "$MACOS_CERTIFICATE" | base64 --decode > certificate.p12
           
-          find "${{ matrix.dist-path }}/Contents/Frameworks" -type d -name "*.framework" -exec codesign --remove-signature {} \; 2>/dev/null || true
+          # Create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           
-          codesign --remove-signature "${{ matrix.dist-path }}/Contents/MacOS/"* 2>/dev/null || true
+          # Import certificate to keychain
+          security import certificate.p12 -k "$KEYCHAIN_PATH" -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
           
-          codesign --remove-signature "${{ matrix.dist-path }}" 2>/dev/null || true
+          # Allow codesign to access keychain
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           
-          echo "All existing signatures removed."
+          # Clean up certificate file
+          rm certificate.p12
+          
+          # Store keychain path for cleanup
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+          echo "✓ Code signing certificate imported successfully"
 
-      - name: Sign macOS app bundles and binaries
+      - name: Sign macOS app bundle with Developer ID
         if: matrix.os == 'macos-latest'
+        env:
+          DEVELOPER_ID: ${{ secrets.APPLE_DEVELOPER_ID }}
         run: |
-          echo "Signing with ad-hoc signature (single Team ID for all components)..."
-      
-          codesign --force --deep --sign - "${{ matrix.dist-path }}"
+          echo "Signing with Apple Developer ID: $DEVELOPER_ID"
           
-          echo "Verifying signature..."
-          codesign --verify --deep --verbose=2 "${{ matrix.dist-path }}"
+          # Sign all dylibs and shared libraries first
+          find "${{ matrix.dist-path }}/Contents" -type f \( -name "*.dylib" -o -name "*.so" \) | while read file; do
+            codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$file" || echo "Warning: Failed to sign $file"
+          done
           
-          echo "Checking signature details..."
+          # Sign all frameworks
+          find "${{ matrix.dist-path }}/Contents/Frameworks" -type d -name "*.framework" | while read framework; do
+            codesign --force --deep --sign "$DEVELOPER_ID" --options runtime --timestamp "$framework" || echo "Warning: Failed to sign $framework"
+          done
+          
+          # Sign main executable(s)
+          for executable in "${{ matrix.dist-path }}/Contents/MacOS/"*; do
+            codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$executable"
+          done
+          
+          # Sign the entire app bundle
+          codesign --force --deep --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "${{ matrix.dist-path }}"
+          
+          echo "✓ App bundle signed successfully"
+          
+          # Verify signature
+          codesign --verify --deep --strict --verbose=2 "${{ matrix.dist-path }}"
+          echo "✓ Signature verified"
+          
+          # Display signature info
           codesign -dvvv "${{ matrix.dist-path }}" 2>&1 | head -30
+
+      - name: Notarize macOS app bundle
+        if: matrix.os == 'macos-latest'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          echo "Creating zip for notarization..."
+          cd dist
+          ditto -c -k --keepParent "$(basename ${{ matrix.dist-path }})" notarization.zip
           
-          echo "Checking Python framework signature..."
-          if [ -f "${{ matrix.dist-path }}/Contents/Frameworks/Python.framework/Versions/3.11/Python" ]; then
-            codesign -dvvv "${{ matrix.dist-path }}/Contents/Frameworks/Python.framework/Versions/3.11/Python" 2>&1 | head -15
+          echo "Submitting app for notarization..."
+          xcrun notarytool submit notarization.zip \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_APP_PASSWORD" \
+            --wait \
+            --timeout 30m
+          
+          # Check if notarization succeeded
+          if [ $? -eq 0 ]; then
+            echo "✓ Notarization successful"
+            
+            # Staple the notarization ticket to the app
+            xcrun stapler staple "${{ matrix.dist-path }}"
+            echo "✓ Notarization ticket stapled to app"
+            
+            # Verify stapling
+            xcrun stapler validate "${{ matrix.dist-path }}"
+            echo "✓ Stapling verified"
+          else
+            echo "⚠ Notarization failed or timed out"
+            echo "The app is signed but not notarized. Users will see a warning on first launch."
+          fi
+          
+          # Clean up notarization zip
+          rm notarization.zip
+          cd ..
+
+      - name: Cleanup keychain
+        if: matrix.os == 'macos-latest' && always()
+        run: |
+          if [ -n "$KEYCHAIN_PATH" ]; then
+            security delete-keychain "$KEYCHAIN_PATH" || true
           fi
 
       - name: Verify app bundle size (macOS)
