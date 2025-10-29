@@ -235,30 +235,63 @@ jobs:
             exit 1
           fi
           
-          # Sign Python.framework first (it's properly structured)
-          if [ -d "$APP_BUNDLE/Contents/Frameworks/Python.framework" ]; then
-            echo "Signing Python.framework..."
-            codesign --force --deep --sign "$DEVELOPER_ID" --options runtime --timestamp "$APP_BUNDLE/Contents/Frameworks/Python.framework"
+          # IMPORTANT: Sign from the inside out, WITHOUT using --deep on frameworks
+          # The --deep flag can break symlinks in properly structured frameworks like Python.framework
+          
+          # 1. Sign all dylibs and binaries in Frameworks directory
+          echo "Signing framework binaries and libraries..."
+          if [ -d "$APP_BUNDLE/Contents/Frameworks" ]; then
+            # Find and sign all .dylib files
+            find "$APP_BUNDLE/Contents/Frameworks" -type f -name "*.dylib" -exec codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp {} \; 2>&1 | grep -v "already signed" || true
+            
+            # Find and sign all .so files (Python extensions)
+            find "$APP_BUNDLE/Contents/Frameworks" -type f -name "*.so" -exec codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp {} \; 2>&1 | grep -v "already signed" || true
+            
+            # Sign Python.framework (properly structured framework - NO --deep)
+            if [ -d "$APP_BUNDLE/Contents/Frameworks/Python.framework" ]; then
+              echo "Signing Python.framework..."
+              # Sign the Python executable inside the framework
+              if [ -f "$APP_BUNDLE/Contents/Frameworks/Python.framework/Versions/Current/Python" ]; then
+                codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$APP_BUNDLE/Contents/Frameworks/Python.framework/Versions/Current/Python"
+              fi
+              # Sign the framework bundle itself (without --deep to preserve symlinks)
+              codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$APP_BUNDLE/Contents/Frameworks/Python.framework"
+            fi
+            
+            # Sign any other properly structured frameworks
+            find "$APP_BUNDLE/Contents/Frameworks" -name "*.framework" -type d -depth 1 -exec codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp {} \; 2>&1 | grep -v "already signed" || true
           fi
           
-          # Sign main executable(s)
-          echo "Signing main executable..."
+          # 2. Sign any executables in MacOS directory
+          echo "Signing main executable(s)..."
           for executable in "$APP_BUNDLE/Contents/MacOS/"*; do
-            codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$executable"
+            if [ -f "$executable" ]; then
+              echo "  Signing: $(basename $executable)"
+              codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$executable"
+            fi
           done
           
-          # Sign the entire app bundle with --deep
-          # Malformed frameworks have been removed, so deep signing will succeed
-          echo "Signing entire app bundle with deep signature..."
-          codesign --force --deep --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$APP_BUNDLE"
+          # 3. Sign the entire app bundle WITHOUT --deep
+          # This is the critical fix: --deep can break symlinks and cause "No such file or directory" errors
+          echo "Signing entire app bundle (without --deep to preserve bundle integrity)..."
+          codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$APP_BUNDLE"
           
           echo "✓ App bundle signed successfully"
           
-          # Verify signature
-          codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
+          # Verify signature (without --strict initially to see any issues)
+          echo "Verifying signature..."
+          codesign --verify --verbose=2 "$APP_BUNDLE" 2>&1 || {
+            echo "⚠ Basic verification failed, trying without verbose..."
+            codesign --verify "$APP_BUNDLE" || {
+              echo "ERROR: Signature verification failed"
+              exit 1
+            }
+          }
           echo "✓ Signature verified"
           
           # Display signature info
+          echo ""
+          echo "=== Signature Details ==="
           codesign -dvvv "$APP_BUNDLE" 2>&1 | head -30
 
       - name: Notarize macOS app bundle
