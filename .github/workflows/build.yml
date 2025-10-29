@@ -169,21 +169,88 @@ jobs:
           echo "Removing extended attributes that prevent signing..."
           xattr -cr "$APP_BUNDLE"
           
-          echo "Removing malformed Qt frameworks that can't be signed..."
-          # PyInstaller copies Qt frameworks without proper bundle structure
-          # These cause "bundle format unrecognized" errors during signing
-          # We delete them because Qt functionality is in the .dylib files, not the .framework bundles
+          echo "Restructuring Qt frameworks for signing and runtime..."
+          # PyInstaller copies Qt frameworks with malformed bundle structure that can't be signed as frameworks
+          # But the actual Qt dylibs inside them are needed at runtime
+          # Solution: Extract the dylibs from the frameworks and place them where @rpath can find them
           QT_FRAMEWORKS_DIR="$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/lib"
           if [ -d "$QT_FRAMEWORKS_DIR" ]; then
-            echo "Found Qt frameworks directory, removing malformed frameworks..."
-            FRAMEWORK_COUNT=$(find "$QT_FRAMEWORKS_DIR" -name "*.framework" -type d | wc -l | tr -d ' ')
-            echo "Removing $FRAMEWORK_COUNT malformed Qt frameworks..."
-            # Remove all .framework directories (they're malformed and prevent signing)
-            find "$QT_FRAMEWORKS_DIR" -name "*.framework" -type d -exec rm -rf {} + 2>/dev/null || true
-            echo "✓ Removed malformed Qt frameworks"
+            echo "Found Qt frameworks directory, extracting dylibs..."
+            
+            # For each .framework, extract the main dylib to the Qt/lib directory
+            for framework in "$QT_FRAMEWORKS_DIR"/*.framework; do
+              if [ -d "$framework" ]; then
+                FRAMEWORK_NAME=$(basename "$framework" .framework)
+                echo "  Processing $FRAMEWORK_NAME.framework..."
+                
+                # Find the actual dylib inside the framework (usually in Versions/A/ or Versions/5/)
+                DYLIB_PATH=""
+                if [ -f "$framework/Versions/A/$FRAMEWORK_NAME" ]; then
+                  DYLIB_PATH="$framework/Versions/A/$FRAMEWORK_NAME"
+                elif [ -f "$framework/Versions/5/$FRAMEWORK_NAME" ]; then
+                  DYLIB_PATH="$framework/Versions/5/$FRAMEWORK_NAME"
+                elif [ -f "$framework/$FRAMEWORK_NAME" ]; then
+                  DYLIB_PATH="$framework/$FRAMEWORK_NAME"
+                fi
+                
+                # Copy the dylib to Qt/lib directory if found
+                if [ -n "$DYLIB_PATH" ] && [ -f "$DYLIB_PATH" ]; then
+                  cp "$DYLIB_PATH" "$QT_FRAMEWORKS_DIR/$FRAMEWORK_NAME.dylib"
+                  echo "    ✓ Extracted $FRAMEWORK_NAME.dylib"
+                fi
+              fi
+            done
+            
+            # Now remove the malformed .framework bundles (we've extracted what we need)
+            FRAMEWORK_COUNT=$(find "$QT_FRAMEWORKS_DIR" -name "*.framework" -type d -maxdepth 1 | wc -l | tr -d ' ')
+            if [ "$FRAMEWORK_COUNT" -gt 0 ]; then
+              echo "Removing $FRAMEWORK_COUNT malformed Qt framework bundles..."
+              find "$QT_FRAMEWORKS_DIR" -name "*.framework" -type d -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
+              echo "✓ Removed malformed Qt framework bundles (dylibs extracted)"
+            fi
+            
+            # Fix @rpath references in PySide6 .so files to point to Qt dylibs
+            echo "Fixing @rpath references in PySide6 binaries..."
+            PYSIDE6_DIR="$APP_BUNDLE/Contents/Frameworks/PySide6"
+            if [ -d "$PYSIDE6_DIR" ]; then
+              # Update rpath in all .so files to include Qt/lib directory
+              find "$PYSIDE6_DIR" -name "*.so" -type f | while read sofile; do
+                # Add rpath to Qt/lib directory (relative to the .so file location)
+                install_name_tool -add_rpath "@loader_path/Qt/lib" "$sofile" 2>/dev/null || true
+                
+                # Also fix any absolute Qt framework references to point to the extracted dylibs
+                # Change @rpath/QtCore -> @rpath/QtCore.dylib for each Qt library
+                for qtlib in QtCore QtGui QtWidgets QtQml QtQuick QtNetwork QtMultimedia QtOpenGL Qt3DCore Qt3DRender Qt3DInput Qt3DLogic Qt3DAnimation Qt3DExtras QtConcurrent QtDBus QtOpenGLWidgets QtPrintSupport QtSql QtSvg QtTest QtXml; do
+                  install_name_tool -change "@rpath/$qtlib" "@rpath/$qtlib.dylib" "$sofile" 2>/dev/null || true
+                done
+              done
+              echo "✓ Fixed @rpath references in PySide6 binaries"
+              
+              # Fix Qt dylibs' own dependencies and install names
+              echo "Fixing Qt dylib inter-dependencies..."
+              if [ -d "$QT_FRAMEWORKS_DIR" ]; then
+                for dylib in "$QT_FRAMEWORKS_DIR"/*.dylib; do
+                  if [ -f "$dylib" ]; then
+                    DYLIB_NAME=$(basename "$dylib")
+                    
+                    # Update the dylib's install name to use @rpath
+                    install_name_tool -id "@rpath/$DYLIB_NAME" "$dylib" 2>/dev/null || true
+                    
+                    # Fix dependencies on other Qt libraries
+                    for qtlib in QtCore QtGui QtWidgets QtQml QtQuick QtNetwork QtMultimedia QtOpenGL Qt3DCore Qt3DRender Qt3DInput Qt3DLogic Qt3DAnimation Qt3DExtras QtConcurrent QtDBus QtOpenGLWidgets QtPrintSupport QtSql QtSvg QtTest QtXml; do
+                      # Change @rpath/QtXxx to @rpath/QtXxx.dylib
+                      install_name_tool -change "@rpath/$qtlib" "@rpath/$qtlib.dylib" "$dylib" 2>/dev/null || true
+                      # Also handle framework-style paths
+                      install_name_tool -change "@rpath/$qtlib.framework/Versions/A/$qtlib" "@rpath/$qtlib.dylib" "$dylib" 2>/dev/null || true
+                    done
+                  fi
+                done
+                echo "✓ Fixed Qt dylib inter-dependencies"
+              fi
+            fi
           fi
           
-          echo "✓ App bundle cleaned and ready for signing"
+          echo "✓ App bundle cleaned and restructured for signing"
 
       - name: Import Code Signing Certificate
         if: matrix.os == 'macos-latest'
