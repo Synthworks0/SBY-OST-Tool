@@ -83,6 +83,14 @@ a = Analysis(
     noarchive=False,
     optimize=0,
 )
+
+# CRITICAL FIX: Remove PySide6 data files from Resources
+# PyInstaller hooks auto-collect PySide6 data to a.datas (goes to Resources)
+# But binaries already go to Frameworks via a.binaries
+# Having PySide6 in BOTH locations causes crashes and "damaged app" errors
+a.datas = [x for x in a.datas if not x[0].startswith('PySide6/')]
+print(f"Filtered out PySide6 data files from Resources to prevent duplication")
+
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
