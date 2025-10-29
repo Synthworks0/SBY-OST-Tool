@@ -243,17 +243,19 @@ jobs:
             --team-id "$APPLE_TEAM_ID" \
             --password "$APPLE_APP_PASSWORD" \
             --wait \
+            --timeout 30m
           
           # Check if notarization succeeded
           if [ $? -eq 0 ]; then
             echo "✓ Notarization successful"
             
-            # Staple the notarization ticket to the app
-            xcrun stapler staple "${{ matrix.dist-path }}"
+            # Staple the notarization ticket to the app (we're in dist/ directory)
+            APP_NAME="$(basename ${{ matrix.dist-path }})"
+            xcrun stapler staple "$APP_NAME"
             echo "✓ Notarization ticket stapled to app"
             
             # Verify stapling
-            xcrun stapler validate "${{ matrix.dist-path }}"
+            xcrun stapler validate "$APP_NAME"
             echo "✓ Stapling verified"
           else
             echo "⚠ Notarization failed or timed out"
