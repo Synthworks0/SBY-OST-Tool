@@ -408,21 +408,6 @@ jobs:
           echo "=== Contents Directory Sizes ==="
           du -sh "${{ matrix.dist-path }}/Contents/"*
           echo ""
-          echo "=== Checking PySide6 Location ==="
-          if [ -d "${{ matrix.dist-path }}/Contents/Resources/PySide6" ]; then
-            echo "⚠ PySide6 found in Resources:"
-            du -sh "${{ matrix.dist-path }}/Contents/Resources/PySide6"
-            echo "  (May impact signature seal if large)"
-          else
-            echo "✓ No PySide6 in Resources"
-          fi
-          if [ -d "${{ matrix.dist-path }}/Contents/Frameworks/PySide6" ]; then
-            echo "✓ PySide6 found in Frameworks:"
-            du -sh "${{ matrix.dist-path }}/Contents/Frameworks/PySide6"
-          else
-            echo "⚠ PySide6 not in Frameworks (unusual but may be OK for small builds)"
-          fi
-          echo ""
           echo "=== Verifying Code Signature Seal Integrity (CRITICAL) ==="
           # Comprehensive signature verification - this is the real test
           if codesign --verify --deep --strict --verbose=4 "${{ matrix.dist-path }}" 2>&1 | tee /tmp/codesign_verify.log; then
