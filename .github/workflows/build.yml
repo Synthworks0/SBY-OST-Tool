@@ -304,10 +304,6 @@ jobs:
           codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
           echo "✓ Signature verified"
 
-          # Validate Gatekeeper assessment to catch "app is damaged" issues early
-          spctl --assess --type exec --verbose "$APP_BUNDLE"
-          echo "✓ Gatekeeper assessment passed"
-          
           # Display signature info
           codesign -dvvv "$APP_BUNDLE" 2>&1 | head -30
 
@@ -323,15 +319,12 @@ jobs:
           ditto -c -k --keepParent "$(basename ${{ matrix.dist-path }})" notarization.zip
           
           echo "Submitting app for notarization..."
-          xcrun notarytool submit notarization.zip \
+          if xcrun notarytool submit notarization.zip \
             --apple-id "$APPLE_ID" \
             --team-id "$APPLE_TEAM_ID" \
             --password "$APPLE_APP_PASSWORD" \
             --wait \
-            --timeout 30m
-          
-          # Check if notarization succeeded
-          if [ $? -eq 0 ]; then
+            --timeout 30m; then
             echo "✓ Notarization successful"
             
             # Staple the notarization ticket to the app (we're in dist/ directory)
@@ -342,6 +335,10 @@ jobs:
             # Verify stapling
             xcrun stapler validate "$APP_NAME"
             echo "✓ Stapling verified"
+
+            echo "Running Gatekeeper assessment..."
+            spctl --assess --type exec --verbose "$APP_NAME"
+            echo "✓ Gatekeeper assessment passed"
           else
             echo "⚠ Notarization failed or timed out"
             echo "The app is signed but not notarized. Users will see a warning on first launch."
