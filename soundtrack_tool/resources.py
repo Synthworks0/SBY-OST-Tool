@@ -1,6 +1,14 @@
 from __future__ import annotations
+import os
+import sys
 from pathlib import Path
-from .environment import get_app_resources_dir, get_runtime_root
+
+from .environment import (
+    get_app_resources_dir,
+    get_runtime_root,
+    get_user_cache_dir,
+    get_user_data_dir,
+)
 
 
 class ResourceLocator:
@@ -9,8 +17,16 @@ class ResourceLocator:
     def __init__(self, runtime_root: Path | None = None, resources_dir: Path | None = None) -> None:
         self._runtime_root = runtime_root or get_runtime_root()
         self._app_resources_dir = resources_dir or get_app_resources_dir(self._runtime_root)
+        self._variant = self._detect_variant()
+        self._bundle_identifier = self._determine_bundle_identifier()
+        self._app_display_name = self._determine_app_display_name()
+        self._user_data_dir = get_user_data_dir(self._app_display_name, self._bundle_identifier)
+        self._user_cache_dir = get_user_cache_dir(self._app_display_name, self._bundle_identifier)
+        self._user_data_dir.mkdir(parents=True, exist_ok=True)
+        self._user_cache_dir.mkdir(parents=True, exist_ok=True)
         self._resources_root = self._detect_resources_root()
         self._soundtrack_root = self._detect_soundtrack_root()
+        self._user_settings_path = self._user_data_dir / "config.json"
 
     @property
     def runtime_root(self) -> Path:
@@ -28,14 +44,28 @@ class ResourceLocator:
     def soundtrack_root(self) -> Path:
         return self._soundtrack_root
 
+    @property
+    def bundle_identifier(self) -> str:
+        return self._bundle_identifier
+
+    @property
+    def user_data_dir(self) -> Path:
+        return self._user_data_dir
+
+    @property
+    def user_cache_dir(self) -> Path:
+        return self._user_cache_dir
+
+    @property
+    def user_settings_path(self) -> Path:
+        return self._user_settings_path
+
     def main_qml_path(self) -> Path:
         return self.app_resources_dir / "main.qml"
 
     def application_icon_path(self, name: str = "icon.ico") -> Path:
-        import sys
-        
-        if sys.platform.startswith('linux'):
-            png_name = name.replace('.ico', '.png')
+        if sys.platform.startswith("linux"):
+            png_name = name.replace(".ico", ".png")
             png_candidates = [
                 self.runtime_root / "_internal" / png_name,
                 self.app_resources_dir / png_name,
@@ -45,7 +75,7 @@ class ResourceLocator:
             for candidate in png_candidates:
                 if candidate.exists():
                     return candidate
-        
+
         candidates = [
             self.runtime_root / "_internal" / name,
             self.app_resources_dir / name,
@@ -102,6 +132,33 @@ class ResourceLocator:
             self.app_resources_dir / "SBY Soundtracks",
         ]
         return next((c for c in candidates if c.is_dir()), candidates[-1])
+
+    def _detect_variant(self) -> str:
+        asset_mode = os.environ.get("SBY_ASSET_MODE", "").strip().lower()
+        if asset_mode == "remote":
+            return "remote"
+        try:
+            from .config import AssetMode, load_app_config  # Local import avoids circular deps
+
+            config = load_app_config()
+            if config.asset_mode == AssetMode.REMOTE or config.use_remote:
+                return "remote"
+        except Exception:
+            pass
+        executable = Path(sys.executable).stem if getattr(sys, "frozen", False) else ""
+        if "remote" in executable.lower():
+            return "remote"
+        return "standard"
+
+    def _determine_bundle_identifier(self) -> str:
+        if self._variant == "remote":
+            return "com.synthworks.sbyosttool.remote"
+        return "com.synthworks.sbyosttool"
+
+    def _determine_app_display_name(self) -> str:
+        if self._variant == "remote":
+            return "SBY OST Tool Remote"
+        return "SBY OST Tool"
 
 
 __all__ = ["ResourceLocator"]

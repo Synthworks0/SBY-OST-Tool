@@ -3,14 +3,15 @@ import hashlib
 import threading
 from pathlib import Path
 from typing import Iterable
+
 from .cloudflare import R2Client
 
 
 class CoverCache:
     """Caches remote cover art on disk so subsequent runs reuse it instantly."""
 
-    def __init__(self, runtime_root: Path) -> None:
-        self._cache_dir = runtime_root / "cache" / "covers"
+    def __init__(self, cache_root: Path) -> None:
+        self._cache_dir = cache_root / "covers"
         self._cache_dir.mkdir(parents=True, exist_ok=True)
         self._lock = threading.Lock()
 

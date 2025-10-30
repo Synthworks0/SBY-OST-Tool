@@ -2,18 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Required for Python/PyInstaller apps with hardened runtime -->
-    <!-- Allows Python interpreter to execute dynamically loaded code -->
-    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
-    <true/>
-    
-    <!-- Allows loading PySide6 and other third-party libraries -->
-    <!-- Without this, Python frameworks will fail to load -->
-    <key>com.apple.security.cs.disable-library-validation</key>
-    <true/>
+  <key>com.apple.security.app-sandbox</key>
+  <false/>
+  <key>com.apple.security.network.client</key>
+  <true/>
+  <key>com.apple.security.network.server</key>
+  <false/>
+  <key>com.apple.security.files.user-selected.read-only</key>
+  <true/>
+  <key>com.apple.security.cs.allow-jit</key>
+  <false/>
+  <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+  <true/>
+  <key>com.apple.security.cs.disable-executable-page-protection</key>
+  <false/>
 </dict>
 </plist>
-
-
-
-

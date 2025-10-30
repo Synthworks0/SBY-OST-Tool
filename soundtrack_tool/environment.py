@@ -73,8 +73,38 @@ def configure_qt_environment(logger=None) -> None:
     _merge_env_paths("QML2_IMPORT_PATH", qml_candidates, logger)
     _set_platform_plugin_path(plugin_candidates, logger)
 
+
+def _default_identifier(app_name: str) -> str:
+    return app_name.lower().replace(" ", "-")
+
+
+def get_user_data_dir(app_name: str, bundle_identifier: str | None = None) -> Path:
+    identifier = bundle_identifier or _default_identifier(app_name)
+    if sys.platform == "darwin":
+        base = Path.home() / "Library" / "Application Support"
+        return base / identifier
+    if sys.platform.startswith("win"):
+        root = os.environ.get("APPDATA") or (Path.home() / "AppData" / "Roaming")
+        return Path(root) / identifier
+    base = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share"))
+    return Path(base) / identifier
+
+
+def get_user_cache_dir(app_name: str, bundle_identifier: str | None = None) -> Path:
+    identifier = bundle_identifier or _default_identifier(app_name)
+    if sys.platform == "darwin":
+        base = Path.home() / "Library" / "Caches"
+        return base / identifier
+    if sys.platform.startswith("win"):
+        root = os.environ.get("LOCALAPPDATA") or (Path.home() / "AppData" / "Local")
+        return Path(root) / identifier
+    base = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+    return Path(base) / identifier
+
 __all__ = [
     "configure_qt_environment",
     "get_app_resources_dir",
     "get_runtime_root",
+    "get_user_data_dir",
+    "get_user_cache_dir",
 ]

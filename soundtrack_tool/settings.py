@@ -9,6 +9,10 @@ class AppSettings:
 
     def __init__(self, settings_path: Path) -> None:
         self._path = settings_path
+        try:
+            self._path.parent.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
 
     def load_last_output_folder(self) -> str:
         if not self._path.exists():
@@ -22,6 +26,7 @@ class AppSettings:
     def save_last_output_folder(self, folder: str) -> None:
         payload = {"last_output_folder": folder}
         try:
+            self._path.parent.mkdir(parents=True, exist_ok=True)
             self._path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         except OSError:
             pass

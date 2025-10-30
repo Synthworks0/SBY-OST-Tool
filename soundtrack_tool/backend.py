@@ -43,10 +43,10 @@ class RenamerBackend(QObject):
         self._r2_client = R2Client(self._config, cancel_event=self._cancel_event) if self._config.use_remote else None
         self._extractor = SoundtrackExtractor(self._locator, self._config, self._r2_client, cancel_event=self._cancel_event)
         self._audio_catalog = AudioCatalog(self._locator, self._config, self._r2_client)
-        self._settings = AppSettings(self._locator.runtime_root / "config.json")
+        self._settings = AppSettings(self._locator.user_settings_path)
         self._executor = ThreadPoolExecutor(max_workers=4)
         self._pending_futures: list = []
-        self._cover_cache = CoverCache(self._locator.runtime_root) if self._config.use_remote else None
+        self._cover_cache = CoverCache(self._locator.user_cache_dir) if self._config.use_remote else None
         if self._config.use_remote and self._r2_client and self._cover_cache:
             self._track_future(self._executor.submit(self._cover_cache.prefetch_all, ASSET_MANIFEST, self._r2_client))
 
