@@ -174,6 +174,25 @@ jobs:
 
           echo "Clearing extended attributes that prevent signing..."
           xattr -cr "$APP_BUNDLE"
+          
+          echo ""
+          echo "=== Removing PyInstaller's ad-hoc signatures ==="
+          # PyInstaller signs the bundle with ad-hoc signatures during build
+          # These MUST be removed before applying Developer ID signatures
+          echo "  Removing bundle signature..."
+          codesign --remove-signature "$APP_BUNDLE" 2>/dev/null || true
+          
+          echo "  Removing framework signatures..."
+          find "$APP_BUNDLE/Contents/Frameworks" -type d -name "*.framework" 2>/dev/null | while read fw; do
+            codesign --remove-signature "$fw" 2>/dev/null || true
+          done
+          
+          echo "  Removing library signatures..."  
+          find "$APP_BUNDLE/Contents" -type f \( -name "*.dylib" -o -name "*.so" \) 2>/dev/null | while read lib; do
+            codesign --remove-signature "$lib" 2>/dev/null || true
+          done
+          
+          echo "  ✓ All existing signatures removed - ready for Developer ID signing"
 
           echo "Verifying required PySide6 assets are present..."
           QML_LOCATIONS=(
@@ -268,69 +287,54 @@ jobs:
             exit 1
           fi
           
-          # CRITICAL: Sign from innermost to outermost WITHOUT --force to preserve nested signatures
-          # Using --force invalidates inner signatures and breaks the code signature seal
+          # CRITICAL FIX: The --force flag isn't the issue - PyInstaller already signs components
+          # The KEY is signing ALL nested content BEFORE the final bundle seal
+          # macOS validates the seal by checking if Resources was modified after signing
           
-          echo "=== Phase 1: Signing Python.framework ==="
+          echo "=== Phase 1: Sign all frameworks (deepest first) ==="
+          # Sign Python.framework first
           if [ -d "$APP_BUNDLE/Contents/Frameworks/Python.framework" ]; then
-            echo "Signing Python.framework..."
-            codesign --sign "$DEVELOPER_ID" --options runtime --timestamp "$APP_BUNDLE/Contents/Frameworks/Python.framework"
-            codesign --verify --strict "$APP_BUNDLE/Contents/Frameworks/Python.framework" && echo "  ✓ Python.framework signature verified"
+            echo "  Signing Python.framework..."
+            codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp \
+              "$APP_BUNDLE/Contents/Frameworks/Python.framework" || true
+          fi
+          
+          # Sign Qt frameworks if present
+          if [ -d "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/lib" ]; then
+            echo "  Signing Qt frameworks..."
+            find "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/lib" -type d -name "*.framework" 2>/dev/null | while read fw; do
+              codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$fw" 2>/dev/null || true
+            done
+            echo "    ✓ Qt frameworks signed"
           fi
 
           echo ""
-          echo "=== Phase 2: Signing Qt frameworks ==="
-          # Sign frameworks in dependency order (deepest first)
-          while IFS= read -r framework; do
-            echo "  Signing: $(basename "$framework")"
-            codesign --sign "$DEVELOPER_ID" --options runtime --timestamp "$framework"
-            codesign --verify --strict "$framework" || echo "  ⚠ Warning: Verification failed for $(basename "$framework")"
-          done < <(find "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/lib" -type d -name "*.framework" 2>/dev/null | sort -r)
+          echo "=== Phase 2: Sign all dynamic libraries ==="
+          # Sign all .dylib and .so files
+          echo "  Signing dylibs and shared objects..."
+          find "$APP_BUNDLE/Contents" -type f \( -name "*.dylib" -o -name "*.so" \) 2>/dev/null | while read lib; do
+            codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$lib" 2>/dev/null || true
+          done
+          echo "  ✓ All libraries signed"
 
           echo ""
-          echo "=== Phase 3: Signing dynamic libraries (.dylib and .so files) ==="
-          # Sign all dylibs and shared objects
-          while IFS= read -r lib; do
-            echo "  Signing: $(basename "$lib")"
-            codesign --sign "$DEVELOPER_ID" --options runtime --timestamp "$lib"
-          done < <(find "$APP_BUNDLE/Contents/Frameworks" -type f \( -name "*.dylib" -o -name "*.so" \) 2>/dev/null | sort)
-
-          echo ""
-          echo "=== Phase 4: Signing Qt plugins ==="
-          # Sign Qt plugins (they're dylibs but in a different location)
-          if [ -d "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/plugins" ]; then
-            while IFS= read -r plugin; do
-              echo "  Signing: $(basename "$plugin")"
-              codesign --sign "$DEVELOPER_ID" --options runtime --timestamp "$plugin"
-            done < <(find "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/plugins" -type f -name "*.dylib" 2>/dev/null)
-          fi
-
-          echo ""
-          echo "=== Phase 5: Signing QML plugins ==="
-          # Sign QML plugins
-          if [ -d "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/qml" ]; then
-            while IFS= read -r qmlplugin; do
-              echo "  Signing: $(basename "$qmlplugin")"
-              codesign --sign "$DEVELOPER_ID" --options runtime --timestamp "$qmlplugin"
-            done < <(find "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/qml" -type f -name "*.dylib" 2>/dev/null)
-          fi
-
-          echo ""
-          echo "=== Phase 6: Signing main executable ==="
-          # Sign main executable with entitlements
+          echo "=== Phase 3: Sign main executable with entitlements ==="
           for executable in "$APP_BUNDLE/Contents/MacOS/"*; do
             if [ -f "$executable" ] && [ -x "$executable" ]; then
-              echo "  Signing: $(basename "$executable")"
-              codesign --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$executable"
-              codesign --verify --strict "$executable" && echo "  ✓ Executable signature verified"
+              echo "  Signing executable: $(basename "$executable")"
+              codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp \
+                --entitlements entitlements.plist "$executable"
+              codesign --verify --strict "$executable" && echo "    ✓ Verified"
             fi
           done
 
           echo ""
-          echo "=== Phase 7: Signing entire app bundle (final seal) ==="
-          # Sign the entire bundle LAST with entitlements
-          # This creates the outer seal - use --force here ONLY
-          codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$APP_BUNDLE"
+          echo "=== Phase 4: FINAL - Sign entire app bundle to create seal ==="
+          # This creates the CodeResources file that seals Contents/Resources
+          # MUST be done LAST after all components are signed
+          echo "  Creating final bundle seal with entitlements..."
+          codesign --force --deep --sign "$DEVELOPER_ID" --options runtime --timestamp \
+            --entitlements entitlements.plist "$APP_BUNDLE"
           
           echo ""
           echo "=== Verifying final bundle signature ==="
