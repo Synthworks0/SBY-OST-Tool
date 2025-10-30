@@ -268,43 +268,83 @@ jobs:
             exit 1
           fi
           
-          # Sign Python.framework first (it's properly structured)
+          # CRITICAL: Sign from innermost to outermost WITHOUT --force to preserve nested signatures
+          # Using --force invalidates inner signatures and breaks the code signature seal
+          
+          echo "=== Phase 1: Signing Python.framework ==="
           if [ -d "$APP_BUNDLE/Contents/Frameworks/Python.framework" ]; then
             echo "Signing Python.framework..."
-            codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$APP_BUNDLE/Contents/Frameworks/Python.framework"
+            codesign --sign "$DEVELOPER_ID" --options runtime --timestamp "$APP_BUNDLE/Contents/Frameworks/Python.framework"
+            codesign --verify --strict "$APP_BUNDLE/Contents/Frameworks/Python.framework" && echo "  ✓ Python.framework signature verified"
           fi
 
-          echo "Signing bundled Qt frameworks..."
+          echo ""
+          echo "=== Phase 2: Signing Qt frameworks ==="
+          # Sign frameworks in dependency order (deepest first)
           while IFS= read -r framework; do
-            echo "  -> $framework"
-            codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$framework"
-          done < <(find "$APP_BUNDLE/Contents/Frameworks" -type d -name "*.framework")
+            echo "  Signing: $(basename "$framework")"
+            codesign --sign "$DEVELOPER_ID" --options runtime --timestamp "$framework"
+            codesign --verify --strict "$framework" || echo "  ⚠ Warning: Verification failed for $(basename "$framework")"
+          done < <(find "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/lib" -type d -name "*.framework" 2>/dev/null | sort -r)
 
-          echo "Signing bundled dynamic libraries..."
-          while IFS= read -r dylib; do
-            echo "  -> $dylib"
-            codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$dylib"
-          done < <(find "$APP_BUNDLE/Contents" -type f \( -name "*.dylib" -o -name "*.so" \))
+          echo ""
+          echo "=== Phase 3: Signing dynamic libraries (.dylib and .so files) ==="
+          # Sign all dylibs and shared objects
+          while IFS= read -r lib; do
+            echo "  Signing: $(basename "$lib")"
+            codesign --sign "$DEVELOPER_ID" --options runtime --timestamp "$lib"
+          done < <(find "$APP_BUNDLE/Contents/Frameworks" -type f \( -name "*.dylib" -o -name "*.so" \) 2>/dev/null | sort)
 
-          # Sign main executable(s)
-          echo "Signing main executable..."
+          echo ""
+          echo "=== Phase 4: Signing Qt plugins ==="
+          # Sign Qt plugins (they're dylibs but in a different location)
+          if [ -d "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/plugins" ]; then
+            while IFS= read -r plugin; do
+              echo "  Signing: $(basename "$plugin")"
+              codesign --sign "$DEVELOPER_ID" --options runtime --timestamp "$plugin"
+            done < <(find "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/plugins" -type f -name "*.dylib" 2>/dev/null)
+          fi
+
+          echo ""
+          echo "=== Phase 5: Signing QML plugins ==="
+          # Sign QML plugins
+          if [ -d "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/qml" ]; then
+            while IFS= read -r qmlplugin; do
+              echo "  Signing: $(basename "$qmlplugin")"
+              codesign --sign "$DEVELOPER_ID" --options runtime --timestamp "$qmlplugin"
+            done < <(find "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/qml" -type f -name "*.dylib" 2>/dev/null)
+          fi
+
+          echo ""
+          echo "=== Phase 6: Signing main executable ==="
+          # Sign main executable with entitlements
           for executable in "$APP_BUNDLE/Contents/MacOS/"*; do
-            if [ -f "$executable" ]; then
-              codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$executable"
+            if [ -f "$executable" ] && [ -x "$executable" ]; then
+              echo "  Signing: $(basename "$executable")"
+              codesign --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$executable"
+              codesign --verify --strict "$executable" && echo "  ✓ Executable signature verified"
             fi
           done
 
-          # Sign the entire app bundle (entitlements applied at bundle level)
-          echo "Signing entire app bundle..."
+          echo ""
+          echo "=== Phase 7: Signing entire app bundle (final seal) ==="
+          # Sign the entire bundle LAST with entitlements
+          # This creates the outer seal - use --force here ONLY
           codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$APP_BUNDLE"
           
-          echo "✓ App bundle signed successfully"
-          
-          # Verify signature
-          codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
-          echo "✓ Signature verified"
+          echo ""
+          echo "=== Verifying final bundle signature ==="
+          # Deep verification to ensure all nested signatures are intact
+          if codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE" 2>&1; then
+            echo "✓ Complete bundle signature verified successfully"
+          else
+            echo "ERROR: Bundle signature verification failed"
+            exit 1
+          fi
 
-          # Display signature info
+          # Display detailed signature info
+          echo ""
+          echo "=== Signature Details ==="
           codesign -dvvv "$APP_BUNDLE" 2>&1 | head -30
 
       - name: Notarize macOS app bundle
@@ -364,16 +404,32 @@ jobs:
           echo "=== Contents Directory Sizes ==="
           du -sh "${{ matrix.dist-path }}/Contents/"*
           echo ""
-          echo "=== Checking for PySide6 duplication ==="
+          echo "=== Checking for PySide6 duplication (CRITICAL FIX VERIFICATION) ==="
           if [ -d "${{ matrix.dist-path }}/Contents/Resources/PySide6" ]; then
-            echo "WARNING: PySide6 found in Resources (should only be in Frameworks):"
+            echo "❌ ERROR: PySide6 found in Resources (should only be in Frameworks):"
             du -sh "${{ matrix.dist-path }}/Contents/Resources/PySide6"
+            echo "This duplication breaks the code signature seal!"
+            ls -la "${{ matrix.dist-path }}/Contents/Resources/" | grep -i pyside || true
+            exit 1
           else
             echo "✓ No PySide6 in Resources (correct)"
           fi
           if [ -d "${{ matrix.dist-path }}/Contents/Frameworks/PySide6" ]; then
-            echo "✓ PySide6 found in Frameworks:"
+            echo "✓ PySide6 found in Frameworks (correct location):"
             du -sh "${{ matrix.dist-path }}/Contents/Frameworks/PySide6"
+          else
+            echo "❌ ERROR: PySide6 not found in Frameworks"
+            exit 1
+          fi
+          echo ""
+          echo "=== Verifying Code Signature Seal Integrity ==="
+          # Check for any seal issues
+          if codesign --verify --deep --strict --verbose=4 "${{ matrix.dist-path }}" 2>&1 | tee /tmp/codesign_verify.log; then
+            echo "✓ Code signature seal is intact"
+          else
+            echo "❌ ERROR: Code signature seal is broken"
+            cat /tmp/codesign_verify.log
+            exit 1
           fi
 
       - name: Create archive (macOS)
