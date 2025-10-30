@@ -160,97 +160,63 @@ jobs:
         run: |
           chmod +x "${{ matrix.dist-path }}/Contents/MacOS/"*
 
-      - name: Fix malformed Qt frameworks and clean metadata
+      - name: Prepare macOS app bundle for signing
         if: matrix.os == 'macos-latest'
         run: |
           # Use absolute path to avoid directory issues
           APP_BUNDLE="${{ github.workspace }}/${{ matrix.dist-path }}"
           
-          echo "Removing extended attributes that prevent signing..."
-          xattr -cr "$APP_BUNDLE"
-          
-          echo "Restructuring Qt frameworks for signing and runtime..."
-          # PyInstaller copies Qt frameworks with malformed bundle structure that can't be signed as frameworks
-          # But the actual Qt dylibs inside them are needed at runtime
-          # Solution: Extract the dylibs from the frameworks and place them where @rpath can find them
-          QT_FRAMEWORKS_DIR="$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/lib"
-          if [ -d "$QT_FRAMEWORKS_DIR" ]; then
-            echo "Found Qt frameworks directory, extracting dylibs..."
-            
-            # For each .framework, extract the main dylib to the Qt/lib directory
-            for framework in "$QT_FRAMEWORKS_DIR"/*.framework; do
-              if [ -d "$framework" ]; then
-                FRAMEWORK_NAME=$(basename "$framework" .framework)
-                echo "  Processing $FRAMEWORK_NAME.framework..."
-                
-                # Find the actual dylib inside the framework (usually in Versions/A/ or Versions/5/)
-                DYLIB_PATH=""
-                if [ -f "$framework/Versions/A/$FRAMEWORK_NAME" ]; then
-                  DYLIB_PATH="$framework/Versions/A/$FRAMEWORK_NAME"
-                elif [ -f "$framework/Versions/5/$FRAMEWORK_NAME" ]; then
-                  DYLIB_PATH="$framework/Versions/5/$FRAMEWORK_NAME"
-                elif [ -f "$framework/$FRAMEWORK_NAME" ]; then
-                  DYLIB_PATH="$framework/$FRAMEWORK_NAME"
-                fi
-                
-                # Copy the dylib to Qt/lib directory if found
-                if [ -n "$DYLIB_PATH" ] && [ -f "$DYLIB_PATH" ]; then
-                  cp "$DYLIB_PATH" "$QT_FRAMEWORKS_DIR/$FRAMEWORK_NAME.dylib"
-                  echo "    ✓ Extracted $FRAMEWORK_NAME.dylib"
-                fi
-              fi
-            done
-            
-            # Now remove the malformed .framework bundles (we've extracted what we need)
-            FRAMEWORK_COUNT=$(find "$QT_FRAMEWORKS_DIR" -name "*.framework" -type d -maxdepth 1 | wc -l | tr -d ' ')
-            if [ "$FRAMEWORK_COUNT" -gt 0 ]; then
-              echo "Removing $FRAMEWORK_COUNT malformed Qt framework bundles..."
-              find "$QT_FRAMEWORKS_DIR" -name "*.framework" -type d -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
-              echo "✓ Removed malformed Qt framework bundles (dylibs extracted)"
-            fi
-            
-            # Fix @rpath references in PySide6 .so files to point to Qt dylibs
-            echo "Fixing @rpath references in PySide6 binaries..."
-            PYSIDE6_DIR="$APP_BUNDLE/Contents/Frameworks/PySide6"
-            if [ -d "$PYSIDE6_DIR" ]; then
-              # Update rpath in all .so files to include Qt/lib directory
-              find "$PYSIDE6_DIR" -name "*.so" -type f | while read sofile; do
-                # Add rpath to Qt/lib directory (relative to the .so file location)
-                install_name_tool -add_rpath "@loader_path/Qt/lib" "$sofile" 2>/dev/null || true
-                
-                # Also fix any absolute Qt framework references to point to the extracted dylibs
-                # Change @rpath/QtCore -> @rpath/QtCore.dylib for each Qt library
-                for qtlib in QtCore QtGui QtWidgets QtQml QtQuick QtNetwork QtMultimedia QtOpenGL Qt3DCore Qt3DRender Qt3DInput Qt3DLogic Qt3DAnimation Qt3DExtras QtConcurrent QtDBus QtOpenGLWidgets QtPrintSupport QtSql QtSvg QtTest QtXml; do
-                  install_name_tool -change "@rpath/$qtlib" "@rpath/$qtlib.dylib" "$sofile" 2>/dev/null || true
-                done
-              done
-              echo "✓ Fixed @rpath references in PySide6 binaries"
-              
-              # Fix Qt dylibs' own dependencies and install names
-              echo "Fixing Qt dylib inter-dependencies..."
-              if [ -d "$QT_FRAMEWORKS_DIR" ]; then
-                for dylib in "$QT_FRAMEWORKS_DIR"/*.dylib; do
-                  if [ -f "$dylib" ]; then
-                    DYLIB_NAME=$(basename "$dylib")
-                    
-                    # Update the dylib's install name to use @rpath
-                    install_name_tool -id "@rpath/$DYLIB_NAME" "$dylib" 2>/dev/null || true
-                    
-                    # Fix dependencies on other Qt libraries
-                    for qtlib in QtCore QtGui QtWidgets QtQml QtQuick QtNetwork QtMultimedia QtOpenGL Qt3DCore Qt3DRender Qt3DInput Qt3DLogic Qt3DAnimation Qt3DExtras QtConcurrent QtDBus QtOpenGLWidgets QtPrintSupport QtSql QtSvg QtTest QtXml; do
-                      # Change @rpath/QtXxx to @rpath/QtXxx.dylib
-                      install_name_tool -change "@rpath/$qtlib" "@rpath/$qtlib.dylib" "$dylib" 2>/dev/null || true
-                      # Also handle framework-style paths
-                      install_name_tool -change "@rpath/$qtlib.framework/Versions/A/$qtlib" "@rpath/$qtlib.dylib" "$dylib" 2>/dev/null || true
-                    done
-                  fi
-                done
-                echo "✓ Fixed Qt dylib inter-dependencies"
-              fi
-            fi
+          if [ ! -d "$APP_BUNDLE" ]; then
+            echo "ERROR: App bundle not found at $APP_BUNDLE"
+            ls -la "${{ github.workspace }}/dist" || true
+            exit 1
           fi
-          
-          echo "✓ App bundle cleaned and restructured for signing"
+
+          echo "Clearing extended attributes that prevent signing..."
+          xattr -cr "$APP_BUNDLE"
+
+          echo "Verifying required PySide6 assets are present..."
+          QML_LOCATIONS=(
+            "$APP_BUNDLE/Contents/Resources/PySide6/Qt/qml"
+            "$APP_BUNDLE/Contents/MacOS/PySide6/Qt/qml"
+            "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/qml"
+          )
+          PLUGIN_LOCATIONS=(
+            "$APP_BUNDLE/Contents/Frameworks/PySide6/Qt/plugins"
+            "$APP_BUNDLE/Contents/Resources/PySide6/Qt/plugins"
+            "$APP_BUNDLE/Contents/MacOS/PySide6/Qt/plugins"
+          )
+
+          has_qml="false"
+          for path in "${QML_LOCATIONS[@]}"; do
+            if [ -d "$path" ]; then
+              has_qml="true"
+              break
+            fi
+          done
+          if [ "$has_qml" != "true" ]; then
+            echo "ERROR: PySide6 QML modules were not bundled. Check spec datas configuration."
+            ls -R "$APP_BUNDLE/Contents" | head -200 || true
+            exit 1
+          fi
+
+          has_plugins="false"
+          for path in "${PLUGIN_LOCATIONS[@]}"; do
+            if [ -d "$path" ]; then
+              has_plugins="true"
+              break
+            fi
+          done
+          if [ "$has_plugins" != "true" ]; then
+            echo "ERROR: PySide6 plugins were not bundled. Check spec binaries configuration."
+            ls -R "$APP_BUNDLE/Contents" | head -200 || true
+            exit 1
+          fi
+
+          echo "Ensuring executable bits are set on bundled binaries..."
+          find "$APP_BUNDLE/Contents" -type f \( -name "*.dylib" -o -name "*.so" -o -path "*/MacOS/*" \) -exec chmod +x {} +
+
+          echo "✓ App bundle prepared for signing"
 
       - name: Import Code Signing Certificate
         if: matrix.os == 'macos-latest'
@@ -302,63 +268,47 @@ jobs:
             exit 1
           fi
           
-          # IMPORTANT: Sign from the inside out, WITHOUT using --deep on frameworks
-          # The --deep flag can break symlinks in properly structured frameworks like Python.framework
-          
-          # 1. Sign all dylibs and binaries in Frameworks directory
-          echo "Signing framework binaries and libraries..."
-          if [ -d "$APP_BUNDLE/Contents/Frameworks" ]; then
-            # Find and sign all .dylib files
-            find "$APP_BUNDLE/Contents/Frameworks" -type f -name "*.dylib" -exec codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp {} \; 2>&1 | grep -v "already signed" || true
-            
-            # Find and sign all .so files (Python extensions)
-            find "$APP_BUNDLE/Contents/Frameworks" -type f -name "*.so" -exec codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp {} \; 2>&1 | grep -v "already signed" || true
-            
-            # Sign Python.framework (properly structured framework - NO --deep)
-            if [ -d "$APP_BUNDLE/Contents/Frameworks/Python.framework" ]; then
-              echo "Signing Python.framework..."
-              # Sign the Python executable inside the framework
-              if [ -f "$APP_BUNDLE/Contents/Frameworks/Python.framework/Versions/Current/Python" ]; then
-                codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$APP_BUNDLE/Contents/Frameworks/Python.framework/Versions/Current/Python"
-              fi
-              # Sign the framework bundle itself (without --deep to preserve symlinks)
-              codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$APP_BUNDLE/Contents/Frameworks/Python.framework"
-            fi
-            
-            # Sign any other properly structured frameworks
-            find "$APP_BUNDLE/Contents/Frameworks" -name "*.framework" -type d -depth 1 -exec codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp {} \; 2>&1 | grep -v "already signed" || true
+          # Sign Python.framework first (it's properly structured)
+          if [ -d "$APP_BUNDLE/Contents/Frameworks/Python.framework" ]; then
+            echo "Signing Python.framework..."
+            codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$APP_BUNDLE/Contents/Frameworks/Python.framework"
           fi
-          
-          # 2. Sign any executables in MacOS directory
-          echo "Signing main executable(s)..."
+
+          echo "Signing bundled Qt frameworks..."
+          while IFS= read -r framework; do
+            echo "  -> $framework"
+            codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$framework"
+          done < <(find "$APP_BUNDLE/Contents/Frameworks" -type d -name "*.framework")
+
+          echo "Signing bundled dynamic libraries..."
+          while IFS= read -r dylib; do
+            echo "  -> $dylib"
+            codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp "$dylib"
+          done < <(find "$APP_BUNDLE/Contents" -type f \( -name "*.dylib" -o -name "*.so" \))
+
+          # Sign main executable(s)
+          echo "Signing main executable..."
           for executable in "$APP_BUNDLE/Contents/MacOS/"*; do
             if [ -f "$executable" ]; then
-              echo "  Signing: $(basename $executable)"
               codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$executable"
             fi
           done
-          
-          # 3. Sign the entire app bundle WITHOUT --deep
-          # This is the critical fix: --deep can break symlinks and cause "No such file or directory" errors
-          echo "Signing entire app bundle (without --deep to preserve bundle integrity)..."
+
+          # Sign the entire app bundle (entitlements applied at bundle level)
+          echo "Signing entire app bundle..."
           codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp --entitlements entitlements.plist "$APP_BUNDLE"
           
           echo "✓ App bundle signed successfully"
           
-          # Verify signature (without --strict initially to see any issues)
-          echo "Verifying signature..."
-          codesign --verify --verbose=2 "$APP_BUNDLE" 2>&1 || {
-            echo "⚠ Basic verification failed, trying without verbose..."
-            codesign --verify "$APP_BUNDLE" || {
-              echo "ERROR: Signature verification failed"
-              exit 1
-            }
-          }
+          # Verify signature
+          codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
           echo "✓ Signature verified"
+
+          # Validate Gatekeeper assessment to catch "app is damaged" issues early
+          spctl --assess --type exec --verbose "$APP_BUNDLE"
+          echo "✓ Gatekeeper assessment passed"
           
           # Display signature info
-          echo ""
-          echo "=== Signature Details ==="
           codesign -dvvv "$APP_BUNDLE" 2>&1 | head -30
 
       - name: Notarize macOS app bundle

@@ -59,17 +59,22 @@ if os.path.exists('icon.ico'):
 if os.path.exists('runtime_config.json'):
     app_datas.append(('runtime_config.json', '.'))
 
-# PyInstaller's automatic hooks will handle all PySide6 dependencies
-# No manual Qt collection needed - this was causing duplication between
-# Contents/Resources and Contents/Frameworks
-
 a = Analysis(
     ['rename.py'],
     pathex=['.'],
     binaries=[],
     datas=app_datas,
     hiddenimports=[
-        'PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtCore', 'PySide6.QtGui', 'PySide6.QtMultimedia',
+        'PySide6.QtCore',
+        'PySide6.QtGui',
+        'PySide6.QtQml',
+        'PySide6.QtQuick',
+        'PySide6.QtQuickControls2',
+        'PySide6.QtQuickLayouts',
+        'PySide6.QtQuickTemplates2',
+        'PySide6.QtMultimedia',
+        'PySide6.QtMultimediaWidgets',
+        'PySide6.QtGraphicalEffects',
         # Ensure platform/backends get tracked
         'PySide6.QtOpenGL',
     ],
@@ -83,13 +88,6 @@ a = Analysis(
     noarchive=False,
     optimize=0,
 )
-
-# CRITICAL FIX: Remove PySide6 data files from Resources
-# PyInstaller hooks auto-collect PySide6 data to a.datas (goes to Resources)
-# But binaries already go to Frameworks via a.binaries
-# Having PySide6 in BOTH locations causes crashes and "damaged app" errors
-a.datas = [x for x in a.datas if not x[0].startswith('PySide6/')]
-print(f"Filtered out PySide6 data files from Resources to prevent duplication")
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
