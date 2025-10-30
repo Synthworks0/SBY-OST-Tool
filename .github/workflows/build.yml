@@ -380,10 +380,23 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           cd dist
-          ditto -c -k --sequesterRsrc --keepParent "$(basename ${{ matrix.dist-path }})" "../${{ matrix.archive-name }}"
+          # Use ditto with proper flags to preserve notarization ticket and code signature
+          # --norsrc is critical: it prevents resource fork issues that break notarization
+          ditto -c -k --norsrc --keepParent "$(basename ${{ matrix.dist-path }})" "../${{ matrix.archive-name }}"
           cd ..
           echo "Created archive: ${{ matrix.archive-name }}"
           ls -lh "${{ matrix.archive-name }}"
+          
+          # Verify the archive preserves the notarization ticket
+          echo "Verifying notarization ticket in archive..."
+          TEMP_VERIFY=$(mktemp -d)
+          unzip -q "${{ matrix.archive-name }}" -d "$TEMP_VERIFY"
+          APP_IN_ZIP=$(find "$TEMP_VERIFY" -name "*.app" -maxdepth 2 | head -1)
+          if [ -n "$APP_IN_ZIP" ]; then
+            xcrun stapler validate "$APP_IN_ZIP" || echo "⚠ Warning: Notarization ticket not preserved in archive"
+            spctl --assess --type exec --verbose "$APP_IN_ZIP" || echo "⚠ Warning: Gatekeeper check failed for archived app"
+          fi
+          rm -rf "$TEMP_VERIFY"
 
       - name: Create archive (Linux)
         if: startsWith(matrix.os, 'ubuntu')
