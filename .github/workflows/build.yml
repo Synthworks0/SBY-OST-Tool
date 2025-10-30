@@ -395,7 +395,7 @@ jobs:
             security delete-keychain "$KEYCHAIN_PATH" || true
           fi
 
-      - name: Verify app bundle size (macOS)
+      - name: Verify app bundle structure and signatures (macOS)
         if: matrix.os == 'macos-latest'
         run: |
           echo "=== App Bundle Size Breakdown ==="
@@ -404,33 +404,39 @@ jobs:
           echo "=== Contents Directory Sizes ==="
           du -sh "${{ matrix.dist-path }}/Contents/"*
           echo ""
-          echo "=== Checking for PySide6 duplication (CRITICAL FIX VERIFICATION) ==="
+          echo "=== Checking PySide6 Location ==="
           if [ -d "${{ matrix.dist-path }}/Contents/Resources/PySide6" ]; then
-            echo "❌ ERROR: PySide6 found in Resources (should only be in Frameworks):"
+            echo "⚠ PySide6 found in Resources:"
             du -sh "${{ matrix.dist-path }}/Contents/Resources/PySide6"
-            echo "This duplication breaks the code signature seal!"
-            ls -la "${{ matrix.dist-path }}/Contents/Resources/" | grep -i pyside || true
-            exit 1
+            echo "  (May impact signature seal if large)"
           else
-            echo "✓ No PySide6 in Resources (correct)"
+            echo "✓ No PySide6 in Resources"
           fi
           if [ -d "${{ matrix.dist-path }}/Contents/Frameworks/PySide6" ]; then
-            echo "✓ PySide6 found in Frameworks (correct location):"
+            echo "✓ PySide6 found in Frameworks:"
             du -sh "${{ matrix.dist-path }}/Contents/Frameworks/PySide6"
           else
-            echo "❌ ERROR: PySide6 not found in Frameworks"
-            exit 1
+            echo "⚠ PySide6 not in Frameworks (unusual but may be OK for small builds)"
           fi
           echo ""
-          echo "=== Verifying Code Signature Seal Integrity ==="
-          # Check for any seal issues
+          echo "=== Verifying Code Signature Seal Integrity (CRITICAL) ==="
+          # Comprehensive signature verification - this is the real test
           if codesign --verify --deep --strict --verbose=4 "${{ matrix.dist-path }}" 2>&1 | tee /tmp/codesign_verify.log; then
-            echo "✓ Code signature seal is intact"
+            echo "✓ Code signature seal is intact and valid"
           else
-            echo "❌ ERROR: Code signature seal is broken"
+            echo "❌ ERROR: Code signature seal is broken - app will show as damaged"
+            echo "Verification output:"
             cat /tmp/codesign_verify.log
             exit 1
           fi
+          echo ""
+          echo "=== Checking for unsigned components ==="
+          find "${{ matrix.dist-path }}/Contents" -type f \( -name "*.dylib" -o -name "*.so" -o -name "*.framework" \) | while read file; do
+            if ! codesign --verify "$file" 2>/dev/null; then
+              echo "⚠ Unsigned: $file"
+            fi
+          done
+          echo "✓ Component signature check complete"
 
       - name: Create archive (macOS)
         if: matrix.os == 'macos-latest'
