@@ -160,6 +160,45 @@ jobs:
         run: |
           chmod +x "${{ matrix.dist-path }}/Contents/MacOS/"*
 
+      - name: Normalize asset filenames to NFD (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "=== Normalizing asset filenames to NFD (decomposed Unicode) ==="
+          python3 - <<'NORMALIZE_PY'
+          import os
+          import unicodedata
+          from pathlib import Path
+          
+          def normalize_to_nfd(path):
+              """Recursively rename all files/dirs to NFD (decomposed) form."""
+              path = Path(path)
+              
+              # Process children first (depth-first) to avoid renaming parent before children
+              if path.is_dir():
+                  for child in sorted(path.iterdir(), reverse=True):
+                      normalize_to_nfd(child)
+              
+              # Normalize this path's name
+              original_name = path.name
+              nfd_name = unicodedata.normalize('NFD', original_name)
+              
+              if original_name != nfd_name:
+                  new_path = path.parent / nfd_name
+                  print(f"Renaming: {original_name} -> {nfd_name}")
+                  path.rename(new_path)
+                  return new_path
+              return path
+          
+          # Normalize all assets in the standalone build
+          assets_dir = Path("${{ matrix.dist-path }}/Contents/Resources/soundtrack_tool/assets")
+          if assets_dir.exists():
+              print(f"Normalizing assets in: {assets_dir}")
+              normalize_to_nfd(assets_dir)
+              print("✓ NFD normalization complete")
+          else:
+              print(f"⚠ Assets directory not found (expected for Remote build): {assets_dir}")
+          NORMALIZE_PY
+
       - name: Prepare macOS app bundle for signing
         if: matrix.os == 'macos-latest'
         run: |
