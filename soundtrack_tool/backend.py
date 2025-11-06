@@ -595,7 +595,16 @@ class RenamerBackend(QObject):
 
     @Property(list, notify=albumsChanged)
     def current_track_list(self) -> list[str]:
-        return self.albums[self._current_album]["Tracks"][self._current_language]
+        album_data = self.albums[self._current_album]
+        tracks = album_data["Tracks"][self._current_language]
+        
+        if album_data.get("is_multi_disc") and isinstance(tracks, dict):
+            result = []
+            for cd_key in sorted(tracks.keys()):
+                result.extend(tracks[cd_key])
+            return result
+        
+        return tracks
 
     @Slot()
     def refresh_album_list(self) -> None:

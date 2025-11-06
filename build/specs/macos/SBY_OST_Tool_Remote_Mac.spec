@@ -40,8 +40,7 @@ else:
 if os.path.exists('../../../build/icons/icon.ico'):
     app_datas.append(('../../../build/icons/icon.ico', '.'))
 
-if os.path.exists('../../../runtime_config.json'):
-    app_datas.append(('../../../runtime_config.json', '.'))
+app_datas.append(('../../../runtime_config.json', '.'))
 
 
 hidden_imports = [

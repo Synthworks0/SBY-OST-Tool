@@ -9,9 +9,8 @@ common_datas = [
     ('../../../qml/components', 'qml/components'),
     ('../../../resources/icons', 'resources/icons'),
     ('../../../soundtrack_tool/assets/SBY Soundtracks', 'soundtrack_tool/assets/SBY Soundtracks'),
+    ('../../../runtime_config.json', '.'),
 ]
-if existing('../../../runtime_config.json'):
-    common_datas.append(('../../../runtime_config.json', '.'))
 
 hidden_imports = [
     'PySide6.QtQml',
