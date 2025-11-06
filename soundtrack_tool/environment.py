@@ -12,7 +12,6 @@ def get_runtime_root() -> Path:
         return Path(sys.executable).resolve().parent
     return Path(__file__).resolve().parent.parent
 
-
 def get_app_resources_dir(runtime_root: Path | None = None) -> Path:
     runtime = runtime_root or get_runtime_root()
     if getattr(sys, "frozen", False) and sys.platform == "darwin":
@@ -73,10 +72,8 @@ def configure_qt_environment(logger=None) -> None:
     _merge_env_paths("QML2_IMPORT_PATH", qml_candidates, logger)
     _set_platform_plugin_path(plugin_candidates, logger)
 
-
 def _default_identifier(app_name: str) -> str:
     return app_name.lower().replace(" ", "-")
-
 
 def get_user_data_dir(app_name: str, bundle_identifier: str | None = None) -> Path:
     identifier = bundle_identifier or _default_identifier(app_name)
@@ -88,7 +85,6 @@ def get_user_data_dir(app_name: str, bundle_identifier: str | None = None) -> Pa
         return Path(root) / identifier
     base = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share"))
     return Path(base) / identifier
-
 
 def get_user_cache_dir(app_name: str, bundle_identifier: str | None = None) -> Path:
     identifier = bundle_identifier or _default_identifier(app_name)

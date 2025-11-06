@@ -5,8 +5,6 @@ from typing import Any
 
 
 class AppSettings:
-    """Simple JSON-backed settings store."""
-
     def __init__(self, settings_path: Path) -> None:
         self._path = settings_path
         try:

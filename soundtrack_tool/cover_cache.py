@@ -8,8 +8,6 @@ from .cloudflare import R2Client
 
 
 class CoverCache:
-    """Caches remote cover art on disk so subsequent runs reuse it instantly."""
-
     def __init__(self, cache_root: Path) -> None:
         self._cache_dir = cache_root / "covers"
         self._cache_dir.mkdir(parents=True, exist_ok=True)
@@ -41,7 +39,6 @@ class CoverCache:
             try:
                 self.get_cover_path(cover_path, r2_client)
             except Exception:
-                # Ignore download errors during warmup; they'll be retried on demand.
                 continue
 
     def _destination_for(self, relative_path: str) -> Path:

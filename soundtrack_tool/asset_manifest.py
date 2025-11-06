@@ -555,6 +555,217 @@ ASSET_MANIFEST = {
       }
     ]
   },
+  "Santa Claus": {
+    "english_name": "Rascal Does Not Dream of Santa Claus Original Soundtrack",
+    "cover": "Rascal Does Not Dream of Santa Claus Original Soundtrack/cover.jpg",
+    "tracks": [
+      {
+        "track_number": 1,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/01. \u76ee\u899a\u3081.flac",
+        "duration_seconds": 107
+      },
+      {
+        "track_number": 2,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/02. \u81ea\u5df1\u7d39\u4ecb.flac",
+        "duration_seconds": 68
+      },
+      {
+        "track_number": 3,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/03. \u53cb\u9054\u5019\u88dc.flac",
+        "duration_seconds": 105
+      },
+      {
+        "track_number": 4,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/04. \u3059\u308c\u9055\u3044.flac",
+        "duration_seconds": 105
+      },
+      {
+        "track_number": 5,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/05. \u65e2\u8996\u611f.flac",
+        "duration_seconds": 109
+      },
+      {
+        "track_number": 6,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/06. \u6025\u3052\uff01.flac",
+        "duration_seconds": 96
+      },
+      {
+        "track_number": 7,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/07. \u672c\u5f53\u306b\u536f\u6708\uff1f.flac",
+        "duration_seconds": 109
+      },
+      {
+        "track_number": 8,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/08. \u81ea\u5206\u63a2\u3057.flac",
+        "duration_seconds": 126
+      },
+      {
+        "track_number": 9,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/09. \u7a7a\u6c17\u8aad\u3093\u3067\u308b\uff1f.flac",
+        "duration_seconds": 70
+      },
+      {
+        "track_number": 10,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/10. \u6c17\u3065\u3044\u3066\u3057\u307e\u3063\u305f.flac",
+        "duration_seconds": 97
+      },
+      {
+        "track_number": 11,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/11. \u8f9b\u3044\u9078\u629e.flac",
+        "duration_seconds": 99
+      },
+      {
+        "track_number": 12,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/12. \u55a7\u5629\u306e\u539f\u56e0.flac",
+        "duration_seconds": 92
+      },
+      {
+        "track_number": 13,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/13. \u5439\u3063\u5207\u308c\u305f.flac",
+        "duration_seconds": 127
+      },
+      {
+        "track_number": 14,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/14. \u61a7\u308c.flac",
+        "duration_seconds": 62
+      },
+      {
+        "track_number": 15,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/15. \u60aa\u8005\u3089\u3057\u304f.flac",
+        "duration_seconds": 67
+      },
+      {
+        "track_number": 16,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/16. \u6fc0\u767a.flac",
+        "duration_seconds": 87
+      },
+      {
+        "track_number": 17,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/17. \u52a9\u3051\u3066\u307b\u3057\u304f\u3066.flac",
+        "duration_seconds": 71
+      },
+      {
+        "track_number": 18,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/18. \u3046\u307e\u304f\u884c\u304b\u306a\u304f\u3066.flac",
+        "duration_seconds": 94
+      },
+      {
+        "track_number": 19,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/19. \u6c17\u3065\u3044\u3066\u304f\u308c\u306a\u3044.flac",
+        "duration_seconds": 66
+      },
+      {
+        "track_number": 20,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/20. \u672c\u5f53\u306e\u81ea\u5206.flac",
+        "duration_seconds": 88
+      },
+      {
+        "track_number": 21,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/21. \u6cbb\u3055\u306a\u3044\u3067\u304f\u3060\u3055\u3044.flac",
+        "duration_seconds": 98
+      },
+      {
+        "track_number": 22,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/22. \u5343\u91cc\u773c.flac",
+        "duration_seconds": 96
+      },
+      {
+        "track_number": 23,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/23. \u5fc3\u306e\u58f0.flac",
+        "duration_seconds": 71
+      },
+      {
+        "track_number": 24,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/24. \u4f55\u3082\u805e\u3053\u3048\u306a\u3044.flac",
+        "duration_seconds": 58
+      },
+      {
+        "track_number": 25,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/25. \u3067\u308c\u3067\u308c.flac",
+        "duration_seconds": 127
+      },
+      {
+        "track_number": 1,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/01. \u7a4f\u3084\u304b.flac",
+        "duration_seconds": 101
+      },
+      {
+        "track_number": 2,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/02. \u4e0d\u5b89\u3068\u5b64\u72ec.flac",
+        "duration_seconds": 188
+      },
+      {
+        "track_number": 3,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/03. \u5065\u5168\u306a\u60a9\u307f.flac",
+        "duration_seconds": 126
+      },
+      {
+        "track_number": 4,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/04. \u8a98\u60d1.flac",
+        "duration_seconds": 77
+      },
+      {
+        "track_number": 5,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/05. \u5922\u306e\u6b63\u4f53.flac",
+        "duration_seconds": 139
+      },
+      {
+        "track_number": 6,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/06. \u6e21\u3057\u305f\u3044\u3082\u306e.flac",
+        "duration_seconds": 133
+      },
+      {
+        "track_number": 7,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/07. \u6115\u7136.flac",
+        "duration_seconds": 105
+      },
+      {
+        "track_number": 8,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/08. \u77e5\u3089\u306a\u3044.flac",
+        "duration_seconds": 75
+      },
+      {
+        "track_number": 9,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/09. \u5207\u306a\u304f\u9060\u3044.flac",
+        "duration_seconds": 132
+      },
+      {
+        "track_number": 10,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/10. \u79c1\u306f\u6b4c\u3092\u5c4a\u3051\u308b\u3060\u3051.flac",
+        "duration_seconds": 119
+      },
+      {
+        "track_number": 11,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/11. \u53ef\u80fd\u6027\u306e\u4e16\u754c.flac",
+        "duration_seconds": 99
+      },
+      {
+        "track_number": 12,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/12. \u4fe1\u3058\u3066\u3082\u3089\u3048\u306a\u3044.flac",
+        "duration_seconds": 112
+      },
+      {
+        "track_number": 13,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/13. \u308f\u3056\u3068\u3089\u3057\u304f.flac",
+        "duration_seconds": 95
+      },
+      {
+        "track_number": 14,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/14. \u8a00\u3063\u305f\u3067\u3057\u3087\uff1f.flac",
+        "duration_seconds": 72
+      },
+      {
+        "track_number": 15,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/15. \u6b69\u304d\u51fa\u3059\u4e8c\u4eba.flac",
+        "duration_seconds": 126
+      },
+      {
+        "track_number": 16,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/16. \u30de\u30a6\u30f3\u30c8.flac",
+        "duration_seconds": 96
+      }
+    ]
+  },
   "Extras": {
     "english_name": "Extras",
     "cover": "Extras/cover.jpg",
@@ -565,7 +776,7 @@ ASSET_MANIFEST = {
         "duration_seconds": 239
       },
       {
-        "track_number": 25,
+        "track_number": 2,
         "relative_path": "Extras/Fukashigi no Karte (All Heroine Ver.)/Fukashigi no Karte (All Heroine Ver.).flac",
         "duration_seconds": 238
       },
@@ -575,84 +786,154 @@ ASSET_MANIFEST = {
         "duration_seconds": 239
       },
       {
-        "track_number": 27,
+        "track_number": 4,
         "relative_path": "Extras/Fukashigi no Karte (Juvenile Ver.)/Fukashigi no Karte (Juvenile Ver.).flac",
         "duration_seconds": 290
       },
       {
-        "track_number": 27,
+        "track_number": 5,
         "relative_path": "Extras/Fukashigi no Karte (Movie Ver.)/Fukashigi no Karte (Movie Ver.).flac",
         "duration_seconds": 239
       },
       {
-        "track_number": 1,
+        "track_number": 6,
+        "relative_path": "Extras/Ikumi Akagi/Fukashigi no Karte (Ikumi Akagi Ver.).flac",
+        "duration_seconds": 240
+      },
+      {
+        "track_number": 7,
+        "relative_path": "Extras/Ikumi Akagi/The Horizon Is My Scar (Ikumi Akagi Ver.).flac",
+        "duration_seconds": 281
+      },
+      {
+        "track_number": 8,
         "relative_path": "Extras/Kaede and Kaede/Fukashigi no Karte (Kaede and Kaede Ver.).flac",
         "duration_seconds": 237
       },
       {
-        "track_number": 1,
+        "track_number": 9,
         "relative_path": "Extras/Kaede Azusagawa/Fukashigi no Karte (Kaede Azusagawa Ver.).flac",
-        "duration_seconds": 240
+        "duration_seconds": 239
       },
       {
-        "track_number": 1,
+        "track_number": 10,
         "relative_path": "Extras/Mai Sakurajima/Fukashigi no Karte (Mai Sakurajima Ver.).flac",
         "duration_seconds": 242
       },
       {
-        "track_number": 1,
+        "track_number": 11,
         "relative_path": "Extras/Nodoka Toyohama/Fukashigi no Karte (Nodoka Toyohama Ver.).flac",
         "duration_seconds": 240
       },
       {
-        "track_number": 1,
+        "track_number": 12,
+        "relative_path": "Extras/Panda Kaede/Fukashigi no Karte (Panda Kaede Ver.).flac",
+        "duration_seconds": 240
+      },
+      {
+        "track_number": 13,
         "relative_path": "Extras/Rio Futaba/Fukashigi no Karte (Rio Futaba Ver.).flac",
         "duration_seconds": 240
       },
       {
-        "track_number": 26,
+        "track_number": 14,
         "relative_path": "Extras/Sakuta Azusagawa/Fukashigi no Karte (Azusagawa Sakuta Ver.).flac",
         "duration_seconds": 239
       },
       {
-        "track_number": 1,
+        "track_number": 15,
         "relative_path": "Extras/Shoko Makinohara/Fukashigi no Karte (Shoko Makinohara Ver.).flac",
         "duration_seconds": 237
       },
       {
-        "track_number": 1,
-        "relative_path": "Extras/Tomoe Koga/Fukashigi no Karte (Tomoe Koga Ver.).flac",
-        "duration_seconds": 240
-      },
-      {
-        "track_number": 2,
-        "relative_path": "Extras/Sweet Bullet/BABY!/BABY!.flac",
-        "duration_seconds": 231
-      },
-      {
-        "track_number": 4,
+        "track_number": 16,
         "relative_path": "Extras/Sweet Bullet/BABY!/BABY! (Instrumental Ver.).flac",
         "duration_seconds": 227
       },
       {
-        "track_number": 28,
-        "relative_path": "Extras/Sweet Bullet/Becoming a Muse/Becoming a Muse.flac",
-        "duration_seconds": 242
+        "track_number": 17,
+        "relative_path": "Extras/Sweet Bullet/BABY!/BABY!.flac",
+        "duration_seconds": 231
       },
       {
-        "track_number": 30,
+        "track_number": 18,
         "relative_path": "Extras/Sweet Bullet/Becoming a Muse/Becoming a Muse (Instrumental Ver.).flac",
         "duration_seconds": 242
       },
       {
-        "track_number": 29,
+        "track_number": 19,
+        "relative_path": "Extras/Sweet Bullet/Becoming a Muse/Becoming a Muse.flac",
+        "duration_seconds": 242
+      },
+      {
+        "track_number": 20,
+        "relative_path": "Extras/Sweet Bullet/Otome Notebook/Otome Notebook (Instrumental Ver.).flac",
+        "duration_seconds": 219
+      },
+      {
+        "track_number": 21,
         "relative_path": "Extras/Sweet Bullet/Otome Notebook/Otome Notebook.flac",
         "duration_seconds": 222
       },
       {
+        "track_number": 22,
+        "relative_path": "Extras/Sweet Bullet/Ultrasonic Melody/Ultrasonic Melody.flac",
+        "duration_seconds": 272
+      },
+      {
+        "track_number": 23,
+        "relative_path": "Extras/The Horizon Is My Scar/\u6c34\u5e73\u7dda\u306f\u50d5\u306e\u53e4\u50b7.flac",
+        "duration_seconds": 281
+      },
+      {
+        "track_number": 24,
+        "relative_path": "Extras/The Horizon Is My Scar (Instrumental Ver.)/\u6c34\u5e73\u7dda\u306f\u50d5\u306e\u53e4\u50b7 Instrumental.flac",
+        "duration_seconds": 279
+      },
+      {
+        "track_number": 25,
+        "relative_path": "Extras/The Horizon Is My Scar (SP Ver.)/\u6c34\u5e73\u7dda\u306f\u50d5\u306e\u53e4\u50b7 SP Ver.flac",
+        "duration_seconds": 281
+      },
+      {
+        "track_number": 26,
+        "relative_path": "Extras/Tomoe Koga/Fukashigi no Karte (Tomoe Koga Ver.).flac",
+        "duration_seconds": 240
+      },
+      {
+        "track_number": 27,
+        "relative_path": "Extras/Touko Kirishima/Hilbert Space/Hilbert Space.flac",
+        "duration_seconds": 206
+      },
+      {
+        "track_number": 28,
+        "relative_path": "Extras/Touko Kirishima/I need you/I need you.flac",
+        "duration_seconds": 310
+      },
+      {
+        "track_number": 29,
+        "relative_path": "Extras/Touko Kirishima/Social World/Social World.flac",
+        "duration_seconds": 274
+      },
+      {
+        "track_number": 30,
+        "relative_path": "Extras/Touko Kirishima/Someone/Someone.flac",
+        "duration_seconds": 232
+      },
+      {
         "track_number": 31,
-        "relative_path": "Extras/Sweet Bullet/Otome Notebook/Otome Notebook (Instrumental Ver.).flac",
-        "duration_seconds": 219
+        "relative_path": "Extras/Uzuki Hirokawa/Fukashigi no Karte (Uzuki Hirokawa Ver.).flac",
+        "duration_seconds": 238
+      },
+      {
+        "track_number": 32,
+        "relative_path": "Extras/Uzuki Hirokawa/Social World (Uzuki Hirokawa Ver.).flac",
+        "duration_seconds": 274
+      },
+      {
+        "track_number": 33,
+        "relative_path": "Extras/Uzuki Hirokawa/The Horizon Is My Scar (Uzuki Hirokawa Ver.).flac",
+        "duration_seconds": 281
       }
     ]
   }

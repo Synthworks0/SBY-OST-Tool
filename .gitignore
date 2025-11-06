@@ -2,7 +2,6 @@
 venv/
 __pycache__/
 *.pyc
-build/
 dist/
 *.spec.build/
 *.log
@@ -20,3 +19,4 @@ runtime_config.json
 .history/
 .cursorignore
 soundtrack_tool/__pycache__/
+.github/workflows/image/

@@ -12,8 +12,6 @@ from .environment import (
 
 
 class ResourceLocator:
-    """Resolves runtime and packaged resource paths cross platform."""
-
     def __init__(self, runtime_root: Path | None = None, resources_dir: Path | None = None) -> None:
         self._runtime_root = runtime_root or get_runtime_root()
         self._app_resources_dir = resources_dir or get_app_resources_dir(self._runtime_root)
@@ -61,7 +59,7 @@ class ResourceLocator:
         return self._user_settings_path
 
     def main_qml_path(self) -> Path:
-        return self.app_resources_dir / "main.qml"
+        return self.app_resources_dir / "qml" / "main.qml"
 
     def application_icon_path(self, name: str = "icon.ico") -> Path:
         if sys.platform.startswith("linux"):
@@ -104,11 +102,11 @@ class ResourceLocator:
 
     def qml_search_candidates(self) -> list[Path]:
         return [
-            self.app_resources_dir / "main.qml",
-            self.runtime_root / "main.qml",
-            self.runtime_root / "_internal" / "main.qml",
-            self.app_resources_dir / "Resources" / "main.qml",
-            self.runtime_root / "Resources" / "main.qml",
+            self.app_resources_dir / "qml" / "main.qml",
+            self.runtime_root / "qml" / "main.qml",
+            self.runtime_root / "_internal" / "qml" / "main.qml",
+            self.app_resources_dir / "Resources" / "qml" / "main.qml",
+            self.runtime_root / "Resources" / "qml" / "main.qml",
         ]
 
     def _detect_resources_root(self) -> Path:

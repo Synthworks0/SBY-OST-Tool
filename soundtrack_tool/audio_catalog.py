@@ -38,7 +38,12 @@ class AudioCatalog:
             return []
         if album_name == "Extras":
             return self._build_local_extras(source_dir, language)
-        return self._build_local_standard(source_dir, album_data["Tracks"].get(language, []))
+        track_data = album_data["Tracks"].get(language, [])
+        
+        if isinstance(track_data, dict):
+            return self._build_multi_disc_standard(source_dir, track_data)
+        
+        return self._build_local_standard(source_dir, track_data)
 
     def _build_local_standard(self, source_dir: Path, track_titles: list[str]) -> list[SongEntry]:
         entries: list[SongEntry] = []
@@ -57,6 +62,39 @@ class AudioCatalog:
                     relative_path=str(song_path.relative_to(self._locator.soundtrack_collection_root())).replace('\\', '/'),
                 )
             )
+        return entries
+
+    def _build_multi_disc_standard(self, source_dir: Path, track_data: dict) -> list[SongEntry]:
+        entries: list[SongEntry] = []
+        track_offset = 0
+        
+        for cd_folder in ["CD1", "CD2"]:
+            cd_dir = source_dir / cd_folder
+            if not cd_dir.exists():
+                continue
+            
+            track_titles = track_data.get(cd_folder, [])
+            if not track_titles:
+                continue
+            
+            flac_files = sorted(cd_dir.glob("*.flac"))
+            for idx, song_path in enumerate(flac_files, start=1):
+                title = track_titles[idx - 1] if idx - 1 < len(track_titles) else song_path.stem
+                length = read_duration_string(song_path)
+                display_track_number = track_offset + idx
+                entries.append(
+                    SongEntry(
+                        title=title,
+                        length=length,
+                        source=str(song_path),
+                        track_number=display_track_number,
+                        is_remote=False,
+                        relative_path=str(song_path.relative_to(self._locator.soundtrack_collection_root())).replace('\\', '/'),
+                    )
+                )
+            
+            track_offset += len(track_titles)
+        
         return entries
 
     def _build_local_extras(self, album_dir: Path, language: str) -> list[SongEntry]:

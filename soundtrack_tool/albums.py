@@ -92,6 +92,47 @@ ALBUMS = {
             ] # Translated by me
         }
     },
+    "Santa Claus": {
+        "Japanese": "青春ブタ野郎はサンタクロースの夢を見ない Original Soundtrack",
+        "Romaji": "Seishun Buta Yarou wa Santa Claus no Yume wo Minai Original Soundtrack",
+        "English": "Rascal Does Not Dream of Santa Claus Original Soundtrack",
+        "is_multi_disc": True,
+        "Tracks": {
+            "Japanese": {
+                "CD1": [
+                    "目覚め", "自己紹介", "友達候補", "すれ違い", "既視感", "急げ！", "本当に卯月？", "自分探し", "空気読んでる？", "気づいてしまった",
+                    "モヤモヤ", "喧嘩の原因", "吹っ切れた", "憧れ", "悪者らしく", "激発", "助けてほしくて", "うまく行かなくて", "気づいてくれない", "本当の自分",
+                    "治さないでください", "千里眼", "心の声", "何も聞こえない", "でれでれ"
+                ],
+                "CD2": [
+                    "穏やか", "不安と孤独", "健全な悩み", "誘惑", "夢の正体", "渡したいもの", "愕然", "知らない", "切なく遠い", "私は歌を届けるだけ",
+                    "可能性の世界", "信じてもらえない", "わざとらしく", "言ったでしょ？", "歩き出す二人", "マウント"
+                ]
+            },
+            "Romaji": {
+                "CD1": [
+                    "Mezame", "Jikoshoukai", "Tomodachi Kouho", "Surechigai", "Kishikan", "Isoge!", "Hontou ni Uzuki?", "Jibun Sagashi", "Kuuki Yonderu?", "Kizuite Shimatta",
+                    "Moyamoya", "Kenka no Gen'in", "Fukkireta", "Akogare", "Warumono Rashiku", "Gekihatsu", "Tasukete Hoshikute", "Umaku Ikanakute", "Kizuite Kurenai", "Hontou no Jibun",
+                    "Naosanaide Kudasai", "Senrigan", "Kokoro no Koe", "Nani mo Kikoenai", "Deredere"
+                ],
+                "CD2": [
+                    "Odayaka", "Fuan to Kodoku", "Kenzen na Nayami", "Yuuwaku", "Yume no Shoutai", "Watashitai Mono", "Gakuzen", "Shiranai", "Setsunaku Tooi", "Watashi wa Uta wo Todokeru Dake",
+                    "Kanousei no Sekai", "Shinjite Moraenai", "Wazatorashiku", "Itta Desho?", "Arukidasu Futari", "Maunto"
+                ]
+            },
+            "English": {
+                "CD1": [
+                    "Awakening", "Self-Introduction", "Potential Friend", "Passing By", "Déjà Vu", "Hurry!", "Is It Really Uzuki?", "Finding Myself", "Are You Reading the Room?", "I Noticed",
+                    "Uneasy Feeling", "The Cause of the Fight", "Got Over It", "Admiration", "Like a Villain", "Outburst", "Wanting Help", "Not Going Well", "Won't Notice", "My True Self",
+                    "Please Don't Fix Me", "Clairvoyance", "Voice of the Heart", "Can't Hear Anything", "Lovey-Dovey"
+                ],
+                "CD2": [
+                    "Calm", "Anxiety and Loneliness", "Healthy Worries", "Temptation", "The True Form of the Dream", "Something I Want to Give", "Stunned", "I Don't Know", "Painfully Distant", "I Just Deliver the Song",
+                    "A World of Possibilities", "Can't Be Believed", "Deliberately", "I Told You, Didn't I?", "Two People Walking Forward", "One-Upping"
+                ]
+            }
+        }
+    },
     "Extras": {
         "Japanese": "エクストラ",
         "Romaji": "Ekusutora",
@@ -117,7 +158,7 @@ ALBUMS = {
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "桜島麻衣(CV:瀬戸麻沙美), 古賀朋絵(CV:東山奈央), 双葉理央(CV:種﨑敦美), 豊浜のどか(CV:内田真礼), 梓川かえで(CV:久保ユリカ), 牧之原翔子(CV:水瀬いのり)",
-                    "Romaji": "Mai Sakurajima(CV:Asami Seto), Tomoe Koga(CV:Nao Toyama), Rio Futaba(CV:Atsumi Tanezaki), Nodoka Toyohama(CV:Maaya Uchida), Kaede Azusagawa(CV:Yurika Kubo), Shoko Makinohara(CV:Inori Minase)",
+                    "Romaji": "Sakurajima Mai(CV:Seto Asami), Koga Tomoe(CV:Toyama Nao), Futaba Rio(CV:Tanezaki Atsumi), Toyohama Nodoka(CV:Uchida Maaya), Azusagawa Kaede(CV:Kubo Yurika), Makinohara Shoko(CV:Minase Inori)",
                     "English": "Mai Sakurajima(CV:Asami Seto), Tomoe Koga(CV:Nao Toyama), Rio Futaba(CV:Atsumi Tanezaki), Nodoka Toyohama(CV:Maaya Uchida), Kaede Azusagawa(CV:Yurika Kubo), Shoko Makinohara(CV:Inori Minase)"
                 },
                 "album_artists": {
@@ -129,7 +170,7 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "不可思議のカルテ 全ヒロインVer.",
+                    "Japanese": "不可思議のカルテ (全ヒロインVer.)",
                     "Romaji": "Fukashigi no Karte All Heroine Ver.",
                     "English": "Fukashigi no Karte (All Heroine Ver.)"
                 },
@@ -140,14 +181,14 @@ ALBUMS = {
                     "English": "Fukashigi no Karte (All Heroine Ver.)"
                 },
                 "album_title": {
-                    "Japanese": "不可思議のカルテ 全ヒロインVer.",
-                    "Romaji": "Fukashigi no Karte All Heroine Ver.",
-                    "English": "Fukashigi no Karte All Heroine Ver."
+                    "Japanese": "不可思議のカルテ (全ヒロインVer.)",
+                    "Romaji": "Fukashigi no Karte (All Heroine Ver.)",
+                    "English": "Fukashigi no Karte (All Heroine Ver.)"
                 },
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "桜島麻衣(CV:瀬戸麻沙美), 古賀朋絵(CV:東山奈央), 双葉理央(CV:種﨑敦美), 豊浜のどか(CV:内田真礼), 梓川かえで(CV:久保ユリカ), 牧之原翔子(CV:水瀬いのり)",
-                    "Romaji": "Mai Sakurajima(CV:Asami Seto), Tomoe Koga(CV:Nao Toyama), Rio Futaba(CV:Atsumi Tanezaki), Nodoka Toyohama(CV:Maaya Uchida), Kaede Azusagawa(CV:Yurika Kubo), Shoko Makinohara(CV:Inori Minase)",
+                    "Romaji": "Sakurajima Mai(CV:Seto Asami), Koga Tomoe(CV:Toyama Nao), Futaba Rio(CV:Tanezaki Atsumi), Toyohama Nodoka(CV:Uchida Maaya), Azusagawa Kaede(CV:Kubo Yurika), Makinohara Shoko(CV:Minase Inori)",
                     "English": "Mai Sakurajima(CV:Asami Seto), Tomoe Koga(CV:Nao Toyama), Rio Futaba(CV:Atsumi Tanezaki), Nodoka Toyohama(CV:Maaya Uchida), Kaede Azusagawa(CV:Yurika Kubo), Shoko Makinohara(CV:Inori Minase)"
                 },
                 "album_artists": {
@@ -159,8 +200,8 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "不可思議のカルテ インストゥルメンタルVer.",
-                    "Romaji": "Fukashigi no Karte Instrumental Ver.",
+                    "Japanese": "不可思議のカルテ (インストゥルメンタルVer.)",
+                    "Romaji": "Fukashigi no Karte (Instrumental Ver.)",
                     "English": "Fukashigi no Karte (Instrumental Ver.)"
                 },
                 "filename": "Fukashigi no Karte (Instrumental Ver.).flac",
@@ -170,9 +211,9 @@ ALBUMS = {
                     "English": "Fukashigi no Karte (Instrumental Ver.)"
                 },
                 "album_title": {
-                    "Japanese": "不可思議のカルテ インストゥルメンタルVer.",
-                    "Romaji": "Fukashigi no Karte Instrumental Ver.",
-                    "English": "Fukashigi no Karte Instrumental Ver."
+                    "Japanese": "不可思議のカルテ (インストゥルメンタルVer.)",
+                    "Romaji": "Fukashigi no Karte (Instrumental Ver.)",
+                    "English": "Fukashigi no Karte (Instrumental Ver.)"
                 },
                 "track_number": 1,
                 "contributing_artists": {
@@ -189,8 +230,8 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "不可思議のカルテ ジュブナイルVer.",
-                    "Romaji": "Fukashigi no Karte Juvenile Ver.",
+                    "Japanese": "不可思議のカルテ (ジュブナイルVer.)",
+                    "Romaji": "Fukashigi no Karte (Juvenile Ver.)",
                     "English": "Fukashigi no Karte (Juvenile Ver.)"
                 },
                 "filename": "Fukashigi no Karte (Juvenile Ver.).flac",
@@ -200,14 +241,14 @@ ALBUMS = {
                     "English": "Fukashigi no Karte (Juvenile Ver.)"
                 },
                 "album_title": {
-                    "Japanese": "不可思議のカルテ ジュブナイルVer.",
-                    "Romaji": "Fukashigi no Karte Juvenile Ver.",
-                    "English": "Fukashigi no Karte Juvenile Ver."
+                    "Japanese": "不可思議のカルテ (ジュブナイルVer.)",
+                    "Romaji": "Fukashigi no Karte (Juvenile Ver.)",
+                    "English": "Fukashigi no Karte (Juvenile Ver.)"
                 },
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "桜島麻衣(CV:瀬戸麻沙美), 古賀朋絵(CV:東山奈央), 双葉理央(CV:種﨑敦美), 豊浜のどか(CV:内田真礼), 梓川かえで(CV:久保ユリカ), 牧之原翔子(CV:水瀬いのり)",
-                    "Romaji": "Mai Sakurajima(CV:Asami Seto), Tomoe Koga(CV:Nao Toyama), Rio Futaba(CV:Atsumi Tanezaki), Nodoka Toyohama(CV:Maaya Uchida), Kaede Azusagawa(CV:Yurika Kubo), Shoko Makinohara(CV:Inori Minase)",
+                    "Romaji": "Sakurajima Mai(CV:Seto Asami), Koga Tomoe(CV:Toyama Nao), Futaba Rio(CV:Tanezaki Atsumi), Toyohama Nodoka(CV:Uchida Maaya), Azusagawa Kaede(CV:Kubo Yurika), Makinohara Shoko(CV:Minase Inori)",
                     "English": "Mai Sakurajima(CV:Asami Seto), Tomoe Koga(CV:Nao Toyama), Rio Futaba(CV:Atsumi Tanezaki), Nodoka Toyohama(CV:Maaya Uchida), Kaede Azusagawa(CV:Yurika Kubo), Shoko Makinohara(CV:Inori Minase)"
                 },
                 "album_artists": {
@@ -219,8 +260,8 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "不可思議のカルテ 映画Ver.",
-                    "Romaji": "Fukashigi no Karte Movie Ver.",
+                    "Japanese": "不可思議のカルテ (映画Ver.)",
+                    "Romaji": "Fukashigi no Karte (Movie Ver.)",
                     "English": "Fukashigi no Karte (Movie Ver.)"
                 },
                 "filename": "Fukashigi no Karte (Movie Ver.).flac",
@@ -230,14 +271,14 @@ ALBUMS = {
                     "English": "Fukashigi no Karte (Movie Ver.)"
                 },
                 "album_title": {
-                    "Japanese": "不可思議のカルテ 映画Ver.",
-                    "Romaji": "Fukashigi no Karte Movie Ver.",
+                    "Japanese": "不可思議のカルテ (映画Ver.)",
+                    "Romaji": "Fukashigi no Karte (Movie Ver.)",
                     "English": "Fukashigi no Karte Movie Ver."
                 },
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "桜島麻衣(CV:瀬戸麻沙美), 古賀朋絵(CV:東山奈央), 双葉理央(CV:種﨑敦美), 豊浜のどか(CV:内田真礼), 梓川かえで(CV:久保ユリカ), 牧之原翔子(CV:水瀬いのり)",
-                    "Romaji": "Mai Sakurajima(CV:Asami Seto), Tomoe Koga(CV:Nao Toyama), Rio Futaba(CV:Atsumi Tanezaki), Nodoka Toyohama(CV:Maaya Uchida), Kaede Azusagawa(CV:Yurika Kubo), Shoko Makinohara(CV:Inori Minase)",
+                    "Romaji": "Sakurajima Mai(CV:Seto Asami), Koga Tomoe(CV:Toyama Nao), Futaba Rio(CV:Tanezaki Atsumi), Toyohama Nodoka(CV:Uchida Maaya), Azusagawa Kaede(CV:Kubo Yurika), Makinohara Shoko(CV:Minase Inori)",
                     "English": "Mai Sakurajima(CV:Asami Seto), Tomoe Koga(CV:Nao Toyama), Rio Futaba(CV:Atsumi Tanezaki), Nodoka Toyohama(CV:Maaya Uchida), Kaede Azusagawa(CV:Yurika Kubo), Shoko Makinohara(CV:Inori Minase)"
                 },
                 "album_artists": {
@@ -249,26 +290,26 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "花楓&かえで",
-                    "Romaji": "Kaede and Kaede",
-                    "English": "Kaede and Kaede"
+                    "Japanese": "梓川花楓&梓川かえで",
+                    "Romaji": "Kaede & Kaede",
+                    "English": "Kaede & Kaede"
                 },
-                "filename": "Fukashigi no Karte (Kaede and Kaede Ver.).flac",
+                "filename": "Fukashigi no Karte (Kaede & Kaede Ver.).flac",
                 "titles": {
-                    "Japanese": "不可思議のカルテ (花楓&かえでVer.)",
-                    "Romaji": "Fukashigi no Karte (Kaede and Kaede Ver.)",
+                    "Japanese": "不可思議のカルテ (梓川花楓&梓川かえでVer.)",
+                    "Romaji": "Fukashigi no Karte (Kaede & Kaede Ver.)",
                     "English": "Fukashigi no Karte (Kaede & Kaede Ver.)"
                 },
                 "album_title": {
-                    "Japanese": "不可思議のカルテ (花楓&かえでVer.)",
-                    "Romaji": "Fukashigi no Karte (Kaede and Kaede Ver.)",
+                    "Japanese": "不可思議のカルテ (梓川花楓&梓川かえでVer.)",
+                    "Romaji": "Fukashigi no Karte (Kaede & Kaede Ver.)",
                     "English": "Fukashigi no Karte (Kaede & Kaede Ver.)"
                 },
                 "track_number": 1,
                 "contributing_artists": {
-                    "Japanese": "梓川花楓&かえで(CV:久保ユリカ)",
-                    "Romaji": "Kaede Azusagawa & Kaede(CV:Yurika Kubo)",
-                    "English": "Kaede Azusagawa & Kaede (CV: Yurika Kubo)"
+                    "Japanese": "梓川花楓&梓川かえで(CV:久保ユリカ)",
+                    "Romaji": "Azusagawa Kaede & Kaede(CV:Kubo Yurika)",
+                    "English": "Kaede Azusagawa & Kaede(CV:Yurika Kubo)"
                 },
                 "album_artists": {
                     "Japanese": "fox capture plan; Various Artists",
@@ -279,7 +320,37 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "梓川 花楓",
+                    "Japanese": "梓川かえで",
+                    "Romaji": "Panda Kaede",
+                    "English": "Panda Kaede"
+                },
+                "filename": "Fukashigi no Karte (Panda Kaede Ver.).flac",
+                "titles": {
+                    "Japanese": "不可思議のカルテ (梓川かえでVer.)",
+                    "Romaji": "Fukashigi no Karte (Panda Kaede Ver.)",
+                    "English": "Fukashigi no Karte (Panda Kaede Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "不可思議のカルテ (梓川かえでVer.)",
+                    "Romaji": "Fukashigi no Karte (Panda Kaede Ver.)",
+                    "English": "Fukashigi no Karte (Panda Kaede Ver.)"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "梓川かえで(CV:久保ユリカ)",
+                    "Romaji": "Panda Kaede(CV:Kubo Yurika)",
+                    "English": "Panda Kaede(CV:Yurika Kubo)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "梓川花楓",
                     "Romaji": "Azusagawa Kaede",
                     "English": "Kaede Azusagawa"
                 },
@@ -297,7 +368,7 @@ ALBUMS = {
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "梓川花楓(CV:久保ユリカ)",
-                    "Romaji": "Kaede Azusagawa(CV:Yurika Kubo)",
+                    "Romaji": "Azusagawa Kaede(CV:Kubo Yurika)",
                     "English": "Kaede Azusagawa(CV:Yurika Kubo)"
                 },
                 "album_artists": {
@@ -309,7 +380,7 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "桜島 麻衣",
+                    "Japanese": "桜島麻衣",
                     "Romaji": "Sakurajima Mai",
                     "English": "Mai Sakurajima"
                 },
@@ -327,7 +398,7 @@ ALBUMS = {
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "桜島麻衣(CV:瀬戸麻沙美)",
-                    "Romaji": "Mai Sakurajima(CV:Asami Seto)",
+                    "Romaji": "Sakurajima Mai(CV:Seto Asami)",
                     "English": "Mai Sakurajima(CV:Asami Seto)"
                 },
                 "album_artists": {
@@ -339,7 +410,7 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "豊浜 のどか",
+                    "Japanese": "豊浜のどか",
                     "Romaji": "Toyohama Nodoka",
                     "English": "Nodoka Toyohama"
                 },
@@ -357,7 +428,7 @@ ALBUMS = {
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "豊浜のどか(CV:内田真礼)",
-                    "Romaji": "Nodoka Toyohama(CV:Maaya Uchida)",
+                    "Romaji": "Toyohama Nodoka(CV:Uchida Maaya)",
                     "English": "Nodoka Toyohama(CV:Maaya Uchida)"
                 },
                 "album_artists": {
@@ -369,7 +440,7 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "双葉 理央",
+                    "Japanese": "双葉理央",
                     "Romaji": "Futaba Rio",
                     "English": "Rio Futaba"
                 },
@@ -387,7 +458,7 @@ ALBUMS = {
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "双葉理央(CV:種﨑敦美)",
-                    "Romaji": "Rio Futaba(CV:Atsumi Tanezaki)",
+                    "Romaji": "Futaba Rio(CV:Tanezaki Atsumi)",
                     "English": "Rio Futaba(CV:Atsumi Tanezaki)"
                 },
                 "album_artists": {
@@ -399,7 +470,7 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "梓川 咲太",
+                    "Japanese": "梓川咲太",
                     "Romaji": "Azusagawa Sakuta",
                     "English": "Sakuta Azusagawa"
                 },
@@ -417,7 +488,7 @@ ALBUMS = {
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "梓川咲太(CV:石川界人)",
-                    "Romaji": "Sakuta Azusagawa(CV:Kaito Ishikawa)",
+                    "Romaji": "Azusagawa Sakuta(CV:Ishikawa Kaito)",
                     "English": "Sakuta Azusagawa(CV:Kaito Ishikawa)"
                 },
                 "album_artists": {
@@ -429,7 +500,7 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "牧之原 翔子",
+                    "Japanese": "牧之原翔子",
                     "Romaji": "Makinohara Shoko",
                     "English": "Shoko Makinohara"
                 },
@@ -447,7 +518,7 @@ ALBUMS = {
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "牧之原翔子(CV:水瀬いのり)",
-                    "Romaji": "Shoko Makinohara(CV:Inori Minase)",
+                    "Romaji": "Makinohara Shoko(CV:Minase Inori)",
                     "English": "Shoko Makinohara(CV:Inori Minase)"
                 },
                 "album_artists": {
@@ -459,26 +530,296 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "古賀 朋絵",
-                    "Romaji": "Tomoe Koga",
+                    "Japanese": "古賀朋絵",
+                    "Romaji": "Koga Tomoe",
                     "English": "Tomoe Koga"
                 },
                 "filename": "Fukashigi no Karte (Tomoe Koga Ver.).flac",
                 "titles": {
                     "Japanese": "不可思議のカルテ (古賀朋絵Ver.)",
-                    "Romaji": "Fukashigi no Karte (Tomoe Koga Ver.)",
+                    "Romaji": "Fukashigi no Karte (Koga Tomoe Ver.)",
                     "English": "Fukashigi no Karte (Tomoe Koga Ver.)"
                 },
                 "album_title": {
                     "Japanese": "不可思議のカルテ (古賀朋絵Ver.)",
-                    "Romaji": "Fukashigi no Karte (Tomoe Koga Ver.)",
+                    "Romaji": "Fukashigi no Karte (Koga Tomoe Ver.)",
                     "English": "Fukashigi no Karte (Tomoe Koga Ver.)"
                 },
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "古賀朋絵(CV:東山奈央)",
-                    "Romaji": "Tomoe Koga(CV:Nao Toyama)",
+                    "Romaji": "Koga Tomoe(CV:Toyama Nao)",
                     "English": "Tomoe Koga(CV:Nao Toyama)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "広川卯月",
+                    "Romaji": "Hirokawa Uzuki",
+                    "English": "Uzuki Hirokawa"
+                },
+                "filename": "Fukashigi no Karte (Uzuki Hirokawa Ver.).flac",
+                "titles": {
+                    "Japanese": "不可思議のカルテ (広川卯月Ver.)",
+                    "Romaji": "Fukashigi no Karte (Hirokawa Uzuki Ver.)",
+                    "English": "Fukashigi no Karte (Uzuki Hirokawa Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "不可思議のカルテ (広川卯月Ver.)",
+                    "Romaji": "Fukashigi no Karte (Hirokawa Uzuki Ver.)",
+                    "English": "Fukashigi no Karte (Uzuki Hirokawa Ver.)"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "広川卯月(CV:雨宮天)",
+                    "Romaji": "Hirokawa Uzuki(CV:Amamiya Sora)",
+                    "English": "Uzuki Hirokawa(CV:Sora Amamiya)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "広川卯月",
+                    "Romaji": "Hirokawa Uzuki",
+                    "English": "Uzuki Hirokawa"
+                },
+                "filename": "The Horizon Is My Scar (Uzuki Hirokawa Ver.).flac",
+                "titles": {
+                    "Japanese": "水平線は僕の古傷 (広川卯月Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Hirokawa Uzuki Ver.)",
+                    "English": "The Horizon is My Scar (Uzuki Hirokawa Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "水平線は僕の古傷 (広川卯月Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Hirokawa Uzuki Ver.)",
+                    "English": "The Horizon is My Scar (Uzuki Hirokawa Ver.)"
+                },
+                "track_number": 2,
+                "contributing_artists": {
+                    "Japanese": "広川卯月(CV:雨宮天)",
+                    "Romaji": "Hirokawa Uzuki(CV:Amamiya Sora)",
+                    "English": "Uzuki Hirokawa(CV:Sora Amamiya)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "広川卯月",
+                    "Romaji": "Hirokawa Uzuki",
+                    "English": "Uzuki Hirokawa"
+                },
+                "filename": "Social World (Uzuki Hirokawa Ver.).flac",
+                "titles": {
+                    "Japanese": "Social World (広川卯月Ver.)",
+                    "Romaji": "Social World (Hirokawa Uzuki Ver.)",
+                    "English": "Social World (Uzuki Hirokawa Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "Social World (広川卯月Ver.)",
+                    "Romaji": "Social World (Hirokawa Uzuki Ver.)",
+                    "English": "Social World (Uzuki Hirokawa Ver.)"
+                },
+                "track_number": 3,
+                "contributing_artists": {
+                    "Japanese": "広川卯月(CV:雨宮天)",
+                    "Romaji": "Hirokawa Uzuki(CV:Amamiya Sora)",
+                    "English": "Uzuki Hirokawa(CV:Sora Amamiya)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "赤城郁実",
+                    "Romaji": "Akagi Ikumi",
+                    "English": "Ikumi Akagi"
+                },
+                "filename": "Fukashigi no Karte (Ikumi Akagi Ver.).flac",
+                "titles": {
+                    "Japanese": "不可思議のカルテ (赤城郁実Ver.)",
+                    "Romaji": "Fukashigi no Karte (Akagi Ikumi Ver.)",
+                    "English": "Fukashigi no Karte (Ikumi Akagi Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "不可思議のカルテ (赤城郁実Ver.)",
+                    "Romaji": "Fukashigi no Karte (Akagi Ikumi Ver.)",
+                    "English": "Fukashigi no Karte (Ikumi Akagi Ver.)"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "赤城郁実(CV:山根綺)",
+                    "Romaji": "Akagi Ikumi(CV:Yamane Aya)",
+                    "English": "Ikumi Akagi(CV:Aya Yamane)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "赤城郁実",
+                    "Romaji": "Akagi Ikumi",
+                    "English": "Ikumi Akagi"
+                },
+                "filename": "The Horizon Is My Scar (Ikumi Akagi Ver.).flac",
+                "titles": {
+                    "Japanese": "水平線は僕の古傷 (赤城郁実Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Akagi Ikumi Ver.)",
+                    "English": "The Horizon is My Scar (Ikumi Akagi Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "水平線は僕の古傷 (赤城郁実Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Akagi Ikumi Ver.)",
+                    "English": "The Horizon is My Scar (Ikumi Akagi Ver.)"
+                },
+                "track_number": 2,
+                "contributing_artists": {
+                    "Japanese": "赤城郁実(CV:山根綺)",
+                    "Romaji": "Akagi Ikumi(CV:Yamane Aya)",
+                    "English": "Ikumi Akagi(CV:Aya Yamane)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "霧島透子/Social World",
+                    "Romaji": "Kirishima Touko/Social World",
+                    "English": "Touko Kirishima/Social World"
+                },
+                "filename": "Social World.flac",
+                "titles": {
+                    "Japanese": "Social World",
+                    "Romaji": "Social World",
+                    "English": "Social World"
+                },
+                "album_title": {
+                    "Japanese": "Social World",
+                    "Romaji": "Social World",
+                    "English": "Social World"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "霧島透子(CV:上田麗奈)",
+                    "Romaji": "Kirishima Touko(CV:Ueda Reina)",
+                    "English": "Touko Kirishima(CV:Reina Ueda)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "霧島透子/Hilbert Space",
+                    "Romaji": "Kirishima Touko/Hilbert Space",
+                    "English": "Touko Kirishima/Hilbert Space"
+                },
+                "filename": "Hilbert Space.flac",
+                "titles": {
+                    "Japanese": "Hilbert Space",
+                    "Romaji": "Hilbert Space",
+                    "English": "Hilbert Space"
+                },
+                "album_title": {
+                    "Japanese": "Hilbert Space",
+                    "Romaji": "Hilbert Space",
+                    "English": "Hilbert Space"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "霧島透子(CV:上田麗奈)",
+                    "Romaji": "Kirishima Touko(CV:Ueda Reina)",
+                    "English": "Touko Kirishima(CV:Reina Ueda)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "霧島透子/I need you",
+                    "Romaji": "Kirishima Touko/I need you", # Romaji isn't done becuase it looks stupid
+                    "English": "Touko Kirishima/I need you"
+                },
+                "filename": "I need you.flac",
+                "titles": {
+                    "Japanese": "I need you",
+                    "Romaji": "I need you",
+                    "English": "I need you"
+                },
+                "album_title": {
+                    "Japanese": "I need you",
+                    "Romaji": "I need you",
+                    "English": "I need you"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "霧島透子(CV:上田麗奈)",
+                    "Romaji": "Kirishima Touko(CV:Ueda Reina)",
+                    "English": "Touko Kirishima(CV:Reina Ueda)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "霧島透子/Someone",
+                    "Romaji": "Kirishima Touko/Someone", # Romaji isn't done becuase it looks stupid
+                    "English": "Touko Kirishima/Someone"
+                },
+                "filename": "Someone.flac",
+                "titles": {
+                    "Japanese": "Someone",
+                    "Romaji": "Someone",
+                    "English": "Someone"
+                },
+                "album_title": {
+                    "Japanese": "Someone",
+                    "Romaji": "Someone",
+                    "English": "Someone"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "霧島透子(CV:上田麗奈)",
+                    "Romaji": "Kirishima Touko(CV:Ueda Reina)",
+                    "English": "Touko Kirishima(CV:Reina Ueda)"
                 },
                 "album_artists": {
                     "Japanese": "fox capture plan; Various Artists",
@@ -666,7 +1007,37 @@ ALBUMS = {
                     "English": "Sweet Bullet"
                 },
                 "genre": "Film; Anime"
-            }
+            },
+            {
+                "subfolder": {
+                    "Japanese": "Sweet Bullet/超音波のメロディ",
+                    "Romaji": "Sweet Bullet/Chouonpa no Melody",
+                    "English": "Sweet Bullet/Ultrasonic Melody"
+                },
+                "filename": "Ultrasonic Melody.flac",
+                "titles": {
+                    "Japanese": "超音波のメロディ",
+                    "Romaji": "Chouonpa no Melody",
+                    "English": "Ultrasonic Melody"
+                },
+                "album_title": {
+                    "Japanese": "超音波のメロディ",
+                    "Romaji": "Chouonpa no Melody",
+                    "English": "Ultrasonic Melody"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "Sweet Bullet",
+                    "Romaji": "Sweet Bullet",
+                    "English": "Sweet Bullet"
+                },
+                "album_artists": {
+                    "Japanese": "Sweet Bullet",
+                    "Romaji": "Sweet Bullet",
+                    "English": "Sweet Bullet"
+                },
+                "genre": "Film; Anime"
+            },
         ]
     }
 }

@@ -454,12 +454,11 @@ class RenamerBackend(QObject):
 
     @Slot()
     def sync_with_local_completion(self) -> None:
-        """If local files are complete, mark extraction finished and refresh states.
+        #If local files are complete, mark extraction finished and refresh states.
+        # This is used by the UI poller in remote mode when it detects that all files
+        # exist and have been renamed, even if the background task has not yet
+        # propagated completion back to the UI.
 
-        This is used by the UI poller in remote mode when it detects that all files
-        exist and have been renamed, even if the background task has not yet
-        propagated completion back to the UI.
-        """
         if not self._output_folder:
             return
         try:

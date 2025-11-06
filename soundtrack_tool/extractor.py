@@ -49,8 +49,6 @@ class AlbumIntegrityReport:
 
 
 class SoundtrackExtractor:
-    """Handles copying bundled soundtracks, downloading from R2, and applying metadata."""
-
     COLLECTION_FOLDER_NAME = "SBY Soundtracks"
 
     def __init__(self, locator: ResourceLocator, config: AppConfig, r2_client: R2Client | None = None, cancel_event: Event | None = None) -> None:
@@ -74,12 +72,7 @@ class SoundtrackExtractor:
             states[album_name] = "rename" if existing else "extract"
         return states
 
-    def find_existing_album_dir(
-        self,
-        output_folder: Path,
-        album_name: str,
-        collection_root: Path | None = None,
-    ) -> Path | None:
+    def find_existing_album_dir(self, output_folder: Path, album_name: str, collection_root: Path | None = None) -> Path | None:
         album_data = ALBUMS.get(album_name)
         if not album_data:
             return None
@@ -99,13 +92,7 @@ class SoundtrackExtractor:
                 return candidate
         return None
 
-    def extract_album(
-        self,
-        album_name: str,
-        language: str,
-        include_track_numbers: bool,
-        output_folder: Path,
-    ) -> Tuple[bool, str]:
+    def extract_album(self, album_name: str, language: str, include_track_numbers: bool, output_folder: Path) -> Tuple[bool, str]:
         if self._use_remote:
             return self._download_remote_album(album_name, output_folder)
 
@@ -127,19 +114,15 @@ class SoundtrackExtractor:
 
         if album_name == "Extras":
             self._extract_extras(source_dir, destination, language)
+        elif album_data.get("is_multi_disc") is True:
+            self._extract_multi_disc_album(source_dir, destination, include_track_numbers)
         else:
             self._extract_regular_album(source_dir, destination, include_track_numbers)
 
         localized_name = album_data.get(language, album_name)
         return True, f"Soundtrack '{localized_name}' extracted successfully"
 
-    def rename_album(
-        self,
-        album_name: str,
-        language: str,
-        include_track_numbers: bool,
-        output_folder: Path,
-    ) -> Tuple[bool, str]:
+    def rename_album(self, album_name: str, language: str, include_track_numbers: bool, output_folder: Path) -> Tuple[bool, str]:
         album_data = ALBUMS.get(album_name)
         if not album_data:
             return False, f"Error: Unknown album '{album_name}'"
@@ -186,8 +169,14 @@ class SoundtrackExtractor:
             return 0
         if album_name == "Extras":
             return len(ALBUMS["Extras"]["Tracks"])
+        
         tracks = album.get("Tracks", {})
-        return len(tracks.get(language, []))
+        track_data = tracks.get(language, [])
+        
+        if isinstance(track_data, dict):
+            return len(track_data.get("CD1", [])) + len(track_data.get("CD2", []))
+        
+        return len(track_data)
 
     def locate_album_dir(
         self,
@@ -222,6 +211,13 @@ class SoundtrackExtractor:
             return 0
         if album_name == "Extras":
             return sum(1 for p in target_dir.rglob("*.flac") if p.is_file() and p.stat().st_size > 0)
+        album_data = ALBUMS.get(album_name)
+        if album_data and album_data.get("is_multi_disc") is True:
+            cd1_dir = target_dir / "CD1"
+            cd2_dir = target_dir / "CD2"
+            cd1_count = sum(1 for p in cd1_dir.glob("*.flac") if p.is_file() and p.stat().st_size > 0) if cd1_dir.exists() else 0
+            cd2_count = sum(1 for p in cd2_dir.glob("*.flac") if p.is_file() and p.stat().st_size > 0) if cd2_dir.exists() else 0
+            return cd1_count + cd2_count
         return sum(1 for p in target_dir.glob("*.flac") if p.is_file() and p.stat().st_size > 0)
 
     def count_available_tracks(self, output_folder: Path, album_name: str, language: str) -> int:
@@ -239,6 +235,29 @@ class SoundtrackExtractor:
             else:
                 filename = f"{base_name}.flac"
             shutil.copy2(path, destination / filename)
+
+    def _extract_multi_disc_album(self, source_dir: Path, destination: Path, include_numbers: bool) -> None:
+        for cd_folder in ["CD1", "CD2"]:
+            cd_source = source_dir / cd_folder
+            if not cd_source.exists():
+                continue
+            
+            cd_dest = destination / cd_folder
+            cd_dest.mkdir(parents=True, exist_ok=True)
+            
+            flac_files = sorted(cd_source.glob("*.flac"))
+            for index, path in enumerate(flac_files, start=1):
+                self._check_cancel()
+                base_name = re.sub(r"^\d+\.\s*", "", path.stem)
+                if include_numbers:
+                    filename = f"{index:02d}. {base_name}.flac"
+                else:
+                    filename = f"{base_name}.flac"
+                shutil.copy2(path, cd_dest / filename)
+            
+            cd_cover = cd_source / "cover.jpg"
+            if cd_cover.exists():
+                shutil.copy2(cd_cover, cd_dest / "cover.jpg")
 
     def _extract_extras(self, source_dir: Path, destination: Path, language: str) -> None:
         for track in ALBUMS["Extras"]["Tracks"]:
@@ -459,14 +478,13 @@ class SoundtrackExtractor:
 
         return report
 
-    def _verify_regular_album(
-        self,
-        album_name: str,
-        album_dir: Path,
-        language: str,
-        include_numbers: bool,
-        report: AlbumIntegrityReport,
-    ) -> None:
+    def _verify_regular_album(self, album_name: str, album_dir: Path, language: str, include_numbers: bool, report: AlbumIntegrityReport) -> None:
+        album_data = ALBUMS[album_name]
+    
+        if album_data.get("is_multi_disc") is True:
+            self._verify_multi_disc_album(album_name, album_dir, language, report)
+            return
+        
         track_titles = ALBUMS[album_name]["Tracks"].get(language, [])
         if not track_titles:
             return
@@ -525,12 +543,69 @@ class SoundtrackExtractor:
             if matched in zero_byte_paths:
                 report.zero_byte_files.append(label)
 
-    def _verify_extras_album(
-        self,
-        extras_dir: Path,
-        language: str,
-        report: AlbumIntegrityReport,
-    ) -> None:
+    def _verify_multi_disc_album(self, album_name: str, album_dir: Path, language: str, report: AlbumIntegrityReport) -> None:
+        album_data = ALBUMS[album_name]
+        track_data = album_data["Tracks"].get(language, {})
+        
+        if not isinstance(track_data, dict):
+            return
+        
+        for cd_folder in ["CD1", "CD2"]:
+            cd_dir = album_dir / cd_folder
+            track_titles = track_data.get(cd_folder, [])
+            
+            if not track_titles:
+                continue
+            
+            if not cd_dir.exists():
+                report.missing_tracks.append(f"{cd_folder} folder missing")
+                continue
+            
+            title_map: dict[str, list[Path]] = defaultdict(list)
+            number_map: dict[int, list[Path]] = defaultdict(list)
+            zero_byte_paths: set[Path] = set()
+            
+            for candidate in sorted(cd_dir.glob("*.flac")):
+                title_key = self._normalize_title_key(re.sub(r"^\d+\.\s*", "", candidate.stem))
+                if title_key:
+                    title_map[title_key].append(candidate)
+                track_number = read_track_number(candidate)
+                if track_number is None:
+                    track_number = self._guess_track_number(candidate)
+                if track_number is not None:
+                    number_map[track_number].append(candidate)
+                try:
+                    if candidate.stat().st_size == 0:
+                        zero_byte_paths.add(candidate)
+                except OSError:
+                    zero_byte_paths.add(candidate)
+            
+            for idx, title in enumerate(track_titles, start=1):
+                label = f"{cd_folder}/{self._format_regular_track_label(idx, title)}"
+                key_title = self._normalize_title_key(title)
+                matched: Path | None = None
+                
+                candidates = number_map.get(idx)
+                if candidates:
+                    matched = candidates.pop(0)
+                    if not candidates:
+                        number_map.pop(idx, None)
+                
+                if matched is None and key_title:
+                    candidates = title_map.get(key_title)
+                    if candidates:
+                        matched = candidates.pop(0)
+                        if not candidates:
+                            title_map.pop(key_title, None)
+                
+                if matched is None:
+                    report.missing_tracks.append(label)
+                    continue
+                
+                if matched in zero_byte_paths:
+                    report.zero_byte_files.append(label)
+
+    def _verify_extras_album(self, extras_dir: Path, language: str, report: AlbumIntegrityReport) -> None:
         track_list = ALBUMS.get("Extras", {}).get("Tracks", [])
         if not track_list:
             return
@@ -601,13 +676,12 @@ class SoundtrackExtractor:
 
     # --- Rename helpers ---------------------------------------------------------------
 
-    def _rename_regular(
-        self,
-        album_name: str,
-        album_dir: Path,
-        language: str,
-        include_numbers: bool,
-    ) -> Tuple[bool, str]:
+    def _rename_regular(self, album_name: str, album_dir: Path, language: str, include_numbers: bool) -> Tuple[bool, str]:
+        album_data = ALBUMS[album_name]
+        
+        if album_data.get("is_multi_disc") is True:
+            return self._rename_multi_disc(album_name, album_dir, language, include_numbers)
+        
         track_names = ALBUMS[album_name]["Tracks"].get(language, [])
         if not track_names:
             return False, f"Error: Missing track listing for {language}"
@@ -643,6 +717,62 @@ class SoundtrackExtractor:
             update_title_and_album(path, title=title, album=ALBUMS[album_name][language])
             files_renamed += 1
         if files_renamed == 0:
+            return False, f"Error: No matching files found for {ALBUMS[album_name][language]}"
+        return True, f"Files renamed successfully for {ALBUMS[album_name][language]}"
+
+    def _rename_multi_disc(self,album_name: str, album_dir: Path, language: str, include_numbers: bool) -> Tuple[bool, str]:
+        album_data = ALBUMS[album_name]
+        track_data = album_data["Tracks"].get(language, {})
+        
+        if not isinstance(track_data, dict):
+            return False, f"Error: Invalid track structure for multi-disc album {album_name}"
+        
+        total_renamed = 0
+        
+        for cd_folder in ["CD1", "CD2"]:
+            cd_dir = album_dir / cd_folder
+            if not cd_dir.exists():
+                continue
+            
+            track_names = track_data.get(cd_folder, [])
+            if not track_names:
+                continue
+            
+            files_renamed = 0
+            for idx, path in enumerate(sorted(cd_dir.glob("*.flac"), key=lambda p: p.stat().st_mtime), start=1):
+                self._check_cancel()
+                track_number = read_track_number(path)
+                if track_number is None or track_number < 1 or track_number > len(track_names):
+                    stem = path.stem.lstrip()
+                    guess = None
+                    if len(stem) >= 2 and stem[:2].isdigit():
+                        guess = int(stem[:2])
+                    elif stem and stem[0].isdigit():
+                        token = stem.split(" ", 1)[0]
+                        if token.isdigit():
+                            guess = int(token)
+                    if guess is None or guess < 1 or guess > len(track_names):
+                        guess = idx if idx <= len(track_names) else None
+                    track_number = guess
+                if track_number is None:
+                    continue
+                title = track_names[track_number - 1]
+                if include_numbers:
+                    new_name = f"{track_number:02d}. {title}.flac"
+                else:
+                    new_name = f"{title}.flac"
+                new_path = cd_dir / new_name
+                if new_path != path:
+                    if new_path.exists():
+                        new_path.unlink()
+                    path.rename(new_path)
+                    path = new_path
+                update_title_and_album(path, title=title, album=ALBUMS[album_name][language])
+                files_renamed += 1
+            
+            total_renamed += files_renamed
+        
+        if total_renamed == 0:
             return False, f"Error: No matching files found for {ALBUMS[album_name][language]}"
         return True, f"Files renamed successfully for {ALBUMS[album_name][language]}"
 

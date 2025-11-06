@@ -19,42 +19,42 @@ jobs:
           - os: windows-latest
             python: '3.11'
             mode: standalone
-            spec: SBY_OST_Tool.spec
+            spec: build/specs/windows/SBY_OST_Tool.spec
             artifact-name: sby-ost-tool-windows-standalone
             dist-path: dist/SBY_OST_Tool
             archive-name: SBY_OST_Tool-windows-standalone.zip
           - os: windows-latest
             python: '3.11'
             mode: streaming
-            spec: SBY_OST_Tool_Remote.spec
+            spec: build/specs/windows/SBY_OST_Tool_Remote.spec
             artifact-name: sby-ost-tool-windows-streaming
             dist-path: dist/SBY_OST_Tool_Remote
             archive-name: SBY_OST_Tool-windows-streaming.zip
           - os: ubuntu-latest
             python: '3.11'
             mode: standalone
-            spec: SBY_OST_Tool_Linux.spec
+            spec: build/specs/linux/SBY_OST_Tool_Linux.spec
             artifact-name: sby-ost-tool-linux-standalone
             dist-path: dist/SBY_OST_Tool
             archive-name: SBY_OST_Tool-linux-standalone.tar.gz
           - os: ubuntu-latest
             python: '3.11'
             mode: streaming
-            spec: SBY_OST_Tool_Remote_Linux.spec
+            spec: build/specs/linux/SBY_OST_Tool_Remote_Linux.spec
             artifact-name: sby-ost-tool-linux-streaming
             dist-path: dist/SBY_OST_Tool_Remote
             archive-name: SBY_OST_Tool-linux-streaming.tar.gz
           - os: macos-latest
             python: '3.11'
             mode: standalone
-            spec: SBY_OST_Tool_Mac.spec
+            spec: build/specs/macos/SBY_OST_Tool_Mac.spec
             artifact-name: sby-ost-tool-macos-standalone
             dist-path: dist/SBY_OST_Tool.app
             archive-name: SBY_OST_Tool-macos-standalone.zip
           - os: macos-latest
             python: '3.11'
             mode: streaming
-            spec: SBY_OST_Tool_Remote_Mac.spec
+            spec: build/specs/macos/SBY_OST_Tool_Remote_Mac.spec
             artifact-name: sby-ost-tool-macos-streaming
             dist-path: dist/SBY_OST_Tool_Remote.app
             archive-name: SBY_OST_Tool-macos-streaming.zip
@@ -150,7 +150,7 @@ jobs:
           Path("runtime_config.json").write_text(json.dumps(config, indent=2))
 
       - name: Compile sources
-        run: python -m compileall soundtrack_tool rename.py
+        run: python -m compileall soundtrack_tool main.py
 
       - name: Build artifact
         run: pyinstaller ${{ matrix.spec }} --noconfirm --clean
@@ -362,7 +362,7 @@ jobs:
             if [ -f "$executable" ] && [ -x "$executable" ]; then
               echo "  Signing executable: $(basename "$executable")"
               codesign --force --sign "$DEVELOPER_ID" --options runtime --timestamp \
-                --entitlements entitlements.plist "$executable"
+                --entitlements build/entitlements.plist "$executable"
               codesign --verify --strict "$executable" && echo "    ✓ Verified"
             fi
           done
@@ -373,7 +373,7 @@ jobs:
           # MUST be done LAST after all components are signed
           echo "  Creating final bundle seal with entitlements..."
           codesign --force --deep --sign "$DEVELOPER_ID" --options runtime --timestamp \
-            --entitlements entitlements.plist "$APP_BUNDLE"
+            --entitlements build/entitlements.plist "$APP_BUNDLE"
           
           echo ""
           echo "=== Verifying final bundle signature ==="
@@ -495,12 +495,30 @@ jobs:
           tar -czf "../${{ matrix.archive-name }}" "$(basename ${{ matrix.dist-path }})"
           cd ..
 
+      - name: Create archive (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          Compress-Archive -Path "${{ matrix.dist-path }}" -DestinationPath "${{ matrix.archive-name }}"
+          Write-Host "Created archive: ${{ matrix.archive-name }}"
+          Get-Item "${{ matrix.archive-name }}" | Format-List
+
+      - name: Calculate and print SHA256 checksum
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            certutil -hashfile "${{ matrix.archive-name }}" SHA256
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            shasum -a 256 "${{ matrix.archive-name }}"
+          else
+            sha256sum "${{ matrix.archive-name }}"
+          fi
+        shell: bash
+
       - name: Upload artifact (Windows)
         if: startsWith(matrix.os, 'windows')
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: ${{ matrix.dist-path }}
+          path: ${{ matrix.archive-name }}
           if-no-files-found: error
           overwrite: true
 
