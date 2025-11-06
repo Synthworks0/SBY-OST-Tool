@@ -23,11 +23,11 @@ The SBY OST Tool is a powerful tool designed to extract and rename soundtracks f
 ### Download
 
 1. Go to the [Releases](https://github.com/Synthworks0/SBY-OST-Tool/releases) page.
-2. Download the latest version:
-   - SBY_OST_Tool: Self extracting archive
-   - SBY_OST_Tool_Portable: A fully contained, portable version. Startup time may be slower for this version!
+2. Download your preferred version:
+   - SBY_OST_Tool: Standalone version with all soundtracks included (larger download)
+   - SBY_OST_Tool_Remote: Streaming version that downloads tracks on-demand (smaller download, requires internet)
 
-* Mac OS and Linux support will be added soon!
+Available for Windows, macOS, and Linux!
 
 ## Usage
 
@@ -35,7 +35,7 @@ The SBY OST Tool is a powerful tool designed to extract and rename soundtracks f
 2. Select an album from the dropdown menu.
 3. Choose the desired language for renaming (Japanese, Romaji, or English).
 4. Click the "Browse" button to select an output folder.
-5. Click "Extract Soundtrack" to extract the files and set the desired langauge.
+5. Click "Extract Soundtrack" to extract the files and set the desired language.
 6. If needed, click "Rename Files" to rename the soundtrack files after extracting.
 
 ## Developer Notes

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import logging
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -16,6 +17,8 @@ from .filesystem import FileSystemService
 from .resources import ResourceLocator
 from .settings import AppSettings
 from .cover_cache import CoverCache
+
+logger = logging.getLogger(__name__)
 
 
 class RenamerBackend(QObject):
@@ -243,7 +246,7 @@ class RenamerBackend(QObject):
             )
         except Exception as exc:
             import traceback
-            print(f"Rename error: {exc}\n{traceback.format_exc()}")
+            logger.error(f"Rename error: {exc}\n{traceback.format_exc()}")
             return {
                 "success": False,
                 "message": f"Error during rename: {exc}",
@@ -251,7 +254,7 @@ class RenamerBackend(QObject):
                 "integrity": None,
             }
         if not rename_success:
-            print(f"Rename failed: {rename_message}")
+            logger.warning(f"Rename failed: {rename_message}")
             return {
                 "success": False,
                 "message": rename_message or message,
@@ -277,11 +280,11 @@ class RenamerBackend(QObject):
                 )
             except Exception as exc:
                 import traceback
-                print(f"Integrity check error: {exc}\n{traceback.format_exc()}")
+                logger.error(f"Integrity check error: {exc}\n{traceback.format_exc()}")
                 integrity_report = None
 
             if integrity_report and not integrity_report.complete:
-                print(f"Integrity check incomplete: {integrity_report}")
+                logger.warning(f"Integrity check incomplete: {integrity_report}")
                 warning_message = f"{final_message} (Note: Some files may have issues)"
                 return {
                     "success": True,

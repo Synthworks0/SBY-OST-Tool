@@ -130,7 +130,7 @@ ALBUMS = {
                     "Calm", "Anxiety and Loneliness", "Healthy Worries", "Temptation", "The True Form of the Dream", "Something I Want to Give", "Stunned", "I Don't Know", "Painfully Distant", "I Just Deliver the Song",
                     "A World of Possibilities", "Can't Be Believed", "Deliberately", "I Told You, Didn't I?", "Two People Walking Forward", "One-Upping"
                 ]
-            }
+            } # Translated by me
         }
     },
     "Extras": {

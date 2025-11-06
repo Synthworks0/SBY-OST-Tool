@@ -99,7 +99,8 @@ def main() -> int:
         from pathlib import Path
         
         if getattr(sys, 'frozen', False):
-            fonts_dir = Path(sys._MEIPASS) / 'resources' / 'fonts'
+            runtime_root = Path(sys.executable).parent
+            fonts_dir = runtime_root / 'resources' / 'fonts'
         else:
             fonts_dir = Path(__file__).parent / 'resources' / 'fonts'
         
