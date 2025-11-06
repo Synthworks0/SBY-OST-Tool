@@ -24,6 +24,9 @@ def update_title_and_album(path: Path, *, title: str, album: str) -> None:
     audio = FLAC(str(path))
     audio["title"] = title
     audio["album"] = album
+    audio.pop("encoded-by", None)
+    audio.pop("encodedby", None)
+    audio.pop("encoded_by", None)
     audio.save()
 
 def update_common_tags(
@@ -43,6 +46,9 @@ def update_common_tags(
     audio["artist"] = artist
     audio["albumartist"] = album_artist
     audio["genre"] = genre
+    audio.pop("encoded-by", None)
+    audio.pop("encodedby", None)
+    audio.pop("encoded_by", None)
     audio.save()
 
 __all__ = [

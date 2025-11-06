@@ -727,22 +727,67 @@ class SoundtrackExtractor:
         if not isinstance(track_data, dict):
             return False, f"Error: Invalid track structure for multi-disc album {album_name}"
         
-        total_renamed = 0
+        cd_folders = ["CD1", "CD2"]
+        has_cd_folders = any((album_dir / cd).exists() for cd in cd_folders)
         
-        for cd_folder in ["CD1", "CD2"]:
-            cd_dir = album_dir / cd_folder
-            if not cd_dir.exists():
-                continue
+        if has_cd_folders:
+            total_renamed = 0
             
-            track_names = track_data.get(cd_folder, [])
-            if not track_names:
-                continue
+            for cd_folder in cd_folders:
+                cd_dir = album_dir / cd_folder
+                if not cd_dir.exists():
+                    continue
+                
+                track_names = track_data.get(cd_folder, [])
+                if not track_names:
+                    continue
+                
+                files_renamed = 0
+                for idx, path in enumerate(sorted(cd_dir.glob("*.flac"), key=lambda p: p.stat().st_mtime), start=1):
+                    self._check_cancel()
+                    track_number = read_track_number(path)
+                    if track_number is None or track_number < 1 or track_number > len(track_names):
+                        stem = path.stem.lstrip()
+                        guess = None
+                        if len(stem) >= 2 and stem[:2].isdigit():
+                            guess = int(stem[:2])
+                        elif stem and stem[0].isdigit():
+                            token = stem.split(" ", 1)[0]
+                            if token.isdigit():
+                                guess = int(token)
+                        if guess is None or guess < 1 or guess > len(track_names):
+                            guess = idx if idx <= len(track_names) else None
+                        track_number = guess
+                    if track_number is None:
+                        continue
+                    title = track_names[track_number - 1]
+                    if include_numbers:
+                        new_name = f"{track_number:02d}. {title}.flac"
+                    else:
+                        new_name = f"{title}.flac"
+                    new_path = cd_dir / new_name
+                    if new_path != path:
+                        if new_path.exists():
+                            new_path.unlink()
+                        path.rename(new_path)
+                        path = new_path
+                    update_title_and_album(path, title=title, album=ALBUMS[album_name][language])
+                    files_renamed += 1
+                
+                total_renamed += files_renamed
+        else:
+            flat_track_list = []
+            for cd_key in sorted(track_data.keys()):
+                flat_track_list.extend(track_data[cd_key])
             
             files_renamed = 0
-            for idx, path in enumerate(sorted(cd_dir.glob("*.flac"), key=lambda p: p.stat().st_mtime), start=1):
+            flac_files = sorted(album_dir.glob("*.flac"), key=lambda p: p.stat().st_mtime)
+            
+            for path in flac_files:
                 self._check_cancel()
                 track_number = read_track_number(path)
-                if track_number is None or track_number < 1 or track_number > len(track_names):
+                
+                if track_number is None or track_number < 1 or track_number > len(flat_track_list):
                     stem = path.stem.lstrip()
                     guess = None
                     if len(stem) >= 2 and stem[:2].isdigit():
@@ -751,17 +796,20 @@ class SoundtrackExtractor:
                         token = stem.split(" ", 1)[0]
                         if token.isdigit():
                             guess = int(token)
-                    if guess is None or guess < 1 or guess > len(track_names):
-                        guess = idx if idx <= len(track_names) else None
-                    track_number = guess
+                    if guess and 1 <= guess <= len(flat_track_list):
+                        track_number = guess
+                    else:
+                        continue
+                
                 if track_number is None:
                     continue
-                title = track_names[track_number - 1]
+                    
+                title = flat_track_list[track_number - 1]
                 if include_numbers:
                     new_name = f"{track_number:02d}. {title}.flac"
                 else:
                     new_name = f"{title}.flac"
-                new_path = cd_dir / new_name
+                new_path = album_dir / new_name
                 if new_path != path:
                     if new_path.exists():
                         new_path.unlink()
@@ -770,7 +818,7 @@ class SoundtrackExtractor:
                 update_title_and_album(path, title=title, album=ALBUMS[album_name][language])
                 files_renamed += 1
             
-            total_renamed += files_renamed
+            total_renamed = files_renamed
         
         if total_renamed == 0:
             return False, f"Error: No matching files found for {ALBUMS[album_name][language]}"

@@ -150,7 +150,16 @@ class AudioCatalog:
                 )
         else:
             manifest_by_number = {item.get("track_number"): item for item in tracks_manifest}
-            track_titles = ALBUMS[album_name]["Tracks"].get(language, [])
+            album_data = ALBUMS[album_name]
+            track_data = album_data["Tracks"].get(language, [])
+            
+            if album_data.get("is_multi_disc") and isinstance(track_data, dict):
+                track_titles = []
+                for cd_key in sorted(track_data.keys()):
+                    track_titles.extend(track_data[cd_key])
+            else:
+                track_titles = track_data
+            
             for idx, title in enumerate(track_titles, start=1):
                 manifest_entry = manifest_by_number.get(idx)
                 if not manifest_entry:

@@ -100,35 +100,35 @@ ALBUMS = {
         "Tracks": {
             "Japanese": {
                 "CD1": [
-                    "目覚め", "自己紹介", "友達候補", "すれ違い", "既視感", "急げ！", "本当に卯月？", "自分探し", "空気読んでる？", "気づいてしまった",
+                    "目覚め", "自己紹介", "友達候補", "すれ違い", "既視感", "急げ！", "本当に卯月", "自分探し", "空気読んでる", "気づいてしまった",
                     "モヤモヤ", "喧嘩の原因", "吹っ切れた", "憧れ", "悪者らしく", "激発", "助けてほしくて", "うまく行かなくて", "気づいてくれない", "本当の自分",
                     "治さないでください", "千里眼", "心の声", "何も聞こえない", "でれでれ"
                 ],
                 "CD2": [
                     "穏やか", "不安と孤独", "健全な悩み", "誘惑", "夢の正体", "渡したいもの", "愕然", "知らない", "切なく遠い", "私は歌を届けるだけ",
-                    "可能性の世界", "信じてもらえない", "わざとらしく", "言ったでしょ？", "歩き出す二人", "マウント"
+                    "可能性の世界", "信じてもらえない", "わざとらしく", "言ったでしょ", "歩き出す二人", "マウント"
                 ]
             },
             "Romaji": {
                 "CD1": [
-                    "Mezame", "Jikoshoukai", "Tomodachi Kouho", "Surechigai", "Kishikan", "Isoge!", "Hontou ni Uzuki?", "Jibun Sagashi", "Kuuki Yonderu?", "Kizuite Shimatta",
+                    "Mezame", "Jikoshoukai", "Tomodachi Kouho", "Surechigai", "Kishikan", "Isoge!", "Hontou ni Uzuki", "Jibun Sagashi", "Kuuki Yonderu", "Kizuite Shimatta",
                     "Moyamoya", "Kenka no Gen'in", "Fukkireta", "Akogare", "Warumono Rashiku", "Gekihatsu", "Tasukete Hoshikute", "Umaku Ikanakute", "Kizuite Kurenai", "Hontou no Jibun",
                     "Naosanaide Kudasai", "Senrigan", "Kokoro no Koe", "Nani mo Kikoenai", "Deredere"
                 ],
                 "CD2": [
                     "Odayaka", "Fuan to Kodoku", "Kenzen na Nayami", "Yuuwaku", "Yume no Shoutai", "Watashitai Mono", "Gakuzen", "Shiranai", "Setsunaku Tooi", "Watashi wa Uta wo Todokeru Dake",
-                    "Kanousei no Sekai", "Shinjite Moraenai", "Wazatorashiku", "Itta Desho?", "Arukidasu Futari", "Maunto"
+                    "Kanousei no Sekai", "Shinjite Moraenai", "Wazatorashiku", "Itta Desho", "Arukidasu Futari", "Maunto"
                 ]
             },
             "English": {
                 "CD1": [
-                    "Awakening", "Self-Introduction", "Potential Friend", "Passing By", "Déjà Vu", "Hurry!", "Is It Really Uzuki?", "Finding Myself", "Are You Reading the Room?", "I Noticed",
+                    "Awakening", "Self-Introduction", "Potential Friend", "Passing By", "Déjà Vu", "Hurry!", "Is It Really Uzuki", "Finding Myself", "Are You Reading the Room", "I Noticed",
                     "Uneasy Feeling", "The Cause of the Fight", "Got Over It", "Admiration", "Like a Villain", "Outburst", "Wanting Help", "Not Going Well", "Won't Notice", "My True Self",
                     "Please Don't Fix Me", "Clairvoyance", "Voice of the Heart", "Can't Hear Anything", "Lovey-Dovey"
                 ],
                 "CD2": [
                     "Calm", "Anxiety and Loneliness", "Healthy Worries", "Temptation", "The True Form of the Dream", "Something I Want to Give", "Stunned", "I Don't Know", "Painfully Distant", "I Just Deliver the Song",
-                    "A World of Possibilities", "Can't Be Believed", "Deliberately", "I Told You, Didn't I?", "Two People Walking Forward", "One-Upping"
+                    "A World of Possibilities", "Can't Be Believed", "Deliberately", "I Told You, Didn't I", "Two People Walking Forward", "One-Upping"
                 ]
             } # Translated by me
         }
@@ -700,6 +700,96 @@ ALBUMS = {
                     "Japanese": "赤城郁実(CV:山根綺)",
                     "Romaji": "Akagi Ikumi(CV:Yamane Aya)",
                     "English": "Ikumi Akagi(CV:Aya Yamane)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "水平線は僕の古傷",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu",
+                    "English": "The Horizon Is My Scar"
+                },
+                "filename": "水平線は僕の古傷.flac",
+                "titles": {
+                    "Japanese": "水平線は僕の古傷",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu",
+                    "English": "The Horizon Is My Scar"
+                },
+                "album_title": {
+                    "Japanese": "水平線は僕の古傷",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu",
+                    "English": "The Horizon Is My Scar"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "広川卯月(CV:雨宮天), 赤城郁実(CV:山根綺), 姫路紗良(CV:小原好美), 岩見沢寧々(CV:上田麗奈)",
+                    "Romaji": "Hirokawa Uzuki(CV:Amamiya Sora), Akagi Ikumi(CV:Yamane Aya), Himeji Sara(CV:Kohara Konomi), Iwamizawa Nene(CV:Ueda Reina)",
+                    "English": "Uzuki Hirokawa(CV:Sora Amamiya), Ikumi Akagi(CV:Aya Yamane), Sara Himeji(CV:Konomi Kohara), Nene Iwamizawa(CV:Reina Ueda)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "水平線は僕の古傷 (インストゥルメンタルVer.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Instrumental Ver.)",
+                    "English": "The Horizon Is My Scar (Instrumental Ver.)"
+                },
+                "filename": "水平線は僕の古傷 Instrumental.flac",
+                "titles": {
+                    "Japanese": "水平線は僕の古傷 (インストゥルメンタルVer.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Instrumental Ver.)",
+                    "English": "The Horizon Is My Scar (Instrumental Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "水平線は僕の古傷 (インストゥルメンタルVer.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Instrumental Ver.)",
+                    "English": "The Horizon Is My Scar (Instrumental Ver.)"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "fox capture plan",
+                    "Romaji": "fox capture plan",
+                    "English": "fox capture plan"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "水平線は僕の古傷 (SP Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (SP Ver.)",
+                    "English": "The Horizon Is My Scar (SP Ver.)"
+                },
+                "filename": "水平線は僕の古傷 SP Ver.flac",
+                "titles": {
+                    "Japanese": "水平線は僕の古傷 (SP Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (SP Ver.)",
+                    "English": "The Horizon Is My Scar (SP Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "水平線は僕の古傷 (SP Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (SP Ver.)",
+                    "English": "The Horizon Is My Scar (SP Ver.)"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "広川卯月(CV:雨宮天), 赤城郁実(CV:山根綺), 姫路紗良(CV:小原好美), 霧島透子(CV:上田麗奈)",
+                    "Romaji": "Hirokawa Uzuki(CV:Amamiya Sora), Akagi Ikumi(CV:Yamane Aya), Himeji Sara(CV:Kohara Konomi), Kirishima Touko(CV:Ueda Reina)",
+                    "English": "Uzuki Hirokawa(CV:Sora Amamiya), Ikumi Akagi(CV:Aya Yamane), Sara Himeji(CV:Konomi Kohara), Touko Kirishima(CV:Reina Ueda)"
                 },
                 "album_artists": {
                     "Japanese": "fox capture plan; Various Artists",
