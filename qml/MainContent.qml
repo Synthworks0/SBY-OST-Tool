@@ -382,7 +382,7 @@ Item {
                 id: albumComboBox
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
-                model: ["Bunny Girl Senpai", "Dreaming Girl", "Sister Venturing Out", "Knapsack Kid", "Extras"]
+                model: renamer.album_list
                 onCurrentTextChanged: {
                     coverColorAnalyzer.setColors(currentText)
                     renamer.set_current_album(currentText)
