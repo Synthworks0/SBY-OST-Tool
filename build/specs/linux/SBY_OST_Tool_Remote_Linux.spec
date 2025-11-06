@@ -18,9 +18,9 @@ def include(path: str, dest: str):
     return None
 
 candidate_datas = [
-    include('../../../qml/main.qml', '.'),
-    include('../../../qml/MainContent.qml', '.'),
-    include(components_dir, 'components'),
+    include('../../../qml/main.qml', 'qml'),
+    include('../../../qml/MainContent.qml', 'qml'),
+    include(components_dir, 'qml/components'),
     include(icons_dir, 'resources/icons'),
     include('../../../build/icons/icon.png', '.'),
     include('../../../build/icons/icon.ico', '.'),

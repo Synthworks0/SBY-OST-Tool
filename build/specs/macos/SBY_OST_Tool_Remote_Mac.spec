@@ -19,7 +19,7 @@ def collect_directory_to_resources(dir_path, bundle_subdir):
 app_datas = []
 components_dir = '../../../qml/components' if os.path.exists('../../../qml/components') else '../../../qml/Components'
 if os.path.exists(components_dir):
-    app_datas.extend(collect_directory_to_resources(components_dir, 'components'))
+    app_datas.extend(collect_directory_to_resources(components_dir, 'qml/components'))
 else:
     print("Warning: components directory not found.")
 
@@ -29,11 +29,11 @@ else:
     print("Warning: resources directory not found.")
 
 if os.path.exists('../../../qml/main.qml'):
-    app_datas.append(('../../../qml/main.qml', '.'))
+    app_datas.append(('../../../qml/main.qml', 'qml'))
 else:
     print("Warning: main.qml not found.")
 if os.path.exists('../../../qml/MainContent.qml'):
-    app_datas.append(('../../../qml/MainContent.qml', '.'))
+    app_datas.append(('../../../qml/MainContent.qml', 'qml'))
 else:
     print("Warning: MainContent.qml not found.")
 

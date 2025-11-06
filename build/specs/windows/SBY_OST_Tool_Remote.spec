@@ -4,9 +4,9 @@ import os
 def existing(path): return os.path.exists(path)
 
 common_datas = [
-    ('../../../qml/main.qml', '.'),
-    ('../../../qml/MainContent.qml', '.'),
-    ('../../../qml/components', 'components'),
+    ('../../../qml/main.qml', 'qml'),
+    ('../../../qml/MainContent.qml', 'qml'),
+    ('../../../qml/components', 'qml/components'),
     ('../../../resources/icons', 'resources/icons'),
 ]
 if existing('../../../runtime_config.json'):

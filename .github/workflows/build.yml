@@ -495,18 +495,10 @@ jobs:
           tar -czf "../${{ matrix.archive-name }}" "$(basename ${{ matrix.dist-path }})"
           cd ..
 
-      - name: Create archive (Windows)
-        if: startsWith(matrix.os, 'windows')
+      - name: Calculate and print SHA256 checksum (Linux/macOS only)
+        if: ${{ !startsWith(matrix.os, 'windows') }}
         run: |
-          Compress-Archive -Path "${{ matrix.dist-path }}" -DestinationPath "${{ matrix.archive-name }}"
-          Write-Host "Created archive: ${{ matrix.archive-name }}"
-          Get-Item "${{ matrix.archive-name }}" | Format-List
-
-      - name: Calculate and print SHA256 checksum
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            certutil -hashfile "${{ matrix.archive-name }}" SHA256
-          elif [ "$RUNNER_OS" == "macOS" ]; then
+          if [ "$RUNNER_OS" == "macOS" ]; then
             shasum -a 256 "${{ matrix.archive-name }}"
           else
             sha256sum "${{ matrix.archive-name }}"
@@ -518,7 +510,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: ${{ matrix.archive-name }}
+          path: ${{ matrix.dist-path }}
           if-no-files-found: error
           overwrite: true
 

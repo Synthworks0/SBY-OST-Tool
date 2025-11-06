@@ -24,10 +24,10 @@ def collect_directory_to_resources(dir_path, bundle_subdir):
 # Collect data files with case-insensitive fallback
 app_datas = []
 
-# Components -> Contents/Resources/components
+# Components -> Contents/Resources/qml/components
 components_dir = '../../../qml/components' if os.path.exists('../../../qml/components') else '../../../qml/Components'
 if os.path.exists(components_dir):
-    app_datas.extend(collect_directory_to_resources(components_dir, 'components'))
+    app_datas.extend(collect_directory_to_resources(components_dir, 'qml/components'))
 else:
     print("Warning: components directory not found.")
 
@@ -42,13 +42,13 @@ if os.path.exists(soundtrack_dir):
     app_datas.extend(collect_directory_to_resources(soundtrack_dir, 'soundtrack_tool/assets/SBY Soundtracks'))
 else:
     print('Warning: soundtrack library not found.')
-# QML at top-level (PyInstaller will place in Contents/Resources)
+# QML in qml/ subdirectory (PyInstaller will place in Contents/Resources/qml)
 if os.path.exists('../../../qml/main.qml'):
-    app_datas.append(('../../../qml/main.qml', '.'))
+    app_datas.append(('../../../qml/main.qml', 'qml'))
 else:
     print("Warning: main.qml not found.")
 if os.path.exists('../../../qml/MainContent.qml'):
-    app_datas.append(('../../../qml/MainContent.qml', '.'))
+    app_datas.append(('../../../qml/MainContent.qml', 'qml'))
 else:
     print("Warning: MainContent.qml not found.")
 
