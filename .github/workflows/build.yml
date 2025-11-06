@@ -96,7 +96,7 @@ jobs:
         run: |
           from PIL import Image
           
-          img = Image.open('icon.png')
+          img = Image.open('build/icons/icon.png')
           icon_sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
           img.save('icon.ico', format='ICO', sizes=icon_sizes)
           print(f"Generated multi-resolution icon.ico with sizes: {icon_sizes}")
@@ -109,7 +109,7 @@ jobs:
           from pathlib import Path
           from PIL import Image
           
-          source_img = Image.open('icon.png')
+          source_img = Image.open('build/icons/icon.png')
           ICNS_SIZES = [16, 32, 64, 128, 256]
           iconset = Path('icon.iconset')
           iconset.mkdir(exist_ok=True)
