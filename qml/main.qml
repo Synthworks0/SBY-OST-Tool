@@ -61,7 +61,7 @@ ApplicationWindow {
                 case "Santa Claus":
                     dominantColor = "#ef82a8"
                     backgroundColor = "#bebeda"
-                    accentColor = "#05489d"
+                    accentColor = "#b43a3d"
                     textColor = "#ffffff"
                     break
                 case "Extras":

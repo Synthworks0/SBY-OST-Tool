@@ -72,7 +72,7 @@ Item {
     Timer {
         id: colorTimer
         interval: 50
-        running: isExtras
+        running: isExtras && !remoteProgressDialog.visible
         repeat: true
         onTriggered: {
             colorProgress += 0.02
@@ -673,16 +673,27 @@ Item {
                     visible: !outputFolderText.text
                 }
 
-                Text {
+                TextInput {
                     id: outputFolderText
                     anchors.fill: parent
                     anchors.margins: 10
-                    verticalAlignment: Text.AlignVCenter
+                    verticalAlignment: TextInput.AlignVCenter
                     text: renamer.output_folder
                     color: albumComboBox.currentText === "Extras"
                         ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
                         : coverColorAnalyzer.textColor
-                    elide: Text.ElideMiddle
+                    selectByMouse: true
+                    selectionColor: albumComboBox.currentText === "Extras"
+                        ? lerpColor(currentColor, nextColor, colorProgress)
+                        : coverColorAnalyzer.accentColor
+                    selectedTextColor: albumComboBox.currentText === "Extras"
+                        ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                        : coverColorAnalyzer.textColor
+                    clip: true
+                    
+                    onEditingFinished: {
+                        renamer.set_output_directory(text)
+                    }
                 }
             }
 
@@ -912,8 +923,16 @@ Item {
                 anchors.fill: parent
                 color: resultDialog.dialogBackgroundColor
                 border.width: 2 * window.scaleFactor
-                border.color: resultDialog.dialogHeaderColor
+                border.color: Qt.darker(resultDialog.dialogHeaderColor, 1.3)
                 radius: 10 * window.scaleFactor
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 0
+                    verticalOffset: 8 * window.scaleFactor
+                    radius: 24 * window.scaleFactor
+                    samples: 32
+                    color: Qt.rgba(0, 0, 0, 0.5)
+                }
             }
 
             Rectangle {
