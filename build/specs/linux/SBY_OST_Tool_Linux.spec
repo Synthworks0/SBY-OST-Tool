@@ -4,34 +4,16 @@ import os
 
 block_cipher = None
 
-components_dir = '../../../qml/components' if os.path.exists('../../../qml/components') else '../../../qml/Components'
-resources_dir = '../../../resources' if os.path.exists('../../../resources') else '../../../Resources'
-icons_dir = os.path.join(resources_dir, 'icons')
-soundtrack_dir = os.path.join('../../../soundtrack_tool', 'assets', 'SBY Soundtracks')
-
-def existing(path: str) -> bool:
-    return os.path.exists(path)
-
-def include(path: str, dest: str):
-    if existing(path):
-        return (path, dest)
-    print(f"Warning: {path} not found, skipping in build")
-    return None
-
-candidate_datas = [
-    include('../../../qml/main.qml', 'qml'),
-    include('../../../qml/MainContent.qml', 'qml'),
-    include(components_dir, 'qml/components'),
-    include(icons_dir, 'resources/icons'),
-    include(soundtrack_dir, 'soundtrack_tool/assets/SBY Soundtracks'),
-    include('../../../build/icons/icon.png', '.'),
-    include('../../../runtime_config.json', '.'),
-    include('../../../resources/fonts', 'resources/fonts'),
+common_datas = [
+    ('../../../qml/main.qml', 'qml'),
+    ('../../../qml/MainContent.qml', 'qml'),
+    ('../../../qml/components', 'qml/components'),
+    ('../../../resources', 'resources'),
+    ('../../../soundtrack_tool/assets/SBY Soundtracks', 'soundtrack_tool/assets/SBY Soundtracks'),
+    ('../../../runtime_config.json', '.'),
 ]
 
-datas = [entry for entry in candidate_datas if entry]
-
-hiddenimports = [
+hidden_imports = [
     'PySide6.QtQml',
     'PySide6.QtQuick',
     'PySide6.QtCore',
@@ -43,19 +25,16 @@ a = Analysis(
     ['../../../main.py'],
     pathex=[],
     binaries=[],
-    datas=datas,
-    hiddenimports=hiddenimports,
+    datas=common_datas,
+    hiddenimports=hidden_imports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=block_cipher,
     noarchive=False,
     optimize=0,
 )
-pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+pyz = PYZ(a.pure)
 
 exe = EXE(
     pyz,
@@ -73,9 +52,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='../../../build/icons/icon.png' if existing('../../../build/icons/icon.png') else None,
 )
-
 coll = COLLECT(
     exe,
     a.binaries,

@@ -4,41 +4,13 @@ import os
 
 block_cipher = None
 
-def collect_directory_to_resources(dir_path, bundle_subdir):
-    collected = []
-    if not os.path.exists(dir_path):
-        return collected
-    for root, _, files in os.walk(dir_path):
-        for file in files:
-            src = os.path.join(root, file)
-            rel = os.path.relpath(root, dir_path)
-            dest = os.path.join(bundle_subdir, rel)
-            collected.append((src, dest))
-    return collected
-
-app_datas = []
-components_dir = '../../../qml/components' if os.path.exists('../../../qml/components') else '../../../qml/Components'
-if os.path.exists(components_dir):
-    app_datas.extend(collect_directory_to_resources(components_dir, 'qml/components'))
-else:
-    print("Warning: components directory not found.")
-
-if os.path.exists('../../../resources'):
-    app_datas.extend(collect_directory_to_resources('../../../resources', 'resources'))
-else:
-    print("Warning: resources directory not found.")
-
-if os.path.exists('../../../qml/main.qml'):
-    app_datas.append(('../../../qml/main.qml', 'qml'))
-else:
-    print("Warning: main.qml not found.")
-if os.path.exists('../../../qml/MainContent.qml'):
-    app_datas.append(('../../../qml/MainContent.qml', 'qml'))
-else:
-    print("Warning: MainContent.qml not found.")
-
-app_datas.append(('../../../runtime_config.json', '.'))
-
+app_datas = [
+    ('../../../qml/main.qml', 'qml'),
+    ('../../../qml/MainContent.qml', 'qml'),
+    ('../../../qml/components', 'qml/components'),
+    ('../../../resources', 'resources'),
+    ('../../../runtime_config.json', '.'),
+]
 
 hidden_imports = [
     'PySide6.QtCore',
@@ -51,6 +23,7 @@ hidden_imports = [
     'PySide6.QtMultimedia',
     'PySide6.QtMultimediaWidgets',
     'PySide6.QtGraphicalEffects',
+    'PySide6.QtOpenGL',
 ]
 
 a = Analysis(
@@ -82,13 +55,14 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=False,
-    console=True,
+    console=False,
     disable_windowed_traceback=False,
     argv_emulation=True,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
 )
+
 icon_file = '../../../icon.icns' if os.path.exists('../../../icon.icns') else None
 if not icon_file:
     print("Warning: icon.icns not found. App will not have a custom icon.")
