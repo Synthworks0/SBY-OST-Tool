@@ -1,6 +1,7 @@
 from __future__ import annotations
 import re
 import shutil
+import sys
 from collections import defaultdict
 from contextlib import suppress
 from dataclasses import dataclass, field
@@ -16,6 +17,47 @@ from .config import AppConfig
 from .metadata import read_track_number, update_common_tags, update_title_and_album
 from .resources import ResourceLocator
 
+
+def normalize_path_macos(path: Path) -> Path:
+    if sys.platform != "darwin":
+        return path
+    
+    parts = []
+    for part in path.parts:
+        normalized = unicodedata.normalize('NFD', part)
+        parts.append(normalized)
+    
+    if path.is_absolute():
+        result = Path(parts[0])
+        for part in parts[1:]:
+            result = result / part
+        return result
+    else:
+        result = Path(parts[0])
+        for part in parts[1:]:
+            result = result / part
+        return result
+
+def resolve_path_macos(base_path: Path, relative_name: str) -> Path | None:
+    if sys.platform != "darwin":
+        candidate = base_path / relative_name
+        return candidate if candidate.exists() else None
+    
+    candidate = base_path / relative_name
+    if candidate.exists():
+        return candidate
+    
+    nfd_name = unicodedata.normalize('NFD', relative_name)
+    candidate_nfd = base_path / nfd_name
+    if candidate_nfd.exists():
+        return candidate_nfd
+    
+    nfc_name = unicodedata.normalize('NFC', relative_name)
+    candidate_nfc = base_path / nfc_name
+    if candidate_nfc.exists():
+        return candidate_nfc
+    
+    return None
 
 @dataclass
 class AlbumIntegrityReport:
@@ -109,8 +151,9 @@ class SoundtrackExtractor:
         destination = collection_root / album_data.get(language, album_data["English"])
         destination.mkdir(parents=True, exist_ok=True)
 
-        if (source_dir / "cover.jpg").exists():
-            shutil.copy2(source_dir / "cover.jpg", destination / "cover.jpg")
+        cover_candidate = resolve_path_macos(source_dir, "cover.jpg")
+        if cover_candidate is not None:
+            shutil.copy2(cover_candidate, destination / "cover.jpg")
 
         if album_name == "Extras":
             self._extract_extras(source_dir, destination, language)
@@ -229,6 +272,13 @@ class SoundtrackExtractor:
         flac_files = sorted(source_dir.glob("*.flac"))
         for index, path in enumerate(flac_files, start=1):
             self._check_cancel()
+            if sys.platform == "darwin" and not path.exists():
+                resolved = resolve_path_macos(source_dir, path.name)
+                if resolved is not None:
+                    path = resolved
+                else:
+                    continue  # Skip files we can't access
+            
             base_name = re.sub(r"^\d+\.\s*", "", path.stem)
             if include_numbers:
                 filename = f"{index:02d}. {base_name}.flac"
@@ -238,8 +288,8 @@ class SoundtrackExtractor:
 
     def _extract_multi_disc_album(self, source_dir: Path, destination: Path, include_numbers: bool) -> None:
         for cd_folder in ["CD1", "CD2"]:
-            cd_source = source_dir / cd_folder
-            if not cd_source.exists():
+            cd_source = resolve_path_macos(source_dir, cd_folder)
+            if cd_source is None or not cd_source.exists():
                 continue
             
             cd_dest = destination / cd_folder
@@ -248,6 +298,13 @@ class SoundtrackExtractor:
             flac_files = sorted(cd_source.glob("*.flac"))
             for index, path in enumerate(flac_files, start=1):
                 self._check_cancel()
+                if sys.platform == "darwin" and not path.exists():
+                    resolved = resolve_path_macos(cd_source, path.name)
+                    if resolved is not None:
+                        path = resolved
+                    else:
+                        continue  # Skip files we can't access
+                
                 base_name = re.sub(r"^\d+\.\s*", "", path.stem)
                 if include_numbers:
                     filename = f"{index:02d}. {base_name}.flac"
@@ -255,9 +312,9 @@ class SoundtrackExtractor:
                     filename = f"{base_name}.flac"
                 shutil.copy2(path, cd_dest / filename)
             
-            cd_cover = cd_source / "cover.jpg"
-            if cd_cover.exists():
-                shutil.copy2(cd_cover, cd_dest / "cover.jpg")
+            cd_cover_candidate = resolve_path_macos(cd_source, "cover.jpg")
+            if cd_cover_candidate is not None:
+                shutil.copy2(cd_cover_candidate, cd_dest / "cover.jpg")
 
     def _extract_extras(self, source_dir: Path, destination: Path, language: str) -> None:
         for track in ALBUMS["Extras"]["Tracks"]:
@@ -268,7 +325,12 @@ class SoundtrackExtractor:
             if subfolder_info:
                 english_name = subfolder_info.get("English")
                 if english_name:
-                    source_folder = source_folder.joinpath(*english_name.split("/"))
+                    for component in english_name.split("/"):
+                        resolved = resolve_path_macos(source_folder, component)
+                        if resolved is None:
+                            source_folder = source_folder / component
+                            break
+                        source_folder = resolved
             if not source_folder.exists():
                 continue
             dest_folder = destination
@@ -279,12 +341,12 @@ class SoundtrackExtractor:
             dest_folder.mkdir(parents=True, exist_ok=True)
 
             if filename:
-                candidate = source_folder / filename
-                if candidate.exists():
-                    shutil.copy2(candidate, dest_folder / candidate.name)
-            cover_source = source_folder / "cover.jpg"
-            if cover_source.exists():
-                shutil.copy2(cover_source, dest_folder / "cover.jpg")
+                candidate = resolve_path_macos(source_folder, filename)
+                if candidate is not None:
+                    shutil.copy2(candidate, dest_folder / filename)
+            cover_candidate = resolve_path_macos(source_folder, "cover.jpg")
+            if cover_candidate is not None:
+                shutil.copy2(cover_candidate, dest_folder / "cover.jpg")
 
     # --- Remote extraction helpers ----------------------------------------------------
 

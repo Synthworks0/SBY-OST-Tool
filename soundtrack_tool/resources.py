@@ -1,6 +1,7 @@
 from __future__ import annotations
 import os
 import sys
+import unicodedata
 from pathlib import Path
 
 from .environment import (
@@ -92,6 +93,8 @@ class ResourceLocator:
         return self._soundtrack_root
 
     def soundtrack_source_dir(self, english_album_name: str) -> Path:
+        if sys.platform == "darwin":
+            english_album_name = unicodedata.normalize('NFD', english_album_name)
         return self.soundtrack_collection_root() / english_album_name
 
     def resource_path(self, *parts: str | Path) -> Path:

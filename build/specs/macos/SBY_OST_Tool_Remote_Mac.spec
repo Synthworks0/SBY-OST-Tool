@@ -63,9 +63,12 @@ exe = EXE(
     entitlements_file=None,
 )
 
-icon_file = '../../../icon.icns' if os.path.exists('../../../icon.icns') else None
+# Get the directory where this spec file is located
+spec_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+icon_path = os.path.join(spec_root, 'icon.icns')
+icon_file = icon_path if os.path.exists(icon_path) else None
 if not icon_file:
-    print("Warning: icon.icns not found. App will not have a custom icon.")
+    print(f"Warning: icon.icns not found at {icon_path}. App will not have a custom icon.")
 
 app = BUNDLE(
     exe,
