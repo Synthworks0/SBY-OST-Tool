@@ -23,7 +23,7 @@ a = Analysis(
     ['../../../main.py'],
     pathex=[],
     binaries=[],
-    datas=common_datas + [('../../../build/icons/icon.ico', '.')],
+    datas=common_datas + [('../../../icon.ico', '.')],
     hiddenimports=hidden_imports,
     hookspath=[],
     hooksconfig={},
@@ -50,7 +50,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['../../../build/icons/icon.ico'],
+    icon=['../../../icon.ico'],
 )
 coll = COLLECT(
     exe,

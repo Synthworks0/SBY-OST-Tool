@@ -25,7 +25,6 @@ candidate_datas = [
     include(icons_dir, 'resources/icons'),
     include(soundtrack_dir, 'soundtrack_tool/assets/SBY Soundtracks'),
     include('../../../build/icons/icon.png', '.'),
-    include('../../../build/icons/icon.ico', '.'),
     include('../../../runtime_config.json', '.'),
     include('../../../resources/fonts', 'resources/fonts'),
 ]
@@ -74,7 +73,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='../../../build/icons/icon.ico' if existing('../../../build/icons/icon.ico') else None,
+    icon='../../../build/icons/icon.png' if existing('../../../build/icons/icon.png') else None,
 )
 
 coll = COLLECT(

@@ -52,10 +52,6 @@ if os.path.exists('../../../qml/MainContent.qml'):
 else:
     print("Warning: MainContent.qml not found.")
 
-# Icons used at runtime
-if os.path.exists('../../../build/icons/icon.ico'):
-    app_datas.append(('../../../build/icons/icon.ico', '.'))
-
 app_datas.append(('../../../runtime_config.json', '.'))
 
 a = Analysis(
