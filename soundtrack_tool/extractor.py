@@ -837,7 +837,8 @@ class SoundtrackExtractor:
             extras_dir.rename(desired_dir)
             extras_dir = desired_dir
 
-        for old_path, new_path in self._planned_subfolder_moves(extras_dir, track_list, language):
+        renames = self._planned_subfolder_moves(extras_dir, track_list, language)
+        for old_path, new_path in renames:
             self._check_cancel()
             if old_path == new_path:
                 continue
@@ -856,6 +857,18 @@ class SoundtrackExtractor:
                 old_path.rmdir()
             else:
                 old_path.rename(new_path)
+
+        for old_path, new_path in renames:
+            try:
+                parent = old_path.parent
+                while parent != extras_dir and parent.exists():
+                    if not any(parent.iterdir()):
+                        parent.rmdir()
+                        parent = parent.parent
+                    else:
+                        break
+            except OSError:
+                pass
 
         for track in track_list:
             self._check_cancel()

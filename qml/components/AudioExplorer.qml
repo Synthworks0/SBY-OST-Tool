@@ -13,6 +13,8 @@ Item {
     property color textColor
     property color accentColor
     property string iconsPath: "../../resources/icons/"
+    property bool isSeeking: false
+    property bool wasPlayingBeforeSeek: false
 
     signal opened()
     signal closed()
@@ -100,6 +102,10 @@ Item {
         
         onPlaybackStateChanged: {
             root.currentPlaybackState = playbackState
+                
+            if (playbackState === MediaPlayer.PlayingState && root.isSeeking) {
+                root.isSeeking = false
+            }
         }
     }
 
@@ -202,11 +208,15 @@ Item {
                     id: playPauseButton
                     width: 32
                     height: 32
-                    icon.width: 16
-                    icon.height: 16
-                    icon.source: mediaPlayer.playbackState === MediaPlayer.PlayingState ? getIconUrl("pause_icon.png") : getIconUrl("play_icon.png")
+                    icon.width: (root.isSeeking && !root.wasPlayingBeforeSeek) ? 0 : 16
+                    icon.height: (root.isSeeking && !root.wasPlayingBeforeSeek) ? 0 : 16
+                    icon.source: (root.isSeeking && !root.wasPlayingBeforeSeek) ? "" : (mediaPlayer.playbackState === MediaPlayer.PlayingState ? getIconUrl("pause_icon.png") : getIconUrl("play_icon.png"))
                     onClicked: {
-                        if (mediaPlayer.playbackState === MediaPlayer.PlayingState) {
+                        if (root.isSeeking) {
+                            seekTimer.stop()
+                            root.isSeeking = false
+                            root.wasPlayingBeforeSeek = false
+                        } else if (mediaPlayer.playbackState === MediaPlayer.PlayingState) {
                             mediaPlayer.pause()
                         } else {
                             mediaPlayer.play()
@@ -215,6 +225,15 @@ Item {
                     background: Rectangle {
                         color: adjustColorForContrast(root.accentColor)
                         radius: 4
+                    }
+                    
+                    BusyIndicator {
+                        visible: root.isSeeking && !root.wasPlayingBeforeSeek
+                        running: root.isSeeking && !root.wasPlayingBeforeSeek
+                        anchors.centerIn: parent
+                        width: 20
+                        height: 20
+                        Material.accent: root.accentColor
                     }
                 }
 
@@ -225,8 +244,22 @@ Item {
                     to: mediaPlayer.duration
                     value: mediaPlayer.position
                     enabled: mediaPlayer.playbackState === MediaPlayer.PlayingState || mediaPlayer.playbackState === MediaPlayer.PausedState
-                    onMoved: {
-                        mediaPlayer.position = value
+                    
+                    onPressedChanged: {
+                        if (pressed) {
+                            root.wasPlayingBeforeSeek = (mediaPlayer.playbackState === MediaPlayer.PlayingState)
+                            root.isSeeking = true
+                            if (root.wasPlayingBeforeSeek) {
+                                mediaPlayer.pause()
+                            }
+                        } else {
+                            mediaPlayer.position = value
+                            if (root.wasPlayingBeforeSeek) {
+                                mediaPlayer.play()
+                            } else {
+                                root.isSeeking = false
+                            }
+                        }
                     }
 
                     background: Rectangle {
@@ -252,6 +285,13 @@ Item {
                         height: 16
                         radius: 8
                         color: root.accentColor
+                    }
+                }
+
+                Timer {
+                    id: seekTimer
+                    interval: 150
+                    onTriggered: {
                     }
                 }
 

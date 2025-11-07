@@ -591,7 +591,7 @@ ASSET_MANIFEST = {
       },
       {
         "track_number": 7,
-        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/07. \u672c\u5f53\u306b\u536f\u6708\uff1f.flac",
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/07. \u672c\u5f53\u306b\u536f\u6708.flac",
         "duration_seconds": 109
       },
       {
@@ -601,7 +601,7 @@ ASSET_MANIFEST = {
       },
       {
         "track_number": 9,
-        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/09. \u7a7a\u6c17\u8aad\u3093\u3067\u308b\uff1f.flac",
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD1/09. \u7a7a\u6c17\u8aad\u3093\u3067\u308b.flac",
         "duration_seconds": 70
       },
       {
@@ -685,82 +685,82 @@ ASSET_MANIFEST = {
         "duration_seconds": 127
       },
       {
-        "track_number": 1,
+        "track_number": 26,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/01. \u7a4f\u3084\u304b.flac",
         "duration_seconds": 101
       },
       {
-        "track_number": 2,
+        "track_number": 27,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/02. \u4e0d\u5b89\u3068\u5b64\u72ec.flac",
         "duration_seconds": 188
       },
       {
-        "track_number": 3,
+        "track_number": 28,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/03. \u5065\u5168\u306a\u60a9\u307f.flac",
         "duration_seconds": 126
       },
       {
-        "track_number": 4,
+        "track_number": 29,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/04. \u8a98\u60d1.flac",
         "duration_seconds": 77
       },
       {
-        "track_number": 5,
+        "track_number": 30,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/05. \u5922\u306e\u6b63\u4f53.flac",
         "duration_seconds": 139
       },
       {
-        "track_number": 6,
+        "track_number": 31,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/06. \u6e21\u3057\u305f\u3044\u3082\u306e.flac",
         "duration_seconds": 133
       },
       {
-        "track_number": 7,
+        "track_number": 32,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/07. \u6115\u7136.flac",
         "duration_seconds": 105
       },
       {
-        "track_number": 8,
+        "track_number": 33,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/08. \u77e5\u3089\u306a\u3044.flac",
         "duration_seconds": 75
       },
       {
-        "track_number": 9,
+        "track_number": 34,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/09. \u5207\u306a\u304f\u9060\u3044.flac",
         "duration_seconds": 132
       },
       {
-        "track_number": 10,
+        "track_number": 35,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/10. \u79c1\u306f\u6b4c\u3092\u5c4a\u3051\u308b\u3060\u3051.flac",
         "duration_seconds": 119
       },
       {
-        "track_number": 11,
+        "track_number": 36,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/11. \u53ef\u80fd\u6027\u306e\u4e16\u754c.flac",
         "duration_seconds": 99
       },
       {
-        "track_number": 12,
+        "track_number": 37,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/12. \u4fe1\u3058\u3066\u3082\u3089\u3048\u306a\u3044.flac",
         "duration_seconds": 112
       },
       {
-        "track_number": 13,
+        "track_number": 38,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/13. \u308f\u3056\u3068\u3089\u3057\u304f.flac",
         "duration_seconds": 95
       },
       {
-        "track_number": 14,
-        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/14. \u8a00\u3063\u305f\u3067\u3057\u3087\uff1f.flac",
+        "track_number": 39,
+        "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/14. \u8a00\u3063\u305f\u3067\u3057\u3087.flac",
         "duration_seconds": 72
       },
       {
-        "track_number": 15,
+        "track_number": 40,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/15. \u6b69\u304d\u51fa\u3059\u4e8c\u4eba.flac",
         "duration_seconds": 126
       },
       {
-        "track_number": 16,
+        "track_number": 41,
         "relative_path": "Rascal Does Not Dream of Santa Claus Original Soundtrack/CD2/16. \u30de\u30a6\u30f3\u30c8.flac",
         "duration_seconds": 96
       }
@@ -882,17 +882,17 @@ ASSET_MANIFEST = {
       },
       {
         "track_number": 23,
-        "relative_path": "Extras/The Horizon Is My Scar/\u6c34\u5e73\u7dda\u306f\u50d5\u306e\u53e4\u50b7.flac",
+        "relative_path": "Extras/The Horizon Is My Scar/The Horizon Is My Scar.flac",
         "duration_seconds": 281
       },
       {
         "track_number": 24,
-        "relative_path": "Extras/The Horizon Is My Scar (Instrumental Ver.)/\u6c34\u5e73\u7dda\u306f\u50d5\u306e\u53e4\u50b7 Instrumental.flac",
+        "relative_path": "Extras/The Horizon Is My Scar (Instrumental Ver.)/The Horizon Is My Scar (Instrumental Ver.).flac",
         "duration_seconds": 279
       },
       {
         "track_number": 25,
-        "relative_path": "Extras/The Horizon Is My Scar (SP Ver.)/\u6c34\u5e73\u7dda\u306f\u50d5\u306e\u53e4\u50b7 SP Ver.flac",
+        "relative_path": "Extras/The Horizon Is My Scar (SP Ver.)/The Horizon Is My Scar (SP Ver.).flac",
         "duration_seconds": 281
       },
       {

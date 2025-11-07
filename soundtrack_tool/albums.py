@@ -714,7 +714,7 @@ ALBUMS = {
                     "Romaji": "Suiheisen wa Boku no Hurukizu",
                     "English": "The Horizon Is My Scar"
                 },
-                "filename": "水平線は僕の古傷.flac",
+                "filename": "The Horizon Is My Scar.flac",
                 "titles": {
                     "Japanese": "水平線は僕の古傷",
                     "Romaji": "Suiheisen wa Boku no Hurukizu",
@@ -744,7 +744,7 @@ ALBUMS = {
                     "Romaji": "Suiheisen wa Boku no Hurukizu (Instrumental Ver.)",
                     "English": "The Horizon Is My Scar (Instrumental Ver.)"
                 },
-                "filename": "水平線は僕の古傷 Instrumental.flac",
+                "filename": "The Horizon Is My Scar (Instrumental Ver.).flac",
                 "titles": {
                     "Japanese": "水平線は僕の古傷 (インストゥルメンタルVer.)",
                     "Romaji": "Suiheisen wa Boku no Hurukizu (Instrumental Ver.)",
@@ -774,7 +774,7 @@ ALBUMS = {
                     "Romaji": "Suiheisen wa Boku no Hurukizu (SP Ver.)",
                     "English": "The Horizon Is My Scar (SP Ver.)"
                 },
-                "filename": "水平線は僕の古傷 SP Ver.flac",
+                "filename": "The Horizon Is My Scar (SP Ver.).flac",
                 "titles": {
                     "Japanese": "水平線は僕の古傷 (SP Ver.)",
                     "Romaji": "Suiheisen wa Boku no Hurukizu (SP Ver.)",

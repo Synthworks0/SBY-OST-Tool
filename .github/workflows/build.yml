@@ -97,7 +97,7 @@ jobs:
           from PIL import Image
           
           img = Image.open('build/icons/icon.png')
-          icon_sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+          icon_sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256), (512, 512)]
           img.save('icon.ico', format='ICO', sizes=icon_sizes)
           print(f"Generated multi-resolution icon.ico with sizes: {icon_sizes}")
 

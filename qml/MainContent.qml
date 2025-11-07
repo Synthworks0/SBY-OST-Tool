@@ -72,7 +72,7 @@ Item {
     Timer {
         id: colorTimer
         interval: 50
-        running: isExtras && !remoteProgressDialog.visible
+        running: isExtras
         repeat: true
         onTriggered: {
             colorProgress += 0.02
@@ -86,7 +86,6 @@ Item {
             }
             root.Material.accent = lerpColor(currentColor, nextColor, colorProgress)
             root.Material.background = adjustBrightness(lerpColor(currentColor, nextColor, colorProgress), -20)
-            root.Material.foreground = getContrastColor(root.Material.background)
         }
     }
 
@@ -298,7 +297,7 @@ Item {
                 font.weight: Font.Medium
                 text: progressTitle.text
                 color: albumComboBox.currentText === "Extras"
-                    ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                    ? "#000000"
                     : remoteProgressDialog.cardTextColor
                 wrapMode: Text.WordWrap
             }
@@ -312,7 +311,7 @@ Item {
                 opacity: 0.75
                 text: progressDetail.text
                 color: albumComboBox.currentText === "Extras"
-                    ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                    ? "#000000"
                     : remoteProgressDialog.cardTextColor
                 wrapMode: Text.WordWrap
             }
@@ -409,7 +408,7 @@ Item {
                             ? lerpColor(currentColor, nextColor, colorProgress)
                             : coverColorAnalyzer.backgroundColor
                         border.color: albumComboBox.currentText === "Extras"
-                            ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                            ? "#000000"
                             : coverColorAnalyzer.dominantColor
                         border.width: 1
                         radius: 5
@@ -433,7 +432,7 @@ Item {
                     font.pixelSize: 14
                     font.family: "Noto Sans JP"
                     color: albumComboBox.currentText === "Extras"
-                        ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                        ? "#000000"
                         : coverColorAnalyzer.textColor
                     verticalAlignment: Text.AlignVCenter
                     renderType: Text.QtRendering
@@ -519,7 +518,7 @@ Item {
                     font.pixelSize: 14
                     font.family: "Noto Sans JP"
                     color: albumComboBox.currentText === "Extras"
-                        ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                        ? "#000000"
                         : coverColorAnalyzer.textColor
                     verticalAlignment: Text.AlignVCenter
                     renderType: Text.QtRendering
@@ -566,7 +565,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     leftPadding: parent.indicator.width + parent.spacing
                     color: albumComboBox.currentText === "Extras"
-                        ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                        ? "#000000"
                         : coverColorAnalyzer.textColor
                 }
                 
@@ -579,7 +578,7 @@ Item {
                     color: "transparent"
                     border.color: parent.checked 
                         ? (albumComboBox.currentText === "Extras"
-                            ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                            ? "#000000"
                             : coverColorAnalyzer.dominantColor)
                         : "gray"
                     
@@ -613,7 +612,7 @@ Item {
                         resultText.color = result.startsWith("Error:")
                             ? "red"
                             : (albumComboBox.currentText === "Extras"
-                                ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                                ? "#000000"
                                 : coverColorAnalyzer.textColor)
                         resultDialog.open()
                     }
@@ -625,7 +624,7 @@ Item {
                     font.pixelSize: 14
                     opacity: enabled ? 1.0 : 0.3
                     color: albumComboBox.currentText === "Extras"
-                        ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                        ? "#000000"
                         : coverColorAnalyzer.textColor
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -667,7 +666,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Choose a folder"
                     color: albumComboBox.currentText === "Extras"
-                        ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                        ? "#000000"
                         : coverColorAnalyzer.textColor
                     opacity: 0.5
                     visible: !outputFolderText.text
@@ -680,14 +679,14 @@ Item {
                     verticalAlignment: TextInput.AlignVCenter
                     text: renamer.output_folder
                     color: albumComboBox.currentText === "Extras"
-                        ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                        ? "#000000"
                         : coverColorAnalyzer.textColor
                     selectByMouse: true
                     selectionColor: albumComboBox.currentText === "Extras"
                         ? lerpColor(currentColor, nextColor, colorProgress)
                         : coverColorAnalyzer.accentColor
                     selectedTextColor: albumComboBox.currentText === "Extras"
-                        ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                        ? "#000000"
                         : coverColorAnalyzer.textColor
                     clip: true
                     
@@ -713,7 +712,7 @@ Item {
                     font.pixelSize: 14
                     opacity: enabled ? 1.0 : 0.3
                     color: albumComboBox.currentText === "Extras"
-                        ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                        ? "#000000"
                         : coverColorAnalyzer.textColor
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -760,7 +759,7 @@ Item {
                     font.pixelSize: 14
                     opacity: enabled ? 1.0 : 0.3
                     color: albumComboBox.currentText === "Extras"
-                        ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                        ? "#000000"
                         : coverColorAnalyzer.textColor
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -791,7 +790,7 @@ Item {
                     ? lerpColor(currentColor, nextColor, colorProgress)
                     : coverColorAnalyzer.backgroundColor
                 textColor: albumComboBox.currentText === "Extras"
-                    ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                    ? "#000000"
                     : coverColorAnalyzer.textColor
                 accentColor: albumComboBox.currentText === "Extras"
                     ? lerpColor(currentColor, nextColor, colorProgress)
@@ -829,7 +828,7 @@ Item {
                     ? lerpColor(currentColor, nextColor, colorProgress)
                     : coverColorAnalyzer.backgroundColor
                 textColor: albumComboBox.currentText === "Extras"
-                    ? getContrastColor(lerpColor(currentColor, nextColor, colorProgress))
+                    ? "#000000"
                     : coverColorAnalyzer.textColor
                 accentColor: albumComboBox.currentText === "Extras"
                     ? lerpColor(currentColor, nextColor, colorProgress)
@@ -1078,7 +1077,7 @@ Item {
             resultText.text = result
             resultText.color = result.startsWith("Error:") ? "red" :
                 (albumComboBox.currentText === "Extras" ?
-                    getContrastColor(lerpColor(currentColor, nextColor, colorProgress)) :
+                    "#000000" :
                     coverColorAnalyzer.textColor)
             resultDialog.open()
             progressPoller.stop()           
@@ -1153,7 +1152,7 @@ Item {
         onTriggered: {
             resultText.text = "Soundtrack '" + (renamer ? renamer.current_album_localized : albumComboBox.currentText) + "' processed successfully"
             resultText.color = albumComboBox.currentText === "Extras" ?
-                getContrastColor(lerpColor(currentColor, nextColor, colorProgress)) :
+                "#000000" :
                 coverColorAnalyzer.textColor
             resultDialog.open()
         }
