@@ -35,6 +35,7 @@ class RenamerBackend(QObject):
     canExtractChanged = Signal()
     songListChanged = Signal()
     currentPathChanged = Signal()
+    permissionError = Signal(str)
 
     def __init__(self) -> None:
         super().__init__()
@@ -117,6 +118,11 @@ class RenamerBackend(QObject):
         self._persist_output_folder()
         self.check_and_create_soundtracks()
         self.canExtractChanged.emit()
+
+    @Slot(str)
+    def set_output_directory(self, directory: str) -> None:
+        """Alias for set_output_folder for QML compatibility."""
+        self.set_output_folder(directory)
 
     @Property('QVariantList', notify=driveListChanged)
     def drive_list(self) -> list[str]:
@@ -244,6 +250,16 @@ class RenamerBackend(QObject):
                 include_numbers,
                 output_path,
             )
+        except PermissionError as exc:
+            import traceback
+            logger.error(f"Permission error during rename: {exc}\n{traceback.format_exc()}")
+            QTimer.singleShot(0, lambda: self.permissionError.emit("Close the folder and try again."))
+            return {
+                "success": False,
+                "message": f"Permission denied. Please close the folder in Windows Explorer and try again.",
+                "downloaded": True,
+                "integrity": None,
+            }
         except Exception as exc:
             import traceback
             logger.error(f"Rename error: {exc}\n{traceback.format_exc()}")
@@ -581,16 +597,21 @@ class RenamerBackend(QObject):
     def rename_files(self) -> str:
         if not self._output_folder:
             return "Error: Choose an output folder first"
-        success, message = self._extractor.rename_album(
-            self._current_album,
-            self._current_language,
-            self._include_track_numbers,
-            Path(self._output_folder),
-        )
-        if success:
-            self.coverImageChanged.emit()
-            self._album_states[self._current_album] = "rename"
-        return message
+        try:
+            success, message = self._extractor.rename_album(
+                self._current_album,
+                self._current_language,
+                self._include_track_numbers,
+                Path(self._output_folder),
+            )
+            if success:
+                self.coverImageChanged.emit()
+                self._album_states[self._current_album] = "rename"
+            return message
+        except PermissionError as exc:
+            error_msg = "Permission denied. Please close the folder in Windows Explorer and try again."
+            self.permissionError.emit("Close the folder and try again.")
+            return error_msg
 
     @Property(str, notify=albumsChanged)
     def current_album_title(self) -> str:

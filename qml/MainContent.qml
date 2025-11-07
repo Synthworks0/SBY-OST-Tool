@@ -1068,6 +1068,69 @@ Item {
         }
     }
 
+    Dialog {
+        id: permissionErrorDialog
+        title: "Permission Denied"
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        width: Math.min(parent.width * 0.6, 350 * window.scaleFactor)
+        modal: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        
+        property string messageText: ""
+        
+        background: Rectangle {
+            color: isExtras 
+                ? lerpColor(currentColor, nextColor, colorProgress)
+                : coverColorAnalyzer.backgroundColor
+            border.width: 2 * window.scaleFactor
+            border.color: "#e74c3c"
+            radius: 10 * window.scaleFactor
+        }
+        
+        contentItem: ColumnLayout {
+            spacing: 15 * window.scaleFactor
+            
+            Text {
+                text: "Permission Error"
+                font.pixelSize: 16 * window.scaleFactor
+                font.bold: true
+                color: isExtras ? "#000000" : coverColorAnalyzer.textColor
+                Layout.alignment: Qt.AlignHCenter
+            }
+            
+            Text {
+                text: permissionErrorDialog.messageText
+                font.pixelSize: 14 * window.scaleFactor
+                color: isExtras ? "#000000" : coverColorAnalyzer.textColor
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+            
+            Button {
+                text: "OK"
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: 100 * window.scaleFactor
+                onClicked: permissionErrorDialog.close()
+                
+                background: Rectangle {
+                    color: parent.pressed ? Qt.darker("#e74c3c", 1.2) : "#e74c3c"
+                    radius: 5 * window.scaleFactor
+                }
+                
+                contentItem: Text {
+                    text: parent.text
+                    font: parent.font
+                    color: "#ffffff"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+        }
+    }
+
     Connections {
         target: typeof renamer !== "undefined" ? renamer : null
         function onExtractionFinished(result) {
@@ -1086,6 +1149,10 @@ Item {
                 actionButton.text = currentState === "extract" ? "Extract Soundtrack" : "Rename Files"
                 actionButton.enabled = renamer.can_extract() && (!renamer.is_extracting || currentState !== "extract")
             }
+        }
+        function onPermissionError(message) {
+            permissionErrorDialog.messageText = message
+            permissionErrorDialog.open()
         }
         function onExtractionStateChanged(isExtracting) {
             if (!root.isRemote) {

@@ -39,10 +39,10 @@ class R2Client:
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                with requests.get(url, stream=True, timeout=60) as response:
+                with requests.get(url, stream=True, timeout=(30, 300)) as response:
                     response.raise_for_status()
                     with destination.open("wb") as fh:
-                        for chunk in response.iter_content(chunk_size=65536):
+                        for chunk in response.iter_content(chunk_size=1048576):  # 1MB chunks
                             if chunk:
                                 if self._cancel_event is not None and self._cancel_event.is_set():
                                     try:
@@ -58,7 +58,9 @@ class R2Client:
                         os.fsync(fh.fileno())
                 return
             except (requests.exceptions.ChunkedEncodingError, 
-                    requests.exceptions.ConnectionError) as exc:
+                    requests.exceptions.ConnectionError,
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ReadTimeout) as exc:
                 if attempt < max_retries - 1:
                     logger.warning(f"Download attempt {attempt + 1} failed: {exc}. Retrying...")
                     if destination.exists():
