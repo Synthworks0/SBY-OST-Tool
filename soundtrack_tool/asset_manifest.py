@@ -807,7 +807,7 @@ ASSET_MANIFEST = {
       },
       {
         "track_number": 8,
-        "relative_path": "Extras/Kaede and Kaede/Fukashigi no Karte (Kaede and Kaede Ver.).flac",
+        "relative_path": "Extras/Kaede & Kaede/Fukashigi no Karte (Kaede & Kaede Ver.).flac",
         "duration_seconds": 237
       },
       {
