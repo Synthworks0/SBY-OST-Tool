@@ -308,8 +308,8 @@ ALBUMS = {
                 "track_number": 1,
                 "contributing_artists": {
                     "Japanese": "梓川花楓&梓川かえで(CV:久保ユリカ)",
-                    "Romaji": "Azusagawa Kaede & Kaede(CV:Kubo Yurika)",
-                    "English": "Kaede Azusagawa & Kaede(CV:Yurika Kubo)"
+                    "Romaji": "Azusagawa Kaede & Panda Kaede(CV:Kubo Yurika)",
+                    "English": "Kaede Azusagawa & Panda Kaede(CV:Yurika Kubo)"
                 },
                 "album_artists": {
                     "Japanese": "fox capture plan; Various Artists",

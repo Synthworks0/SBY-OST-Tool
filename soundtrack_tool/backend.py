@@ -598,16 +598,16 @@ class RenamerBackend(QObject):
         if not self._output_folder:
             return "Error: Choose an output folder first"
         try:
-            success, message = self._extractor.rename_album(
-                self._current_album,
-                self._current_language,
-                self._include_track_numbers,
-                Path(self._output_folder),
-            )
-            if success:
-                self.coverImageChanged.emit()
-                self._album_states[self._current_album] = "rename"
-            return message
+        success, message = self._extractor.rename_album(
+            self._current_album,
+            self._current_language,
+            self._include_track_numbers,
+            Path(self._output_folder),
+        )
+        if success:
+            self.coverImageChanged.emit()
+            self._album_states[self._current_album] = "rename"
+        return message
         except PermissionError as exc:
             error_msg = "Permission denied. Please close the folder in Windows Explorer and try again."
             self.permissionError.emit("Close the folder and try again.")
