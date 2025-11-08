@@ -342,7 +342,7 @@ Item {
         clip: true
 
         ColumnLayout {
-            width: scrollView.width
+            width: scrollView.width - 20
             spacing: 20
 
             Item {
