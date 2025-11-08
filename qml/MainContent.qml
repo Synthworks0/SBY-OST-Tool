@@ -685,7 +685,9 @@ Item {
                 id: actionButton
                 Layout.fillWidth: true
                 Layout.preferredHeight: 50
-                text: renamer.get_current_album_state() === "extract" ? "Extract Soundtrack" : "Rename Files"
+                text: renamer.get_current_album_state() === "extract" 
+                    ? (root.isRemote ? "Download Soundtrack" : "Extract Soundtrack")
+                    : "Rename Files"
                 onClicked: {
                     if (renamer.get_current_album_state() === "extract") {
                         renamer.extract_soundtrack(albumComboBox.currentText)
@@ -1204,7 +1206,9 @@ Item {
             progressPoller.stop()           
             if (typeof renamer !== "undefined" && renamer) {
                 var currentState = renamer.get_current_album_state()
-                actionButton.text = currentState === "extract" ? "Extract Soundtrack" : "Rename Files"
+                actionButton.text = currentState === "extract" 
+                    ? (root.isRemote ? "Download Soundtrack" : "Extract Soundtrack")
+                    : "Rename Files"
                 actionButton.enabled = renamer.can_extract() && (!renamer.is_extracting || currentState !== "extract")
             }
         }
@@ -1229,7 +1233,9 @@ Item {
         function onAlbumStateChanged() {
             if (typeof renamer !== "undefined" && renamer) {
                 var currentState = renamer.get_current_album_state()
-                actionButton.text = currentState === "extract" ? "Extract Soundtrack" : "Rename Files"
+                actionButton.text = currentState === "extract" 
+                    ? (root.isRemote ? "Download Soundtrack" : "Extract Soundtrack")
+                    : "Rename Files"
             }
         }
         function onCanExtractChanged() {
