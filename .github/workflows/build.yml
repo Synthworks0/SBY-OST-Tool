@@ -7,7 +7,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: read
+  contents: write
   actions: read
   packages: read
 
@@ -514,3 +514,34 @@ jobs:
           path: ${{ matrix.archive-name }}
           if-no-files-found: error
           overwrite: true
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
+      - name: Display structure of downloaded files
+        run: ls -R artifacts
+      
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            artifacts/sby-ost-tool-windows-standalone/*
+            artifacts/sby-ost-tool-windows-streaming/*
+            artifacts/sby-ost-tool-linux-standalone/*
+            artifacts/sby-ost-tool-linux-streaming/*
+            artifacts/sby-ost-tool-macos-standalone/*
+            artifacts/sby-ost-tool-macos-streaming/*
