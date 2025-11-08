@@ -399,7 +399,8 @@ jobs:
         run: |
           echo "Creating zip for notarization..."
           cd dist
-          ditto -c -k --keepParent "$(basename ${{ matrix.dist-path }})" notarization.zip
+          APP_NAME=$(basename "${{ matrix.dist-path }}")
+          ditto -c -k --keepParent "$APP_NAME" notarization.zip
           
           echo "Submitting app for notarization..."
           if xcrun notarytool submit notarization.zip \
@@ -411,7 +412,6 @@ jobs:
             echo "✓ Notarization successful"
             
             # Staple the notarization ticket to the app (we're in dist/ directory)
-            APP_NAME="$(basename ${{ matrix.dist-path }})"
             xcrun stapler staple "$APP_NAME"
             echo "✓ Notarization ticket stapled to app"
             
@@ -470,9 +470,10 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           cd dist
+          APP_NAME=$(basename "${{ matrix.dist-path }}")
           # Preserve extended attributes and the stapled notarization ticket when archiving
           # --sequesterRsrc keeps resource forks/attrs that Gatekeeper expects
-          ditto -c -k --sequesterRsrc --keepParent "$(basename ${{ matrix.dist-path }})" "../${{ matrix.archive-name }}"
+          ditto -c -k --sequesterRsrc --keepParent "$APP_NAME" "../${{ matrix.archive-name }}"
           cd ..
           echo "Created archive: ${{ matrix.archive-name }}"
           ls -lh "${{ matrix.archive-name }}"
@@ -492,7 +493,8 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu')
         run: |
           cd dist
-          tar -czf "../${{ matrix.archive-name }}" "$(basename ${{ matrix.dist-path }})"
+          APP_NAME=$(basename "${{ matrix.dist-path }}")
+          tar -czf "../${{ matrix.archive-name }}" "$APP_NAME"
           cd ..
 
       - name: Upload artifact (Windows)
