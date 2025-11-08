@@ -114,10 +114,9 @@ Item {
             smooth: true
             mipmap: true
             antialiasing: true
-            sourceSize: Qt.size(width * 2, height * 2)
+            sourceSize: Qt.size(1200, 1200)
             layer.enabled: true
             layer.smooth: true
-            layer.textureSize: Qt.size(width * 2, height * 2)
 
             onStatusChanged: {
                 if (status === Image.Ready) {
@@ -340,11 +339,10 @@ Item {
         anchors.rightMargin: 28
         anchors.topMargin: 10
         anchors.bottomMargin: 10
-        contentWidth: availableWidth
         clip: true
 
         ColumnLayout {
-            width: scrollView.availableWidth
+            width: scrollView.width - scrollView.ScrollBar.vertical.width - scrollView.ScrollBar.vertical.padding * 2
             spacing: 20
 
             Item {
@@ -363,10 +361,9 @@ Item {
                     smooth: true
                     mipmap: true
                     antialiasing: true
-                    sourceSize: Qt.size(width * 2, height * 2)
+                    sourceSize: Qt.size(600, 600)
                     layer.enabled: true
                     layer.smooth: true
-                    layer.textureSize: Qt.size(width * 2, height * 2)
 
                     onStatusChanged: {
                         if (status === Image.Ready) {
