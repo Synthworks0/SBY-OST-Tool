@@ -332,18 +332,46 @@ Item {
         }
     }
 
-    ScrollView {
-        id: scrollView
+    Item {
+        id: scrollArea
         anchors.fill: parent
-        anchors.leftMargin: 28
-        anchors.rightMargin: 28
-        anchors.topMargin: 10
-        anchors.bottomMargin: 10
-        clip: true
+        anchors.margins: 10
 
-        ColumnLayout {
-            width: scrollView.width - 20
-            spacing: 20
+        Item {
+            id: rightMarginContainer
+            width: 28
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+        }
+
+        Flickable {
+            id: contentFlickable
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.leftMargin: 28
+            anchors.right: rightMarginContainer.left
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            interactive: true
+            contentWidth: contentColumn.implicitWidth
+            contentHeight: contentColumn.implicitHeight
+
+            ScrollBar.vertical: ScrollBar {
+                id: verticalScrollBar
+                parent: rightMarginContainer
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 12
+                policy: ScrollBar.AsNeeded
+            }
+
+            ColumnLayout {
+                id: contentColumn
+                width: contentFlickable.width
+                spacing: 20
 
             Item {
                 Layout.alignment: Qt.AlignHCenter
@@ -866,7 +894,6 @@ Item {
         }
 
         ScrollBar.vertical: ScrollBar {
-            id: verticalScrollBar
             anchors {
                 right: parent.right
                 top: parent.top
@@ -899,6 +926,7 @@ Item {
                 opacity: 0.1
             }
         }
+    }
     }
 
     Dialog {
