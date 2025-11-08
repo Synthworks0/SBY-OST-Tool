@@ -82,11 +82,11 @@ Item {
 
     Timer {
         id: colorTimer
-        interval: 50
+        interval: 16
         running: isExtras
         repeat: true
         onTriggered: {
-            colorProgress += 0.02
+            colorProgress += 0.0064
             if (colorProgress >= 1) {
                 colorProgress = 0
                 currentColor = nextColor
@@ -95,8 +95,9 @@ Item {
                     nextColor = getRandomColor()
                 }
             }
-            root.Material.accent = lerpColor(currentColor, nextColor, colorProgress)
-            root.Material.background = adjustBrightness(lerpColor(currentColor, nextColor, colorProgress), -20)
+            var interpolated = lerpColor(currentColor, nextColor, colorProgress)
+            root.Material.accent = interpolated
+            root.Material.background = adjustBrightness(interpolated, -20)
         }
     }
 
@@ -166,10 +167,9 @@ Item {
             id: remoteBlurSource
             anchors.fill: parent
             sourceItem: backgroundContainer
-            smooth: false
+            smooth: true
             recursive: true
             live: false
-            hideSource: true
             visible: remoteProgressDialog.visible
         }
 
@@ -178,7 +178,7 @@ Item {
             source: remoteBlurSource
             radius: 64
             transparentBorder: true
-            cached: true
+            smooth: true
             visible: remoteProgressDialog.visible
         }
 
@@ -209,18 +209,12 @@ Item {
         padding: 0
         closePolicy: Popup.NoAutoClose
         parent: root
-        
-        property real cachedWidth: 0
-        property real cachedHeight: 0
-        property real cachedX: 0
-        property real cachedY: 0
-        
-        implicitWidth: cachedWidth > 0 ? cachedWidth : Math.min(360 * (window.scaleFactor || 1), root.width - 40)
-        implicitHeight: cachedHeight > 0 ? cachedHeight : 220 * (window.scaleFactor || 1)
+        implicitWidth: Math.min(360 * (window.scaleFactor || 1), root.width - 40)
+        implicitHeight: 220 * (window.scaleFactor || 1)
         width: implicitWidth
         height: implicitHeight
-        x: cachedX > 0 ? cachedX : Math.round((root.width - width) / 2)
-        y: cachedY > 0 ? cachedY : Math.round((root.height - height) / 2)
+        x: Math.round((root.width - width) / 2)
+        y: Math.round((root.height - height) / 2)
         property real popupScale: window.scaleFactor || 1
         readonly property color cardColor: albumComboBox.currentText === "Extras"
             ? Qt.rgba(0.95, 0.95, 0.95, 0.95)
@@ -239,10 +233,6 @@ Item {
                 return
             }
             closing = false
-            cachedWidth = Math.min(360 * (window.scaleFactor || 1), root.width - 40)
-            cachedHeight = 220 * (window.scaleFactor || 1)
-            cachedX = Math.round((root.width - cachedWidth) / 2)
-            cachedY = Math.round((root.height - cachedHeight) / 2)
             if (remoteBlurSource) {
                 remoteBlurSource.scheduleUpdate()
             }
@@ -262,10 +252,6 @@ Item {
         onClosed: {
             busyIndicator.running = false
             closing = false
-            cachedWidth = 0
-            cachedHeight = 0
-            cachedX = 0
-            cachedY = 0
         }
 
         enter: Transition {
@@ -299,52 +285,54 @@ Item {
             }
         }
 
-        contentItem: ColumnLayout {
+        contentItem: Item {
             anchors.fill: parent
-            anchors.margins: 32 * remoteProgressDialog.popupScale
-            spacing: 16 * remoteProgressDialog.popupScale
+            
+            ColumnLayout {
+                anchors.centerIn: parent
+                width: parent.width - 64 * remoteProgressDialog.popupScale
+                spacing: 16 * remoteProgressDialog.popupScale
 
-            BusyIndicator {
-                id: busyIndicator
-                Layout.alignment: Qt.AlignHCenter
-                implicitWidth: 64 * remoteProgressDialog.popupScale
-                implicitHeight: 64 * remoteProgressDialog.popupScale
-                running: false
-                visible: running
-                Material.accent: coverColorAnalyzer.accentColor
+                BusyIndicator {
+                    id: busyIndicator
+                    Layout.alignment: Qt.AlignHCenter
+                    implicitWidth: 64 * remoteProgressDialog.popupScale
+                    implicitHeight: 64 * remoteProgressDialog.popupScale
+                    running: false
+                    visible: running
+                    Material.accent: coverColorAnalyzer.accentColor
+                }
+
+                Text {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredWidth: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: 18 * remoteProgressDialog.popupScale
+                    font.weight: Font.Medium
+                    text: progressTitle.text
+                    color: albumComboBox.currentText === "Extras"
+                        ? "#000000"
+                        : remoteProgressDialog.cardTextColor
+                    wrapMode: Text.WordWrap
+                }
+
+                Text {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredWidth: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: 13 * remoteProgressDialog.popupScale
+                    opacity: 0.75
+                    text: progressDetail.text
+                    color: albumComboBox.currentText === "Extras"
+                        ? "#000000"
+                        : remoteProgressDialog.cardTextColor
+                    wrapMode: Text.WordWrap
+                }
+
+                // Hidden text elements to simplify dynamic binding updates
+                Text { id: progressTitle; visible: false; text: "Downloading soundtrack." }
+                Text { id: progressDetail; visible: false; text: "This may take a minute." }
             }
-
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                Layout.maximumWidth: remoteProgressDialog.implicitWidth - 64 * remoteProgressDialog.popupScale
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: 18 * remoteProgressDialog.popupScale
-                font.weight: Font.Medium
-                text: progressTitle.text
-                color: albumComboBox.currentText === "Extras"
-                    ? "#000000"
-                    : remoteProgressDialog.cardTextColor
-                wrapMode: Text.WordWrap
-            }
-
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                Layout.maximumWidth: remoteProgressDialog.implicitWidth - 64 * remoteProgressDialog.popupScale
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: 13 * remoteProgressDialog.popupScale
-                opacity: 0.75
-                text: progressDetail.text
-                color: albumComboBox.currentText === "Extras"
-                    ? "#000000"
-                    : remoteProgressDialog.cardTextColor
-                wrapMode: Text.WordWrap
-            }
-
-            // Hidden text elements to simplify dynamic binding updates
-            Text { id: progressTitle; visible: false; text: "Downloading soundtrack." }
-            Text { id: progressDetail; visible: false; text: "This may take a minute." }
         }
     }
 
