@@ -41,6 +41,21 @@ class CoverCache:
             except Exception:
                 continue
 
+    def prefetch_albums(self, album_names: list[str], manifest_map: dict[str, dict], r2_client: R2Client) -> None:
+        covers = set()
+        for album_name in album_names:
+            manifest = manifest_map.get(album_name)
+            if not manifest:
+                continue
+            cover = manifest.get("cover")
+            if cover:
+                covers.add(cover)
+        for cover_path in covers:
+            try:
+                self.get_cover_path(cover_path, r2_client)
+            except Exception:
+                continue
+
     def _destination_for(self, relative_path: str) -> Path:
         normalised = relative_path.replace("\\", "/").strip("/")
         digest = hashlib.sha1(normalised.encode("utf-8")).hexdigest()

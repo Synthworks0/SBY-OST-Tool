@@ -418,13 +418,35 @@ Item {
                     layer.enabled: true
                     layer.smooth: true
 
-                    onStatusChanged: {
-                        if (status === Image.Ready) {
-                            imageBorder.width = coverImage.paintedWidth
-                            imageBorder.height = coverImage.paintedHeight
+                    function updateBorder() {
+                        if (status === Image.Ready && paintedWidth > 0 && paintedHeight > 0) {
+                            imageBorder.width = paintedWidth
+                            imageBorder.height = paintedHeight
                             imageBorder.x = (parent.width - paintedWidth) / 2
                             imageBorder.y = (parent.height - paintedHeight) / 2
+                        } else if (status !== Image.Loading) {
+                            // Hide border if image is not ready and not loading
+                            imageBorder.width = 0
+                            imageBorder.height = 0
                         }
+                    }
+
+                    onStatusChanged: updateBorder()
+                    onPaintedWidthChanged: {
+                        if (status === Image.Ready) {
+                            updateBorder()
+                        }
+                    }
+                    onPaintedHeightChanged: {
+                        if (status === Image.Ready) {
+                            updateBorder()
+                        }
+                    }
+                    onSourceChanged: {
+                        imageBorder.width = 0
+                        imageBorder.height = 0
+                        imageBorder.x = 0
+                        imageBorder.y = 0
                     }
                 }
 

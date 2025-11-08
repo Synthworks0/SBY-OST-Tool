@@ -52,7 +52,8 @@ class RenamerBackend(QObject):
         self._pending_futures: list = []
         self._cover_cache = CoverCache(self._locator.user_cache_dir) if self._config.use_remote else None
         if self._config.use_remote and self._r2_client and self._cover_cache:
-            self._track_future(self._executor.submit(self._cover_cache.prefetch_all, ASSET_MANIFEST, self._r2_client))
+            album_names = list(self.albums.keys())
+            self._track_future(self._executor.submit(self._cover_cache.prefetch_albums, album_names, ASSET_MANIFEST, self._r2_client))
 
         QDir.addSearchPath("resources", str(self._locator.resources_root))
 
