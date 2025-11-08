@@ -1,24 +1,30 @@
 # SBY OST Tool
 
-The SBY OST Tool is a powerful tool designed to extract and rename soundtracks from the "Seishun Buta Yarou" (Rascal Does Not Dream) series.
+The SBY OST Tool is a powerful tool that extracts/downloads and renames soundtracks from the "Seishun Buta Yarou" (Rascal Does Not Dream) series.
 
 * If there is translation issues please feel free to let me know! Translations are all done by me or retrieved from a music database.
 
-** Sakuta doesn't have a album cover because no offical one was ever made
+* Sakuta doesn't have a album cover because no offical one was ever made
 
 ## Features
 
 - Extract soundtracks from the SBY series
 - Rename soundtrack files in multiple languages (Japanese, Romaji, English)
-- Dynamic color theming based on album artwork
-- User-friendly GUI with album selection and language options
 - In-program track playback
+- Dynamic color theming based on album artwork
 
-![Example 1](https://github.com/Synthworks0/SBY-OST-Tool/blob/refactor-v3/screenshots/example1.png)
 
-![Example 2](https://github.com/Synthworks0/SBY-OST-Tool/blob/refactor-v3/screenshots/example2.png)
+<div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 10px;">
 
-![Example 3](https://github.com/Synthworks0/SBY-OST-Tool/blob/refactor-v3/screenshots/example3.png)
+  <img src="https://raw.githubusercontent.com/Synthworks0/SBY-OST-Tool/refactor-v3/screenshots/example1.png" alt="Example 1" style="width: 48%; max-width: 640px; height: auto;">
+
+  <img src="https://raw.githubusercontent.com/Synthworks0/SBY-OST-Tool/refactor-v3/screenshots/example2.png" alt="Example 2" style="width: 48%; max-width: 640px; height: auto;">
+
+  <img src="https://raw.githubusercontent.com/Synthworks0/SBY-OST-Tool/refactor-v3/screenshots/example3.png" alt="Example 3" style="width: 48%; max-width: 640px; height: auto;">
+
+  <img src="https://github.com/Synthworks0/SBY-OST-Tool/blob/refactor-v3/screenshots/example4.png" alt="Example 4" style="width: 48%; max-width: 640px; height: auto;">
+
+</div>
 
 ## Installation
 
