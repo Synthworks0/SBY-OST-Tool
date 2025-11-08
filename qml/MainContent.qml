@@ -337,9 +337,11 @@ Item {
         anchors.fill: parent
         anchors.margins: 10
 
+        readonly property int dynamicMargin: Math.max(12, Math.min(28, scrollContainer.width * 0.06))
+
         Item {
             id: rightMarginSpacer
-            width: 28
+            width: scrollContainer.dynamicMargin
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.right: parent.right
@@ -350,7 +352,7 @@ Item {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.left: parent.left
-            anchors.leftMargin: 28
+            anchors.leftMargin: scrollContainer.dynamicMargin
             anchors.right: rightMarginSpacer.left
             clip: true
             contentWidth: availableWidth
