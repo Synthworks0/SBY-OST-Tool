@@ -166,9 +166,10 @@ Item {
             id: remoteBlurSource
             anchors.fill: parent
             sourceItem: backgroundContainer
-            smooth: true
+            smooth: false
             recursive: true
-            live: remoteProgressDialog.visible
+            live: false
+            hideSource: true
             visible: remoteProgressDialog.visible
         }
 
@@ -177,6 +178,7 @@ Item {
             source: remoteBlurSource
             radius: 64
             transparentBorder: true
+            cached: true
             visible: remoteProgressDialog.visible
         }
 
@@ -207,12 +209,18 @@ Item {
         padding: 0
         closePolicy: Popup.NoAutoClose
         parent: root
-        implicitWidth: Math.min(360 * (window.scaleFactor || 1), root.width - 40)
-        implicitHeight: 220 * (window.scaleFactor || 1)
+        
+        property real cachedWidth: 0
+        property real cachedHeight: 0
+        property real cachedX: 0
+        property real cachedY: 0
+        
+        implicitWidth: cachedWidth > 0 ? cachedWidth : Math.min(360 * (window.scaleFactor || 1), root.width - 40)
+        implicitHeight: cachedHeight > 0 ? cachedHeight : 220 * (window.scaleFactor || 1)
         width: implicitWidth
         height: implicitHeight
-        x: Math.round((root.width - width) / 2)
-        y: Math.round((root.height - height) / 2)
+        x: cachedX > 0 ? cachedX : Math.round((root.width - width) / 2)
+        y: cachedY > 0 ? cachedY : Math.round((root.height - height) / 2)
         property real popupScale: window.scaleFactor || 1
         readonly property color cardColor: albumComboBox.currentText === "Extras"
             ? Qt.rgba(0.95, 0.95, 0.95, 0.95)
@@ -231,6 +239,10 @@ Item {
                 return
             }
             closing = false
+            cachedWidth = Math.min(360 * (window.scaleFactor || 1), root.width - 40)
+            cachedHeight = 220 * (window.scaleFactor || 1)
+            cachedX = Math.round((root.width - cachedWidth) / 2)
+            cachedY = Math.round((root.height - cachedHeight) / 2)
             if (remoteBlurSource) {
                 remoteBlurSource.scheduleUpdate()
             }
@@ -250,6 +262,10 @@ Item {
         onClosed: {
             busyIndicator.running = false
             closing = false
+            cachedWidth = 0
+            cachedHeight = 0
+            cachedX = 0
+            cachedY = 0
         }
 
         enter: Transition {
