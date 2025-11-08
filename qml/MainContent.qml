@@ -11,6 +11,17 @@ Item {
     id: root
     anchors.fill: parent
 
+    MouseArea {
+        anchors.fill: parent
+        propagateComposedEvents: true
+        onPressed: function(mouse) {
+            if (outputFolderText && outputFolderText.activeFocus) {
+                outputFolderText.focus = false
+            }
+            mouse.accepted = false
+        }
+    }
+
     // Fallback to avoid undefined access during loading
     property var coverColorAnalyzer: ({
         dominantColor: "#5cc4f1",
@@ -690,8 +701,17 @@ Item {
                         : coverColorAnalyzer.textColor
                     clip: true
                     
+                    Keys.onEscapePressed: {
+                        outputFolderText.focus = false
+                    }
+                    
+                    Keys.onReturnPressed: {
+                        outputFolderText.focus = false
+                    }
+                    
                     onEditingFinished: {
                         renamer.set_output_directory(text)
+                        outputFolderText.focus = false
                     }
                 }
             }

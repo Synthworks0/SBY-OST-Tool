@@ -51,7 +51,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='SBY_OST_Tool',
+    name='SBY OST Tool',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -77,7 +77,7 @@ app = BUNDLE(
     a.binaries,
     a.zipfiles,
     a.datas,
-    name='SBY_OST_Tool.app',
+    name='SBY OST Tool.app',
     icon=icon_file,
     bundle_identifier='com.synthworks.sbyosttool',
     info_plist={

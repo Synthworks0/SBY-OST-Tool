@@ -21,42 +21,42 @@ jobs:
             mode: standalone
             spec: build/specs/windows/SBY_OST_Tool.spec
             artifact-name: sby-ost-tool-windows-standalone
-            dist-path: dist/SBY_OST_Tool
+            dist-path: "dist/SBY OST Tool"
             archive-name: SBY_OST_Tool-windows-standalone.zip
           - os: windows-latest
             python: '3.11'
             mode: streaming
             spec: build/specs/windows/SBY_OST_Tool_Remote.spec
             artifact-name: sby-ost-tool-windows-streaming
-            dist-path: dist/SBY_OST_Tool_Remote
+            dist-path: "dist/SBY OST Tool Remote"
             archive-name: SBY_OST_Tool-windows-streaming.zip
           - os: ubuntu-latest
             python: '3.11'
             mode: standalone
             spec: build/specs/linux/SBY_OST_Tool_Linux.spec
             artifact-name: sby-ost-tool-linux-standalone
-            dist-path: dist/SBY_OST_Tool
+            dist-path: "dist/SBY OST Tool"
             archive-name: SBY_OST_Tool-linux-standalone.tar.gz
           - os: ubuntu-latest
             python: '3.11'
             mode: streaming
             spec: build/specs/linux/SBY_OST_Tool_Remote_Linux.spec
             artifact-name: sby-ost-tool-linux-streaming
-            dist-path: dist/SBY_OST_Tool_Remote
+            dist-path: "dist/SBY OST Tool Remote"
             archive-name: SBY_OST_Tool-linux-streaming.tar.gz
           - os: macos-latest
             python: '3.11'
             mode: standalone
             spec: build/specs/macos/SBY_OST_Tool_Mac.spec
             artifact-name: sby-ost-tool-macos-standalone
-            dist-path: dist/SBY_OST_Tool.app
+            dist-path: "dist/SBY OST Tool.app"
             archive-name: SBY_OST_Tool-macos-standalone.zip
           - os: macos-latest
             python: '3.11'
             mode: streaming
             spec: build/specs/macos/SBY_OST_Tool_Remote_Mac.spec
             artifact-name: sby-ost-tool-macos-streaming
-            dist-path: dist/SBY_OST_Tool_Remote.app
+            dist-path: "dist/SBY OST Tool Remote.app"
             archive-name: SBY_OST_Tool-macos-streaming.zip
     runs-on: ${{ matrix.os }}
 
@@ -494,16 +494,6 @@ jobs:
           cd dist
           tar -czf "../${{ matrix.archive-name }}" "$(basename ${{ matrix.dist-path }})"
           cd ..
-
-      - name: Calculate and print SHA256 checksum (Linux/macOS only)
-        if: ${{ !startsWith(matrix.os, 'windows') }}
-        run: |
-          if [ "$RUNNER_OS" == "macOS" ]; then
-            shasum -a 256 "${{ matrix.archive-name }}"
-          else
-            sha256sum "${{ matrix.archive-name }}"
-          fi
-        shell: bash
 
       - name: Upload artifact (Windows)
         if: startsWith(matrix.os, 'windows')

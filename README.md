@@ -4,6 +4,8 @@ The SBY OST Tool is a powerful tool designed to extract and rename soundtracks f
 
 * If there is translation issues please feel free to let me know! Translations are all done by me or retrieved from a music database.
 
+** Sakuta doesn't have a album cover because no offical one was ever made
+
 ## Features
 
 - Extract soundtracks from the SBY series
@@ -24,10 +26,10 @@ The SBY OST Tool is a powerful tool designed to extract and rename soundtracks f
 
 1. Go to the [Releases](https://github.com/Synthworks0/SBY-OST-Tool/releases) page.
 2. Download your preferred version:
-   - SBY_OST_Tool: Standalone version with all soundtracks included (larger download)
-   - SBY_OST_Tool_Remote: Streaming version that downloads tracks on-demand (smaller download, requires internet)
+   - **SBY OST Tool**: Standalone version with all soundtracks included (larger download size but fully offline)
+   - **SBY OST Tool Remote**: Streaming version that downloads tracks on-demand (smaller download but requires internet access)
 
-Available for Windows, macOS, and Linux!
+Available for **Windows**, **macOS**, and **Linux**!
 
 ## Usage
 
@@ -38,24 +40,12 @@ Available for Windows, macOS, and Linux!
 5. Click "Extract Soundtrack" to extract the files and set the desired language.
 6. If needed, click "Rename Files" to rename the soundtrack files after extracting.
 
-## Developer Notes
-
-I've loved this series for a long time and as a audiophile I bought the blurays and extracted the soundtracks in flac lossless from them. When I was going to add them to my media server (I use Jellyfin)
-and I wanted to batch rename all of the soundtrack albums with some better metadata and thought, "Why don't I just make a program to do this instead of a terminal program just for me?"
-
-Fast forward 6 months and now we're here in November of 2024.
-
-I spent a lot of time on this as I've never used PySide6 and had to learn the hard way that everything I wanted to do just wasn't possible :)
-
-I'm aware that less than 10 people will probably ever use this and that does make me disappointed. But while making it I felt happy to contribute and make something for a series that has changed my life.
-So if you are reading this, thank you. You can find me at `synthworks` on Discord and Reddit.
-
 ## Support
 
 If you encounter any issues or have questions, please [open an issue](https://github.com/Synthworks0/SBY-OST-Tool/issues) on the GitHub repository.
 
+You can also find me at `synthworks` on Discord and Reddit. Response time is anywhere from 8-72 hours.
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/Synthworks0/SBY-OST-Tool/blob/main/LICENSE) file for details.
-
-The soundtracks are not distributed in the github repo for copyright reasons.
