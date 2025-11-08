@@ -342,7 +342,6 @@ Item {
         anchors.bottomMargin: 10
         contentWidth: availableWidth
         clip: true
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
         ColumnLayout {
             width: scrollView.availableWidth
