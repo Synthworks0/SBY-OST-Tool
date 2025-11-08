@@ -337,14 +337,15 @@ Item {
         id: scrollView
         anchors.fill: parent
         anchors.leftMargin: 28
-        anchors.rightMargin: 10
+        anchors.rightMargin: 28
         anchors.topMargin: 10
         anchors.bottomMargin: 10
         contentWidth: availableWidth
         clip: true
+        ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
         ColumnLayout {
-            width: scrollView.width - 20
+            width: scrollView.availableWidth
             spacing: 20
 
             Item {
