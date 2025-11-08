@@ -64,12 +64,13 @@ exe = EXE(
     entitlements_file=None,
 )
 
-# Icon file is expected at the project root
-icon_file = 'icon.icns' if os.path.exists('icon.icns') else None
+# Icon file is expected at the project root (use absolute path)
+icon_path = os.path.abspath('icon.icns')
+icon_file = icon_path if os.path.exists(icon_path) else None
 if not icon_file:
     print("Warning: icon.icns not found. App will not have a custom icon.")
 else:
-    print(f"Using icon file: {os.path.abspath(icon_file)}")
+    print(f"Using icon file: {icon_file}")
 
 app = BUNDLE(
     exe,
