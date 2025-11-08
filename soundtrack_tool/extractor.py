@@ -750,6 +750,13 @@ class SoundtrackExtractor:
         files_renamed = 0
         for idx, path in enumerate(sorted(album_dir.glob("*.flac"), key=lambda p: p.stat().st_mtime), start=1):
             self._check_cancel()
+            if sys.platform == "darwin" and not path.exists():
+                resolved = resolve_path_macos(album_dir, path.name)
+                if resolved is not None:
+                    path = resolved
+                else:
+                    continue
+            
             track_number = read_track_number(path)
             if track_number is None or track_number < 1 or track_number > len(track_names):
                 stem = path.stem.lstrip()
@@ -770,9 +777,17 @@ class SoundtrackExtractor:
                 new_name = f"{track_number:02d}. {title}.flac"
             else:
                 new_name = f"{title}.flac"
+            
+            if sys.platform == "darwin":
+                new_name = unicodedata.normalize('NFD', new_name)
+            
             new_path = album_dir / new_name
-            if new_path != path:
-                if new_path.exists():
+            
+            path_normalized = unicodedata.normalize('NFD', str(path.name)) if sys.platform == "darwin" else str(path.name)
+            new_name_normalized = unicodedata.normalize('NFD', new_name) if sys.platform == "darwin" else new_name
+            
+            if path_normalized != new_name_normalized:
+                if new_path.exists() and new_path != path:
                     new_path.unlink()
                 path.rename(new_path)
                 path = new_path
@@ -796,8 +811,8 @@ class SoundtrackExtractor:
             total_renamed = 0
             
             for cd_folder in cd_folders:
-                cd_dir = album_dir / cd_folder
-                if not cd_dir.exists():
+                cd_dir = resolve_path_macos(album_dir, cd_folder) if sys.platform == "darwin" else album_dir / cd_folder
+                if cd_dir is None or not cd_dir.exists():
                     continue
                 
                 track_names = track_data.get(cd_folder, [])
@@ -807,6 +822,13 @@ class SoundtrackExtractor:
                 files_renamed = 0
                 for idx, path in enumerate(sorted(cd_dir.glob("*.flac"), key=lambda p: p.stat().st_mtime), start=1):
                     self._check_cancel()
+                    if sys.platform == "darwin" and not path.exists():
+                        resolved = resolve_path_macos(cd_dir, path.name)
+                        if resolved is not None:
+                            path = resolved
+                        else:
+                            continue
+                    
                     track_number = read_track_number(path)
                     if track_number is None or track_number < 1 or track_number > len(track_names):
                         stem = path.stem.lstrip()
@@ -827,9 +849,17 @@ class SoundtrackExtractor:
                         new_name = f"{track_number:02d}. {title}.flac"
                     else:
                         new_name = f"{title}.flac"
+                    
+                    if sys.platform == "darwin":
+                        new_name = unicodedata.normalize('NFD', new_name)
+                    
                     new_path = cd_dir / new_name
-                    if new_path != path:
-                        if new_path.exists():
+                    
+                    path_normalized = unicodedata.normalize('NFD', str(path.name)) if sys.platform == "darwin" else str(path.name)
+                    new_name_normalized = unicodedata.normalize('NFD', new_name) if sys.platform == "darwin" else new_name
+                    
+                    if path_normalized != new_name_normalized:
+                        if new_path.exists() and new_path != path:
                             new_path.unlink()
                         path.rename(new_path)
                         path = new_path
@@ -892,8 +922,15 @@ class SoundtrackExtractor:
         processed_paths: set[Path] = set()
 
         album_parent_dir = extras_dir.parent
-        desired_dir = album_parent_dir / ALBUMS["Extras"].get(language, ALBUMS["Extras"]["English"])
-        if extras_dir != desired_dir:
+        desired_name = ALBUMS["Extras"].get(language, ALBUMS["Extras"]["English"])
+        if sys.platform == "darwin":
+            desired_name = unicodedata.normalize('NFD', desired_name)
+        desired_dir = album_parent_dir / desired_name
+        
+        extras_normalized = unicodedata.normalize('NFD', str(extras_dir.name)) if sys.platform == "darwin" else str(extras_dir.name)
+        desired_normalized = unicodedata.normalize('NFD', desired_name) if sys.platform == "darwin" else desired_name
+        
+        if extras_normalized != desired_normalized:
             if desired_dir.exists():
                 shutil.rmtree(desired_dir)
             extras_dir.rename(desired_dir)
@@ -961,9 +998,17 @@ class SoundtrackExtractor:
             new_name = track.get("filename") or source_file.name
             if title:
                 new_name = f"{title}{source_file.suffix}"
+            
+            if sys.platform == "darwin":
+                new_name = unicodedata.normalize('NFD', new_name)
+            
             destination = target_folder / new_name
-            if destination != source_file:
-                if destination.exists():
+            
+            source_normalized = unicodedata.normalize('NFD', str(source_file.name)) if sys.platform == "darwin" else str(source_file.name)
+            dest_normalized = unicodedata.normalize('NFD', new_name) if sys.platform == "darwin" else new_name
+            
+            if source_normalized != dest_normalized:
+                if destination.exists() and destination != source_file:
                     destination.unlink()
                 source_file.rename(destination)
             update_common_tags(
@@ -1000,8 +1045,16 @@ class SoundtrackExtractor:
             current = self._find_existing_subfolder(extras_dir, subfolder)
             if not current:
                 continue
-            desired = extras_dir.joinpath(*target.split("/"))
-            if current != desired:
+            
+            target_parts = target.split("/")
+            if sys.platform == "darwin":
+                target_parts = [unicodedata.normalize('NFD', part) for part in target_parts]
+            desired = extras_dir.joinpath(*target_parts)
+            
+            current_normalized = unicodedata.normalize('NFD', str(current.relative_to(extras_dir))) if sys.platform == "darwin" else str(current.relative_to(extras_dir))
+            desired_normalized = unicodedata.normalize('NFD', str(desired.relative_to(extras_dir))) if sys.platform == "darwin" else str(desired.relative_to(extras_dir))
+            
+            if current_normalized != desired_normalized:
                 renames.append((current, desired))
         renames.sort(key=lambda pair: pair[0].as_posix().count("/"), reverse=True)
         return renames
@@ -1011,9 +1064,21 @@ class SoundtrackExtractor:
             name = subfolder.get(lang)
             if not name:
                 continue
-            candidate = root.joinpath(*name.split("/"))
-            if candidate.exists():
-                return candidate
+            parts = name.split("/")
+            if sys.platform == "darwin":
+                candidate = root
+                for part in parts:
+                    resolved = resolve_path_macos(candidate, part)
+                    if resolved is None:
+                        break
+                    candidate = resolved
+                else:
+                    if candidate.exists():
+                        return candidate
+            else:
+                candidate = root.joinpath(*parts)
+                if candidate.exists():
+                    return candidate
         return None
 
     def _locate_extras_track(self, folder: Path, track: dict) -> Path | None:

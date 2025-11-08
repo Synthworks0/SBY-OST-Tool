@@ -14,17 +14,17 @@ app_datas = [
 ]
 
 hidden_imports = [
-    'PySide6.QtCore',
-    'PySide6.QtGui',
-    'PySide6.QtQml',
-    'PySide6.QtQuick',
-    'PySide6.QtQuickControls2',
-    'PySide6.QtQuickLayouts',
-    'PySide6.QtQuickTemplates2',
-    'PySide6.QtMultimedia',
-    'PySide6.QtMultimediaWidgets',
-    'PySide6.QtGraphicalEffects',
-    'PySide6.QtOpenGL',
+        'PySide6.QtCore',
+        'PySide6.QtGui',
+        'PySide6.QtQml',
+        'PySide6.QtQuick',
+        'PySide6.QtQuickControls2',
+        'PySide6.QtQuickLayouts',
+        'PySide6.QtQuickTemplates2',
+        'PySide6.QtMultimedia',
+        'PySide6.QtMultimediaWidgets',
+        'PySide6.QtGraphicalEffects',
+        'PySide6.QtOpenGL',
 ]
 
 a = Analysis(

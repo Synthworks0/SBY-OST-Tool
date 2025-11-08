@@ -117,6 +117,7 @@ Item {
         anchors.fill: parent
         color: adjustColorForContrast(root.backgroundColor)
         opacity: 0.9
+        radius: 5
         visible: root.isOpen
 
         ColumnLayout {
