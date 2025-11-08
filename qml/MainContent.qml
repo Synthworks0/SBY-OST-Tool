@@ -333,50 +333,69 @@ Item {
     }
 
     Item {
-        id: scrollArea
+        id: scrollContainer
         anchors.fill: parent
         anchors.margins: 10
 
         Item {
-            id: rightMarginContainer
+            id: rightMarginSpacer
             width: 28
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.right: parent.right
         }
 
-        Flickable {
-            id: contentFlickable
+        ScrollView {
+            id: scrollView
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.leftMargin: 28
-            anchors.right: rightMarginContainer.left
+            anchors.right: rightMarginSpacer.left
             clip: true
-            boundsBehavior: Flickable.StopAtBounds
-            interactive: true
-            contentWidth: contentColumn.implicitWidth
-            contentHeight: contentColumn.implicitHeight
+            contentWidth: availableWidth
 
             ScrollBar.vertical: ScrollBar {
-                id: verticalScrollBar
-                parent: rightMarginContainer
+                id: customScrollBar
+                parent: rightMarginSpacer
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: 12
                 policy: ScrollBar.AsNeeded
+                active: false
+                visible: size < 1.0
+                
+                contentItem: Rectangle {
+                    implicitWidth: 12
+                    radius: width / 2
+                    color: albumComboBox.currentText === "Extras" 
+                        ? lerpColor(currentColor, nextColor, colorProgress)
+                        : coverColorAnalyzer.accentColor
+                    opacity: customScrollBar.active || customScrollBar.pressed ? 1 : 0.3
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 200 }
+                    }
+                }
+
+                background: Rectangle {
+                    implicitWidth: 12
+                    radius: width / 2
+                    color: albumComboBox.currentText === "Extras"
+                        ? Qt.darker(lerpColor(currentColor, nextColor, colorProgress), 1.2)
+                        : Qt.darker(coverColorAnalyzer.backgroundColor, 1.2)
+                    opacity: 0.1
+                }
             }
 
             ColumnLayout {
-                id: contentColumn
-                width: contentFlickable.width
+                width: scrollView.width
                 spacing: 20
 
-            Item {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: Math.min(root.width - 40, 300)
-                Layout.preferredHeight: Layout.preferredWidth
+                Item {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredWidth: Math.min(root.width - 40, 300)
+                    Layout.preferredHeight: Layout.preferredWidth
 
                 Image {
                     id: coverImage
@@ -890,40 +909,6 @@ Item {
                 onOpened: folderExplorer.close()
                 onRequestScroll: scrollTimer.start()
                 onClosed: {}
-            }
-        }
-
-        ScrollBar.vertical: ScrollBar {
-            anchors {
-                right: parent.right
-                top: parent.top
-                bottom: parent.bottom
-                margins: 2
-            }
-            policy: ScrollBar.AsNeeded
-            active: false
-            visible: size < 1.0
-            
-            contentItem: Rectangle {
-                implicitWidth: 12
-                radius: width / 2
-                color: albumComboBox.currentText === "Extras" 
-                    ? lerpColor(currentColor, nextColor, colorProgress)
-                    : coverColorAnalyzer.accentColor
-                opacity: parent.active || parent.pressed ? 1 : 0.3
-
-                Behavior on opacity {
-                    NumberAnimation { duration: 200 }
-                }
-            }
-
-            background: Rectangle {
-                implicitWidth: 12
-                radius: width / 2
-                color: albumComboBox.currentText === "Extras"
-                    ? Qt.darker(lerpColor(currentColor, nextColor, colorProgress), 1.2)
-                    : Qt.darker(coverColorAnalyzer.backgroundColor, 1.2)
-                opacity: 0.1
             }
         }
     }
