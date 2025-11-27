@@ -710,6 +710,66 @@ ALBUMS = {
             },
             {
                 "subfolder": {
+                    "Japanese": "姫路紗良",
+                    "Romaji": "Himeji Sara",
+                    "English": "Sara Himeji"
+                },
+                "filename": "Fukashigi no Karte (Sara Himeji Ver.).flac",
+                "titles": {
+                    "Japanese": "不可思議のカルテ (姫路紗良Ver.)",
+                    "Romaji": "Fukashigi no Karte (Himeji Sara Ver.)",
+                    "English": "Fukashigi no Karte (Sara Himeji Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "不可思議のカルテ (姫路紗良Ver.)",
+                    "Romaji": "Fukashigi no Karte (Himeji Sara Ver.)",
+                    "English": "Fukashigi no Karte (Sara Himeji Ver.)"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "姫路紗良(CV:小原好美)",
+                    "Romaji": "Himeji Sara(CV:Kohara Konomi)",
+                    "English": "Sara Himeji(CV:Konomi Kohara)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "姫路紗良",
+                    "Romaji": "Himeji Sara",
+                    "English": "Sara Himeji"
+                },
+                "filename": "The Horizon Is My Scar (Sara Himeji Ver.).flac",
+                "titles": {
+                    "Japanese": "水平線は僕の古傷 (姫路紗良Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Himeji Sara Ver.)",
+                    "English": "The Horizon is My Scar (Sara Himeji Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "水平線は僕の古傷 (姫路紗良Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Himeji Sara Ver.)",
+                    "English": "The Horizon is My Scar (Sara Himeji Ver.)"
+                },
+                "track_number": 2,
+                "contributing_artists": {
+                    "Japanese": "姫路紗良(CV:小原好美)",
+                    "Romaji": "Himeji Sara(CV:Kohara Konomi)",
+                    "English": "Sara Himeji(CV:Konomi Kohara)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
                     "Japanese": "水平線は僕の古傷",
                     "Romaji": "Suiheisen wa Boku no Hurukizu",
                     "English": "The Horizon Is My Scar"
@@ -904,6 +964,36 @@ ALBUMS = {
                     "Japanese": "Someone",
                     "Romaji": "Someone",
                     "English": "Someone"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "霧島透子(CV:上田麗奈)",
+                    "Romaji": "Kirishima Touko(CV:Ueda Reina)",
+                    "English": "Touko Kirishima(CV:Reina Ueda)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "霧島透子/Silent Night",
+                    "Romaji": "Kirishima Touko/Silent Night",
+                    "English": "Touko Kirishima/Silent Night"
+                },
+                "filename": "Silent Night.flac",
+                "titles": {
+                    "Japanese": "Silent Night",
+                    "Romaji": "Silent Night",
+                    "English": "Silent Night"
+                },
+                "album_title": {
+                    "Japanese": "Silent Night",
+                    "Romaji": "Silent Night",
+                    "English": "Silent Night"
                 },
                 "track_number": 1,
                 "contributing_artists": {

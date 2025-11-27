@@ -934,6 +934,21 @@ ASSET_MANIFEST = {
         "track_number": 33,
         "relative_path": "Extras/Uzuki Hirokawa/The Horizon Is My Scar (Uzuki Hirokawa Ver.).flac",
         "duration_seconds": 281
+      },
+      {
+        "track_number": 34,
+        "relative_path": "Extras/Sara Himeji/Fukashigi no Karte (Sara Himeji Ver.).flac",
+        "duration_seconds": 239
+      },
+      {
+        "track_number": 35,
+        "relative_path": "Extras/Sara Himeji/The Horizon Is My Scar (Sara Himeji Ver.).flac",
+        "duration_seconds": 282
+      },
+      {
+        "track_number": 36,
+        "relative_path": "Extras/Touko Kirishima/Silent Night/Silent Night.flac",
+        "duration_seconds": 255
       }
     ]
   }
