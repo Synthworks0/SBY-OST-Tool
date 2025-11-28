@@ -15,6 +15,8 @@ Item {
     property string iconsPath: "../../resources/icons/"
     property bool isSeeking: false
     property bool wasPlayingBeforeSeek: false
+    property bool pendingResumeAfterSeek: false
+    property int pendingSeekPosition: -1
 
     signal opened()
     signal closed()
@@ -105,7 +107,48 @@ Item {
                 
             if (playbackState === MediaPlayer.PlayingState && root.isSeeking) {
                 root.isSeeking = false
+                root.pendingResumeAfterSeek = false
+                root.pendingSeekPosition = -1
             }
+        }
+
+        onMediaStatusChanged: {
+            var status = mediaPlayer.mediaStatus
+            if (status === MediaPlayer.BufferingMedia || status === MediaPlayer.LoadingMedia) {
+                if (root.pendingSeekPosition >= 0) {
+                    root.isSeeking = true
+                }
+            } else if (status === MediaPlayer.BufferedMedia || status === MediaPlayer.LoadedMedia) {
+                if (root.pendingResumeAfterSeek) {
+                    mediaPlayer.play()
+                }
+                root.isSeeking = false
+                root.pendingResumeAfterSeek = false
+                root.pendingSeekPosition = -1
+            } else if (status === MediaPlayer.StalledMedia) {
+                root.isSeeking = true
+                stallRecoveryTimer.restart()
+            } else if (status === MediaPlayer.EndOfMedia) {
+                if (root.pendingSeekPosition >= 0 && mediaPlayer.duration > 0 && root.pendingSeekPosition < mediaPlayer.duration - 1000) {
+                    var retryPosition = root.pendingSeekPosition
+                    root.pendingSeekPosition = -1
+                    Qt.callLater(function() {
+                        mediaPlayer.position = retryPosition
+                        mediaPlayer.play()
+                    })
+                    return
+                }
+                root.isSeeking = false
+                root.pendingResumeAfterSeek = false
+                root.pendingSeekPosition = -1
+            }
+        }
+
+        onErrorOccurred: function(error, errorString) {
+            console.warn("Media error:", error, errorString, mediaPlayer.source)
+            root.isSeeking = false
+            root.pendingResumeAfterSeek = false
+            root.pendingSeekPosition = -1
         }
     }
 
@@ -242,23 +285,37 @@ Item {
                     id: progressSlider
                     Layout.fillWidth: true
                     from: 0
-                    to: mediaPlayer.duration
+                    to: Math.max(0, mediaPlayer.duration)
                     value: mediaPlayer.position
-                    enabled: mediaPlayer.playbackState === MediaPlayer.PlayingState || mediaPlayer.playbackState === MediaPlayer.PausedState
+                    enabled: mediaPlayer.seekable && mediaPlayer.duration > 0 &&
+                        (mediaPlayer.playbackState === MediaPlayer.PlayingState ||
+                         mediaPlayer.playbackState === MediaPlayer.PausedState)
                     
                     onPressedChanged: {
                         if (pressed) {
+                            if (!mediaPlayer.seekable) {
+                                return
+                            }
                             root.wasPlayingBeforeSeek = (mediaPlayer.playbackState === MediaPlayer.PlayingState)
                             root.isSeeking = true
                             if (root.wasPlayingBeforeSeek) {
                                 mediaPlayer.pause()
                             }
                         } else {
+                            if (!mediaPlayer.seekable) {
+                                root.isSeeking = false
+                                root.wasPlayingBeforeSeek = false
+                                return
+                            }
+                            root.pendingSeekPosition = value
                             mediaPlayer.position = value
                             if (root.wasPlayingBeforeSeek) {
+                                root.pendingResumeAfterSeek = true
                                 mediaPlayer.play()
                             } else {
                                 root.isSeeking = false
+                                root.pendingSeekPosition = -1
+                                root.pendingResumeAfterSeek = false
                             }
                         }
                     }
@@ -293,6 +350,20 @@ Item {
                     id: seekTimer
                     interval: 150
                     onTriggered: {
+                    }
+                }
+
+                Timer {
+                    id: stallRecoveryTimer
+                    interval: 1500
+                    repeat: false
+                    onTriggered: {
+                        if (root.isSeeking && root.pendingSeekPosition >= 0) {
+                            mediaPlayer.position = root.pendingSeekPosition
+                            if (root.pendingResumeAfterSeek) {
+                                mediaPlayer.play()
+                            }
+                        }
                     }
                 }
 
