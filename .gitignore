@@ -20,3 +20,5 @@ runtime_config.json
 .cursorignore
 soundtrack_tool/__pycache__/
 .github/workflows/image/
+local_tools/
+soundtrack_tool/assets/SBY Soundtracks Remote Optimized/

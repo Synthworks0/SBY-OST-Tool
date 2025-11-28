@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Optional
 
 from .albums import ALBUMS
@@ -9,6 +9,8 @@ from .config import AppConfig
 from .metadata import read_duration_string, read_track_number
 from .resources import ResourceLocator
 
+REMOTE_STREAMING_PREFIX = "streaming"
+STREAMING_EXTENSION = ".m4a"
 
 @dataclass(frozen=True)
 class SongEntry:
@@ -135,9 +137,10 @@ class AudioCatalog:
                 if not manifest_entry:
                     continue
                 relative_path = manifest_entry["relative_path"]
+                remote_relative = self._remote_relative_path(relative_path)
                 title = track.get("titles", {}).get(language) or Path(relative_path).stem
                 length = _format_duration(manifest_entry.get("duration_seconds"))
-                url = self._r2.build_url(relative_path)
+                url = self._r2.build_url(remote_relative)
                 entries.append(
                     SongEntry(
                         title=title,
@@ -165,8 +168,9 @@ class AudioCatalog:
                 if not manifest_entry:
                     continue
                 relative_path = manifest_entry["relative_path"]
+                remote_relative = self._remote_relative_path(relative_path)
                 length = _format_duration(manifest_entry.get("duration_seconds"))
-                url = self._r2.build_url(relative_path)
+                url = self._r2.build_url(remote_relative)
                 entries.append(
                     SongEntry(
                         title=title,
@@ -231,6 +235,13 @@ class AudioCatalog:
                 return candidate
         flacs = sorted(base_dir.glob("*.flac"))
         return flacs[0] if flacs else None
+
+    def _remote_relative_path(self, relative_path: str) -> str:
+        rel = relative_path.replace("\\", "/").lstrip("/")
+        posix_path = PurePosixPath(rel).with_suffix(STREAMING_EXTENSION)
+        if REMOTE_STREAMING_PREFIX:
+            return f"{REMOTE_STREAMING_PREFIX}/{posix_path.as_posix()}"
+        return posix_path.as_posix()
 
 def _format_duration(duration: Optional[int]) -> str:
     if not duration:
