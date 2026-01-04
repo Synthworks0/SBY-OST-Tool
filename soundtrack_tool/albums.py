@@ -768,6 +768,96 @@ ALBUMS = {
                 },
                 "genre": "Film; Anime"
             },
+                        {
+                "subfolder": {
+                    "Japanese": "岩見沢寧々",
+                    "Romaji": "Iwamizawa Nene",
+                    "English": "Nene Iwamizawa"
+                },
+                "filename": "Fukashigi no Karte (Nene Iwamizawa Ver.).flac",
+                "titles": {
+                    "Japanese": "不可思議のカルテ (岩見沢寧々Ver.)",
+                    "Romaji": "Fukashigi no Karte (Iwamizawa Nene Ver.)",
+                    "English": "Fukashigi no Karte (Nene Iwamizawa Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "不可思議のカルテ (岩見沢寧々Ver.)",
+                    "Romaji": "Fukashigi no Karte (Iwamizawa Nene Ver.)",
+                    "English": "Fukashigi no Karte (Nene Iwamizawa Ver.)"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "岩見沢寧々(CV:上田麗奈)",
+                    "Romaji": "Iwamizawa Nene(CV:Ueda Reina)",
+                    "English": "Nene Iwamizawa(CV:Reina Ueda)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "岩見沢寧々",
+                    "Romaji": "Iwamizawa Nene",
+                    "English": "Nene Iwamizawa"
+                },
+                "filename": "The Horizon Is My Scar (Nene Iwamizawa Ver.).flac",
+                "titles": {
+                    "Japanese": "水平線は僕の古傷 (岩見沢寧々Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Iwamizawa Nene Ver.)",
+                    "English": "The Horizon is My Scar (Nene Iwamizawa Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "水平線は僕の古傷 (岩見沢寧々Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Iwamizawa Nene Ver.)",
+                    "English": "The Horizon is My Scar (Nene Iwamizawa Ver.)"
+                },
+                "track_number": 2,
+                "contributing_artists": {
+                    "Japanese": "岩見沢寧々(CV:上田麗奈)",
+                    "Romaji": "Iwamizawa Nene(CV:Ueda Reina)",
+                    "English": "Nene Iwamizawa(CV:Reina Ueda)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "霧島透子",
+                    "Romaji": "Kirishima Touko",
+                    "English": "Touko Kirishima"
+                },
+                "filename": "The Horizon Is My Scar (Touko Kirishima Ver.).flac",
+                "titles": {
+                    "Japanese": "水平線は僕の古傷 (霧島透子Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Kirishima Touko Ver.)",
+                    "English": "The Horizon is My Scar (Touko Kirishima Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "水平線は僕の古傷 (霧島透子Ver.)",
+                    "Romaji": "Suiheisen wa Boku no Hurukizu (Kirishima Touko Ver.)",
+                    "English": "The Horizon is My Scar (Touko Kirishima Ver.)"
+                },
+                "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "霧島透子(CV:上田麗奈)",
+                    "Romaji": "Kirishima Touko(CV:Ueda Reina)",
+                    "English": "Touko Kirishima(CV:Reina Ueda)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
             {
                 "subfolder": {
                     "Japanese": "水平線は僕の古傷",
@@ -876,6 +966,66 @@ ALBUMS = {
                     "English": "Social World"
                 },
                 "track_number": 1,
+                "contributing_artists": {
+                    "Japanese": "霧島透子(CV:上田麗奈)",
+                    "Romaji": "Kirishima Touko(CV:Ueda Reina)",
+                    "English": "Touko Kirishima(CV:Reina Ueda)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "霧島透子/Social World (Piano Arr. Ver.)",
+                    "Romaji": "Kirishima Touko/Social World (Piano Arr. Ver.)",
+                    "English": "Touko Kirishima/Social World (Piano Arr. Ver.)"
+                },
+                "filename": "Social World (Piano Arr. Ver.).flac",
+                "titles": {
+                    "Japanese": "Social World (Piano Arr. Ver.)",
+                    "Romaji": "Social World (Piano Arr. Ver.)",
+                    "English": "Social World (Piano Arr. Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "Social World (Piano Arr. Ver.)",
+                    "Romaji": "Social World (Piano Arr. Ver.)",
+                    "English": "Social World (Piano Arr. Ver.)"
+                },
+                "track_number": 2,
+                "contributing_artists": {
+                    "Japanese": "霧島透子(CV:上田麗奈)",
+                    "Romaji": "Kirishima Touko(CV:Ueda Reina)",
+                    "English": "Touko Kirishima(CV:Reina Ueda)"
+                },
+                "album_artists": {
+                    "Japanese": "fox capture plan; Various Artists",
+                    "Romaji": "fox capture plan; Various Artists",
+                    "English": "fox capture plan; Various Artists"
+                },
+                "genre": "Film; Anime"
+            },
+            {
+                "subfolder": {
+                    "Japanese": "霧島透子/Social World (Band Arr. Ver.)",
+                    "Romaji": "Kirishima Touko/Social World (Band Arr. Ver.)",
+                    "English": "Touko Kirishima/Social World (Band Arr. Ver.)"
+                },
+                "filename": "Social World (Band Arr. Ver.).flac",
+                "titles": {
+                    "Japanese": "Social World (Band Arr. Ver.)",
+                    "Romaji": "Social World (Band Arr. Ver.)",
+                    "English": "Social World (Band Arr. Ver.)"
+                },
+                "album_title": {
+                    "Japanese": "Social World (Band Arr. Ver.)",
+                    "Romaji": "Social World (Band Arr. Ver.)",
+                    "English": "Social World (Band Arr. Ver.)"
+                },
+                "track_number": 3,
                 "contributing_artists": {
                     "Japanese": "霧島透子(CV:上田麗奈)",
                     "Romaji": "Kirishima Touko(CV:Ueda Reina)",

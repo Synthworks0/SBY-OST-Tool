@@ -795,160 +795,207 @@ ASSET_MANIFEST = {
         "relative_path": "Extras/Fukashigi no Karte (Movie Ver.)/Fukashigi no Karte (Movie Ver.).flac",
         "duration_seconds": 239
       },
+      # Mai Sakurajima
       {
         "track_number": 6,
-        "relative_path": "Extras/Ikumi Akagi/Fukashigi no Karte (Ikumi Akagi Ver.).flac",
-        "duration_seconds": 240
+        "relative_path": "Extras/Mai Sakurajima/Fukashigi no Karte (Mai Sakurajima Ver.).flac",
+        "duration_seconds": 242
       },
+      # Tomoe Koga
       {
         "track_number": 7,
-        "relative_path": "Extras/Ikumi Akagi/The Horizon Is My Scar (Ikumi Akagi Ver.).flac",
-        "duration_seconds": 281
+        "relative_path": "Extras/Tomoe Koga/Fukashigi no Karte (Tomoe Koga Ver.).flac",
+        "duration_seconds": 240
       },
+      # Rio Futaba
       {
         "track_number": 8,
+        "relative_path": "Extras/Rio Futaba/Fukashigi no Karte (Rio Futaba Ver.).flac",
+        "duration_seconds": 240
+      },
+      # Nodoka Toyohama
+      {
+        "track_number": 9,
+        "relative_path": "Extras/Nodoka Toyohama/Fukashigi no Karte (Nodoka Toyohama Ver.).flac",
+        "duration_seconds": 240
+      },
+      # Kaede Arc
+      {
+        "track_number": 10,
         "relative_path": "Extras/Kaede & Kaede/Fukashigi no Karte (Kaede & Kaede Ver.).flac",
         "duration_seconds": 237
       },
       {
-        "track_number": 9,
-        "relative_path": "Extras/Kaede Azusagawa/Fukashigi no Karte (Kaede Azusagawa Ver.).flac",
-        "duration_seconds": 239
-      },
-      {
-        "track_number": 10,
-        "relative_path": "Extras/Mai Sakurajima/Fukashigi no Karte (Mai Sakurajima Ver.).flac",
-        "duration_seconds": 242
-      },
-      {
         "track_number": 11,
-        "relative_path": "Extras/Nodoka Toyohama/Fukashigi no Karte (Nodoka Toyohama Ver.).flac",
-        "duration_seconds": 240
-      },
-      {
-        "track_number": 12,
         "relative_path": "Extras/Panda Kaede/Fukashigi no Karte (Panda Kaede Ver.).flac",
         "duration_seconds": 240
       },
       {
-        "track_number": 13,
-        "relative_path": "Extras/Rio Futaba/Fukashigi no Karte (Rio Futaba Ver.).flac",
-        "duration_seconds": 240
+        "track_number": 12,
+        "relative_path": "Extras/Kaede Azusagawa/Fukashigi no Karte (Kaede Azusagawa Ver.).flac",
+        "duration_seconds": 239
       },
+      # Shoko Makinohara
+      {
+        "track_number": 13,
+        "relative_path": "Extras/Shoko Makinohara/Fukashigi no Karte (Shoko Makinohara Ver.).flac",
+        "duration_seconds": 237
+      },
+      # Sakuta Azusagawa
       {
         "track_number": 14,
         "relative_path": "Extras/Sakuta Azusagawa/Fukashigi no Karte (Azusagawa Sakuta Ver.).flac",
         "duration_seconds": 239
       },
+      # Uzuki Hirokawa
       {
         "track_number": 15,
-        "relative_path": "Extras/Shoko Makinohara/Fukashigi no Karte (Shoko Makinohara Ver.).flac",
-        "duration_seconds": 237
-      },
-      {
-        "track_number": 16,
-        "relative_path": "Extras/Sweet Bullet/BABY!/BABY! (Instrumental Ver.).flac",
-        "duration_seconds": 227
-      },
-      {
-        "track_number": 17,
-        "relative_path": "Extras/Sweet Bullet/BABY!/BABY!.flac",
-        "duration_seconds": 231
-      },
-      {
-        "track_number": 18,
-        "relative_path": "Extras/Sweet Bullet/Becoming a Muse/Becoming a Muse (Instrumental Ver.).flac",
-        "duration_seconds": 242
-      },
-      {
-        "track_number": 19,
-        "relative_path": "Extras/Sweet Bullet/Becoming a Muse/Becoming a Muse.flac",
-        "duration_seconds": 242
-      },
-      {
-        "track_number": 20,
-        "relative_path": "Extras/Sweet Bullet/Otome Notebook/Otome Notebook (Instrumental Ver.).flac",
-        "duration_seconds": 219
-      },
-      {
-        "track_number": 21,
-        "relative_path": "Extras/Sweet Bullet/Otome Notebook/Otome Notebook.flac",
-        "duration_seconds": 222
-      },
-      {
-        "track_number": 22,
-        "relative_path": "Extras/Sweet Bullet/Ultrasonic Melody/Ultrasonic Melody.flac",
-        "duration_seconds": 272
-      },
-      {
-        "track_number": 23,
-        "relative_path": "Extras/The Horizon Is My Scar/The Horizon Is My Scar.flac",
-        "duration_seconds": 281
-      },
-      {
-        "track_number": 24,
-        "relative_path": "Extras/The Horizon Is My Scar (Instrumental Ver.)/The Horizon Is My Scar (Instrumental Ver.).flac",
-        "duration_seconds": 279
-      },
-      {
-        "track_number": 25,
-        "relative_path": "Extras/The Horizon Is My Scar (SP Ver.)/The Horizon Is My Scar (SP Ver.).flac",
-        "duration_seconds": 281
-      },
-      {
-        "track_number": 26,
-        "relative_path": "Extras/Tomoe Koga/Fukashigi no Karte (Tomoe Koga Ver.).flac",
-        "duration_seconds": 240
-      },
-      {
-        "track_number": 27,
-        "relative_path": "Extras/Touko Kirishima/Hilbert Space/Hilbert Space.flac",
-        "duration_seconds": 206
-      },
-      {
-        "track_number": 28,
-        "relative_path": "Extras/Touko Kirishima/I need you/I need you.flac",
-        "duration_seconds": 310
-      },
-      {
-        "track_number": 29,
-        "relative_path": "Extras/Touko Kirishima/Social World/Social World.flac",
-        "duration_seconds": 274
-      },
-      {
-        "track_number": 30,
-        "relative_path": "Extras/Touko Kirishima/Someone/Someone.flac",
-        "duration_seconds": 232
-      },
-      {
-        "track_number": 31,
         "relative_path": "Extras/Uzuki Hirokawa/Fukashigi no Karte (Uzuki Hirokawa Ver.).flac",
         "duration_seconds": 238
       },
       {
-        "track_number": 32,
-        "relative_path": "Extras/Uzuki Hirokawa/Social World (Uzuki Hirokawa Ver.).flac",
-        "duration_seconds": 274
-      },
-      {
-        "track_number": 33,
+        "track_number": 16,
         "relative_path": "Extras/Uzuki Hirokawa/The Horizon Is My Scar (Uzuki Hirokawa Ver.).flac",
         "duration_seconds": 281
       },
       {
-        "track_number": 34,
+        "track_number": 17,
+        "relative_path": "Extras/Uzuki Hirokawa/Social World (Uzuki Hirokawa Ver.).flac",
+        "duration_seconds": 274
+      },
+      # Ikumi Akagi
+      {
+        "track_number": 18,
+        "relative_path": "Extras/Ikumi Akagi/Fukashigi no Karte (Ikumi Akagi Ver.).flac",
+        "duration_seconds": 240
+      },
+      {
+        "track_number": 19,
+        "relative_path": "Extras/Ikumi Akagi/The Horizon Is My Scar (Ikumi Akagi Ver.).flac",
+        "duration_seconds": 281
+      },
+      # Sara Himeji
+      {
+        "track_number": 20,
         "relative_path": "Extras/Sara Himeji/Fukashigi no Karte (Sara Himeji Ver.).flac",
         "duration_seconds": 239
       },
       {
-        "track_number": 35,
+        "track_number": 21,
         "relative_path": "Extras/Sara Himeji/The Horizon Is My Scar (Sara Himeji Ver.).flac",
         "duration_seconds": 282
       },
+      # Nene Iwamizawa
       {
-        "track_number": 36,
+        "track_number": 22,
+        "relative_path": "Extras/Nene Iwamizawa/Fukashigi no Karte (Nene Iwamizawa Ver.).flac",
+        "duration_seconds": 240
+      },
+      {
+        "track_number": 23,
+        "relative_path": "Extras/Nene Iwamizawa/The Horizon Is My Scar (Nene Iwamizawa Ver.).flac",
+        "duration_seconds": 281
+      },
+      # Touko Kirishima
+      {
+        "track_number": 24,
+        "relative_path": "Extras/Touko Kirishima/The Horizon Is My Scar (Touko Kirishima Ver.).flac",
+        "duration_seconds": 281
+      },
+      # The Horizon Is My Scar
+      {
+        "track_number": 25,
+        "relative_path": "Extras/The Horizon Is My Scar/The Horizon Is My Scar.flac",
+        "duration_seconds": 281
+      },
+      {
+        "track_number": 26,
+        "relative_path": "Extras/The Horizon Is My Scar (Instrumental Ver.)/The Horizon Is My Scar (Instrumental Ver.).flac",
+        "duration_seconds": 279
+      },
+      {
+        "track_number": 27,
+        "relative_path": "Extras/The Horizon Is My Scar (SP Ver.)/The Horizon Is My Scar (SP Ver.).flac",
+        "duration_seconds": 281
+      },
+      # Touko Kirishima/Social World
+      {
+        "track_number": 28,
+        "relative_path": "Extras/Touko Kirishima/Social World/Social World.flac",
+        "duration_seconds": 274
+      },
+      {
+        "track_number": 29,
+        "relative_path": "Extras/Touko Kirishima/Social World/Social World (Piano Arr. Ver.).flac",
+        "duration_seconds": 274
+      },
+      {
+        "track_number": 30,
+        "relative_path": "Extras/Touko Kirishima/Social World/Social World (Band Arr. Ver.).flac",
+        "duration_seconds": 274
+      },
+      # Touko Kirishima/Hilbert Space
+      {
+        "track_number": 31,
+        "relative_path": "Extras/Touko Kirishima/Hilbert Space/Hilbert Space.flac",
+        "duration_seconds": 206
+      },
+      # Touko Kirishima/I need you
+      {
+        "track_number": 32,
+        "relative_path": "Extras/Touko Kirishima/I need you/I need you.flac",
+        "duration_seconds": 310
+      },
+      # Touko Kirishima/Someone
+      {
+        "track_number": 33,
+        "relative_path": "Extras/Touko Kirishima/Someone/Someone.flac",
+        "duration_seconds": 232
+      },
+      # Touko Kirishima/Silent Night
+      {
+        "track_number": 34,
         "relative_path": "Extras/Touko Kirishima/Silent Night/Silent Night.flac",
         "duration_seconds": 255
+      },
+      # Sweet Bullet/BABY!
+      {
+        "track_number": 35,
+        "relative_path": "Extras/Sweet Bullet/BABY!/BABY!.flac",
+        "duration_seconds": 231
+      },
+      {
+        "track_number": 36,
+        "relative_path": "Extras/Sweet Bullet/BABY!/BABY! (Instrumental Ver.).flac",
+        "duration_seconds": 227
+      },
+      # Sweet Bullet/Becoming a Muse
+      {
+        "track_number": 37,
+        "relative_path": "Extras/Sweet Bullet/Becoming a Muse/Becoming a Muse.flac",
+        "duration_seconds": 242
+      },
+      {
+        "track_number": 38,
+        "relative_path": "Extras/Sweet Bullet/Becoming a Muse/Becoming a Muse (Instrumental Ver.).flac",
+        "duration_seconds": 242
+      },
+      # Sweet Bullet/Otome Notebook
+      {
+        "track_number": 39,
+        "relative_path": "Extras/Sweet Bullet/Otome Notebook/Otome Notebook.flac",
+        "duration_seconds": 222
+      },
+      {
+        "track_number": 40,
+        "relative_path": "Extras/Sweet Bullet/Otome Notebook/Otome Notebook (Instrumental Ver.).flac",
+        "duration_seconds": 219
+      },
+      # Sweet Bullet/Ultrasonic Melody
+      {
+        "track_number": 41,
+        "relative_path": "Extras/Sweet Bullet/Ultrasonic Melody/Ultrasonic Melody.flac",
+        "duration_seconds": 272
       }
     ]
   }
