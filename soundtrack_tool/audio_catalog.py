@@ -212,11 +212,9 @@ class AudioCatalog:
                     else:
                         return item
 
-        number = track.get("track_number")
-        if number is not None:
-            for item in candidates:
-                if item.get("track_number") == number:
-                    return item
+        # IMPORTANT: Do not fall back to track_number for Extras.
+        # Extras track numbers are not globally unique (many are "1"), and using them
+        # can silently map a UI entry to the wrong audio file.
         return None
 
     def _resolve_extras_track_path(self, album_dir: Path, track: dict) -> Path | None:
@@ -233,6 +231,9 @@ class AudioCatalog:
             candidate = base_dir / filename
             if candidate.exists():
                 return candidate
+            # If a filename is provided but missing, treat it as missing instead of
+            # silently falling back to the first FLAC (which causes wrong playback).
+            return None
         flacs = sorted(base_dir.glob("*.flac"))
         return flacs[0] if flacs else None
 

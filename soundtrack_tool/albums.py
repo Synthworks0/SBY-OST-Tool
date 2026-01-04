@@ -804,7 +804,7 @@ ALBUMS = {
                     "Romaji": "Iwamizawa Nene",
                     "English": "Nene Iwamizawa"
                 },
-                "filename": "The Horizon Is My Scar (Nene Iwamizawa Ver.).flac",
+                "filename": "The Horizon Is My Scar (Nene Iwamizawa Ver).flac",
                 "titles": {
                     "Japanese": "水平線は僕の古傷 (岩見沢寧々Ver.)",
                     "Romaji": "Suiheisen wa Boku no Hurukizu (Iwamizawa Nene Ver.)",
@@ -830,9 +830,9 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "霧島透子",
-                    "Romaji": "Kirishima Touko",
-                    "English": "Touko Kirishima"
+                    "Japanese": "霧島透子/水平線は僕の古傷",
+                    "Romaji": "Kirishima Touko/Suiheisen wa Boku no Hurukizu",
+                    "English": "Touko Kirishima/The Horizon Is My Scar"
                 },
                 "filename": "The Horizon Is My Scar (Touko Kirishima Ver.).flac",
                 "titles": {
@@ -980,11 +980,11 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "霧島透子/Social World (Piano Arr. Ver.)",
-                    "Romaji": "Kirishima Touko/Social World (Piano Arr. Ver.)",
-                    "English": "Touko Kirishima/Social World (Piano Arr. Ver.)"
+                    "Japanese": "霧島透子/Social World",
+                    "Romaji": "Kirishima Touko/Social World",
+                    "English": "Touko Kirishima/Social World"
                 },
-                "filename": "Social World (Piano Arr. Ver.).flac",
+                "filename": "Social World (Piano Arr. Ver).flac",
                 "titles": {
                     "Japanese": "Social World (Piano Arr. Ver.)",
                     "Romaji": "Social World (Piano Arr. Ver.)",
@@ -1010,11 +1010,11 @@ ALBUMS = {
             },
             {
                 "subfolder": {
-                    "Japanese": "霧島透子/Social World (Band Arr. Ver.)",
-                    "Romaji": "Kirishima Touko/Social World (Band Arr. Ver.)",
-                    "English": "Touko Kirishima/Social World (Band Arr. Ver.)"
+                    "Japanese": "霧島透子/Social World",
+                    "Romaji": "Kirishima Touko/Social World",
+                    "English": "Touko Kirishima/Social World"
                 },
-                "filename": "Social World (Band Arr. Ver.).flac",
+                "filename": "Social World (Band Arr. Ver).flac",
                 "titles": {
                     "Japanese": "Social World (Band Arr. Ver.)",
                     "Romaji": "Social World (Band Arr. Ver.)",

@@ -893,13 +893,13 @@ ASSET_MANIFEST = {
       },
       {
         "track_number": 23,
-        "relative_path": "Extras/Nene Iwamizawa/The Horizon Is My Scar (Nene Iwamizawa Ver.).flac",
+        "relative_path": "Extras/Nene Iwamizawa/The Horizon Is My Scar (Nene Iwamizawa Ver).flac",
         "duration_seconds": 281
       },
       # Touko Kirishima
       {
         "track_number": 24,
-        "relative_path": "Extras/Touko Kirishima/The Horizon Is My Scar (Touko Kirishima Ver.).flac",
+        "relative_path": "Extras/Touko Kirishima/The Horizon Is My Scar/The Horizon Is My Scar (Touko Kirishima Ver.).flac",
         "duration_seconds": 281
       },
       # The Horizon Is My Scar
@@ -926,13 +926,13 @@ ASSET_MANIFEST = {
       },
       {
         "track_number": 29,
-        "relative_path": "Extras/Touko Kirishima/Social World/Social World (Piano Arr. Ver.).flac",
-        "duration_seconds": 274
+        "relative_path": "Extras/Touko Kirishima/Social World/Social World (Piano Arr. Ver).flac",
+        "duration_seconds": 293
       },
       {
         "track_number": 30,
-        "relative_path": "Extras/Touko Kirishima/Social World/Social World (Band Arr. Ver.).flac",
-        "duration_seconds": 274
+        "relative_path": "Extras/Touko Kirishima/Social World/Social World (Band Arr. Ver).flac",
+        "duration_seconds": 300
       },
       # Touko Kirishima/Hilbert Space
       {
