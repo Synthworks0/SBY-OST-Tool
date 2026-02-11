@@ -46,6 +46,8 @@ Available for **Windows**, **macOS**, and **Linux**!
 5. Click "Extract Soundtrack" to extract the files and set the desired language.
 6. If needed, click "Rename Files" to rename the soundtrack files after extracting.
 
+### For those unable to use this program you can find the soundtrack files at [this link](https://drive.google.com/drive/folders/1R32XMPrM47grDjgt5MpNq_Mcdg_yHEEb?usp=sharing).
+
 ## Support
 
 If you encounter any issues or have questions, please [open an issue](https://github.com/Synthworks0/SBY-OST-Tool/issues) on the GitHub repository.
